@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services") version "4.4.1"
+    id("com.google.gms.google-services") 
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -52,8 +52,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     
     // Explicitly add these with versions from the BOM
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-database-ktx") // Note the -ktx suffix
+    
     
     // Add these critical dependencies
     implementation("com.google.android.gms:play-services-base:18.4.0")

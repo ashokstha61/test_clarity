@@ -22,72 +22,72 @@ class SoundSelectionPageState extends State<SoundSelectionPage> {
     {
       'label': 'Thunderstorm',
       'image': 'assets/images/himage/thunder.png',
-      'audio': 'assets/audio/thunderstorm.mp3',
+      // 'audio': 'assets/audio/thunderstorm.mp3',
     },
     {
       'label': 'Rain',
       'image': 'assets/images/himage/rain.png',
-      'audio': 'assets/audio/rain.mp3',
+      // 'audio': 'assets/audio/rain.mp3',
     },
     {
       'label': 'Snow',
       'image': 'assets/images/himage/snow.png',
-      'audio': 'assets/audio/snow.mp3',
+      // 'audio': 'assets/audio/snow.mp3',
     },
     {
       'label': 'Love',
       'image': 'assets/images/himage/love.png',
-      'audio': 'assets/audio/love.mp3',
+      // 'audio': 'assets/audio/love.mp3',
     },
     {
       'label': 'Forest',
       'image': 'assets/images/himage/forest.png',
-      'audio': 'assets/audio/forest.mp3',
+      // 'audio': 'assets/audio/forest.mp3',
     },
     {
       'label': 'Sensory',
       'image': 'assets/images/himage/sensory.png',
-      'audio': 'assets/audio/sensory.mp3',
+      // 'audio': 'assets/audio/sensory.mp3',
     },
     {
       'label': 'Lullaby',
       'image': 'assets/images/himage/lullaby.png',
-      'audio': 'assets/audio/lullaby.mp3',
+      // 'audio': 'assets/audio/lullaby.mp3',
     },
     {
       'label': 'Piano',
       'image': 'assets/images/himage/piano.png',
-      'audio': 'assets/audio/piano.mp3',
+      // 'audio': 'assets/audio/piano.mp3',
     },
     {
       'label': 'Keyboard',
       'image': 'assets/images/himage/keyboard.png',
-      'audio': 'assets/audio/keyboard.mp3',
+      // 'audio': 'assets/audio/keyboard.mp3',
     },
     {
       'label': 'Guitar',
       'image': 'assets/images/himage/guitar.png',
-      'audio': 'assets/audio/guitar.mp3',
+      // 'audio': 'assets/audio/guitar.mp3',
     },
     {
       'label': 'Spa',
       'image': 'assets/images/himage/meditation.png',
-      'audio': 'assets/audio/spa.mp3',
+      // 'audio': 'assets/audio/spa.mp3',
     },
     {
       'label': 'Fireplace',
       'image': 'assets/images/himage/fire.png',
-      'audio': 'assets/audio/fireplace.mp3',
+      // 'audio': 'assets/audio/fireplace.mp3',
     },
     {
       'label': 'Ocean',
       'image': 'assets/images/himage/wave.png',
-      'audio': 'assets/audio/ocean.mp3',
+      // 'audio': 'assets/audio/ocean.mp3',
     },
     {
       'label': 'Breeze',
       'image': 'assets/images/himage/wind.png',
-      'audio': 'assets/audio/breeze.mp3',
+      // 'audio': 'assets/audio/breeze.mp3',
     },
   ];
 
@@ -146,25 +146,39 @@ class SoundSelectionPageState extends State<SoundSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sound Selection')),
+      appBar: AppBar(
+        leading: Icon(Icons.keyboard_arrow_down),
+        title: Text('Your Relaxation Mix'),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(8.0),
-              itemCount: sounds.length,
-              itemBuilder: (context, index) {
-                final sound = sounds[index];
-                return SoundCard(
-                  label: sound['label'],
-                  imagePath: sound['image'],
-                  onPressed: () {
-                    // _playSound(sound['label']);
-                  },
-                );
-              },
+          Flexible(
+            child: SizedBox(
+              height: 80,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                itemCount: sounds.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: SizedBox(
+                      width: 80,
+                      child: SoundCard(
+                        label: sounds[index]['label'],
+                        imagePath: sounds[index]['image'],
+                        onPressed: () {},
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
+
+          Spacer(),
+
           if (_isTimerRunning)
             Padding(
               padding: const EdgeInsets.all(16.0),
