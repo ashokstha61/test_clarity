@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:clarity/view/favouratepage.dart';
 import 'package:clarity/view/profile_page.dart';
 import 'package:clarity/view/soundpage.dart';
+import 'package:firebase_database/firebase_database.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -22,11 +23,15 @@ class _HomepageState extends State<Homepage> {
   final List<String> _titles = ['Sounds', 'Favourites', 'Settings'];
 
   List<SoundItem> soundData = [];
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
+  
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("Database reference path: ${_dbRef.child('SoundData').path}");
     getSoundData();
   }
 

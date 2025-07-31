@@ -1,10 +1,30 @@
 {
   "project_info": {
     "project_number": "536456729301",
+    "firebase_url": "https://aura-5fcbb-default-rtdb.firebaseio.com",
     "project_id": "aura-5fcbb",
     "storage_bucket": "aura-5fcbb.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536456729301:android:52b2eb852fc4b800ea485c",
+        "android_client_info": {
+          "package_name": "com.apple.fruit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI-i2cVYHUNdx9Pgg843DWP4A7qPd-4FM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:536456729301:android:2d5e00b2007e717eea485c",

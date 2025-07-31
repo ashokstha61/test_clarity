@@ -57,6 +57,8 @@ class DefaultFirebaseOptions {
     appId: '1:536456729301:android:2d5e00b2007e717eea485c',
     messagingSenderId: '536456729301',
     projectId: 'aura-5fcbb',
+    databaseURL: 'https://aura-5fcbb-default-rtdb.firebaseio.com',
     storageBucket: 'aura-5fcbb.firebasestorage.app',
   );
+
 }
