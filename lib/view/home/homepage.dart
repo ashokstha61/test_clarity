@@ -18,7 +18,7 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [Soundpage(), Favouratepage(), ProfilePage()];
+  final List<Widget> _screens = [SoundPage(), Favouratepage(), ProfilePage()];
 
   final List<String> _titles = ['Sounds', 'Favourites', 'Settings'];
 
