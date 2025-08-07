@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
-import 'package:clarity/view/my_account_page.dart';
+import 'package:clarity/view/profile/my_account_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

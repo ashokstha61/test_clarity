@@ -3,7 +3,7 @@ import 'package:clarity/custom/sound_control_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:clarity/custom/sound_card.dart';
-import 'timer_screen.dart';
+import 'sound mixing page/timer_screen.dart';
 
 class SoundSelectionPage extends StatefulWidget {
   const SoundSelectionPage({super.key});
@@ -22,72 +22,72 @@ class SoundSelectionPageState extends State<SoundSelectionPage> {
   final List<Map<String, dynamic>> sounds = [
     {
       'label': 'Thunderstorm',
-      'image': 'assets/images/himage/thunder.png',
+      'image': 'assets/images/thunder_icon.png',
       'audio': 'assets/audio/thunderstorm.mp3',
     },
     {
       'label': 'Rain',
-      'image': 'assets/images/himage/rain.png',
+      'image': 'assets/images/rain_icon.png',
       'audio': 'assets/audio/rain.mp3',
     },
     {
       'label': 'Snow',
-      'image': 'assets/images/himage/snow.png',
+      'image': 'assets/images/snow_icon.png',
       'audio': 'assets/audio/snow.mp3',
     },
     {
       'label': 'Love',
-      'image': 'assets/images/himage/love.png',
+      'image': 'assets/images/hearts_icon.png',
       'audio': 'assets/audio/love.mp3',
     },
     {
       'label': 'Forest',
-      'image': 'assets/images/himage/forest.png',
+      'image': 'assets/images/forest_icon.png',
       'audio': 'assets/audio/forest.mp3',
     },
     {
       'label': 'Sensory',
-      'image': 'assets/images/himage/sensory.png',
+      'image': 'assets/images/sensory_icon.png',
       'audio': 'assets/audio/sensory.mp3',
     },
     {
       'label': 'Lullaby',
-      'image': 'assets/images/himage/lullaby.png',
+      'image': 'assets/images/baby_lullaby_icon.png',
       'audio': 'assets/audio/lullaby.mp3',
     },
     {
       'label': 'Piano',
-      'image': 'assets/images/himage/piano.png',
+      'image': 'assets/images/piano_icon.png',
       'audio': 'assets/audio/piano.mp3',
     },
     {
       'label': 'Keyboard',
-      'image': 'assets/images/himage/keyboard.png',
+      'image': 'assets/images/keyboard_icon.png',
       'audio': 'assets/audio/keyboard.mp3',
     },
     {
       'label': 'Guitar',
-      'image': 'assets/images/himage/guitar.png',
+      'image': 'assets/images/guitar_icon.png',
       'audio': 'assets/audio/guitar.mp3',
     },
     {
       'label': 'Spa',
-      'image': 'assets/images/himage/meditation.png',
+      'image': 'assets/images/spa_icon.png',
       'audio': 'assets/audio/spa.mp3',
     },
     {
       'label': 'Fireplace',
-      'image': 'assets/images/himage/fire.png',
+      'image': 'assets/images/fireplace_icon.png',
       'audio': 'assets/audio/fireplace.mp3',
     },
     {
       'label': 'Ocean',
-      'image': 'assets/images/himage/wave.png',
+      'image': 'assets/images/waves_icon.png',
       'audio': 'assets/audio/ocean.mp3',
     },
     {
       'label': 'Breeze',
-      'image': 'assets/images/himage/wind.png',
+      'image': 'assets/images/breeze_icon.png',
       'audio': 'assets/audio/breeze.mp3',
     },
   ];
@@ -114,10 +114,10 @@ class SoundSelectionPageState extends State<SoundSelectionPage> {
 
   IconData _getIconForSound(String soundName) {
     switch (soundName) {
-      case 'Thunderstorm':
+      case 'Thunder':
         return Icons.flash_on;
       case 'Rain':
-        return Icons.grain;
+        return Icons.cloud;
       case 'Snow':
         return Icons.ac_unit;
       case 'Forest':
@@ -211,10 +211,17 @@ class SoundSelectionPageState extends State<SoundSelectionPage> {
           SizedBox(
             height: 40,
             child: Text(
-              'Active Sounds',
+              'Selected Sound',
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.start,
             ),
+          ),
+          SoundControlWidget(
+            label: 'thunder',
+            icon: Icons.thunderstorm_outlined,
+            onRemove: () {},
+            audioPlayer: audioPlayer,
+            // audioPlayer: audioPlayer,
           ),
           // Column(
           //   children: _activeSounds.map((sound) {

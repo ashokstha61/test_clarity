@@ -9,19 +9,19 @@ class SoundControlWidget extends StatefulWidget {
   final String? audioPath;
 
   const SoundControlWidget({
-    Key? key,
+    super.key,
     required this.label,
     required this.icon,
     required this.audioPlayer,
     required this.onRemove,
     this.audioPath,
-  }) : super(key: key);
+  });
 
   @override
-  _SoundControlWidgetState createState() => _SoundControlWidgetState();
+  SoundControlWidgetState createState() => SoundControlWidgetState();
 }
 
-class _SoundControlWidgetState extends State<SoundControlWidget> {
+class SoundControlWidgetState extends State<SoundControlWidget> {
   double _volume = 0.7;
   bool _isPlaying = false;
 
@@ -32,7 +32,6 @@ class _SoundControlWidgetState extends State<SoundControlWidget> {
       widget.audioPlayer.setVolume(_volume);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -48,7 +47,7 @@ class _SoundControlWidgetState extends State<SoundControlWidget> {
                 right: 0,
                 child: ElevatedButton(
                   onPressed: widget.onRemove,
-                  child: const Icon(Icons.close, size: 16),
+                  child: Icon(Icons.close, size: 16),
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(4),
@@ -68,12 +67,14 @@ class _SoundControlWidgetState extends State<SoundControlWidget> {
                   children: [
                     IconButton(
                       icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                      onPressed: _togglePlayback,
+                      // onPressed: _togglePlayback,
+                      onPressed: () {},
                     ),
                     Expanded(
                       child: Slider(
                         value: _volume,
-                        onChanged: _handleVolumeChange,
+                        // onChanged: _handleVolumeChange,
+                        onChanged: (value) {},
                       ),
                     ),
                   ],
@@ -92,7 +93,7 @@ class _SoundControlWidgetState extends State<SoundControlWidget> {
     } else if (widget.audioPath != null) {
       await widget.audioPlayer.play(AssetSource(widget.audioPath!));
     }
-    
+
     setState(() {
       _isPlaying = !_isPlaying;
     });

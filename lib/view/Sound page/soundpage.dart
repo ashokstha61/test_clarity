@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_button.dart';
 
 class Soundpage extends StatelessWidget {
-  const Soundpage({super.key}); 
-  
+  const Soundpage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,85 +14,85 @@ class Soundpage extends StatelessWidget {
         Divider(),
         CustomButton(
           label: 'Thunderstorm',
-          image: 'assets/images/himage/thunder.png',
+          image: 'assets/images/thunder_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Rain',
-          image: 'assets/images/himage/rain.png',
+          image: 'assets/images/rain_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Snow',
-          image: 'assets/images/himage/snow.png',
+          image: 'assets/images/snow_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Love',
-          image: 'assets/images/himage/love.png',
+          image: 'assets/images/hearts_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'forest',
-          image: 'assets/images/himage/forest.png',
+          image: 'assets/images/forest_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Sensory',
-          image: 'assets/images/himage/sensory.png',
+          image: 'assets/images/sensory_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Lullaby',
-          image: 'assets/images/himage/lullaby.png',
+          image: 'assets/images/baby_lullaby_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Piano',
-          image: 'assets/images/himage/piano.png',
+          image: 'assets/images/piano_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Keyboard',
-          image: 'assets/images/himage/keyboard.png',
+          image: 'assets/images/keyboard_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Guitar',
-          image: 'assets/images/himage/guitar.png',
+          image: 'assets/images/guitar_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Spa',
-          image: 'assets/images/himage/meditation.png',
+          image: 'assets/images/spa_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Fireplace',
-          image: 'assets/images/himage/fire.png',
+          image: 'assets/images/fireplace_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Ocean',
-          image: 'assets/images/himage/wave.png',
+          image: 'assets/images/waves_icon.png',
           onPressed: () {},
         ),
         Divider(),
         CustomButton(
           label: 'Breeze',
-          image: 'assets/images/himage/wind.png',
+          image: 'assets/images/breeze_icon.png',
           onPressed: () {},
         ),
         Divider(),
