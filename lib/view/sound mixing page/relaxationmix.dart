@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:clarity/model/sound_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -658,44 +659,44 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   // }
 }
 
-class SoundData {
-  final String id;
-  final String title;
-  final String icon;
-  final String musicURL;
-  final String filepath;
-  final bool isFav;
-  final bool isLocked;
-  final bool isSelected;
-  final bool isNew;
-  double volume;
+// class SoundData {
+//   final String id;
+//   final String title;
+//   final String icon;
+//   final String musicURL;
+//   final String filepath;
+//   final bool isFav;
+//   final bool isLocked;
+//   final bool isSelected;
+//   final bool isNew;
+//   double volume;
 
-  SoundData({
-    required this.id,
-    required this.title,
-    required this.musicURL,
-    required this.filepath,
-    required this.icon,
-    this.isFav = false,
-    this.isLocked = false,
-    this.isSelected = false,
-    this.isNew = false,
-    this.volume = 0.5, // Default to 0.5 for safer initial volume
-  });
+//   SoundData({
+//     required this.id,
+//     required this.title,
+//     required this.musicURL,
+//     required this.filepath,
+//     required this.icon,
+//     this.isFav = false,
+//     this.isLocked = false,
+//     this.isSelected = false,
+//     this.isNew = false,
+//     this.volume = 0.5, // Default to 0.5 for safer initial volume
+//   });
 
-  factory SoundData.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return SoundData(
-      id: doc.id,
-      title: data['title'] ?? '',
-      musicURL: data['musicURL'] ?? '',
-      filepath: data['filepath'] ?? '',
-      isFav: data['isFav'] ?? false,
-      isLocked: data['isLocked'] ?? false,
-      isSelected: data['isSelected'] ?? false,
-      isNew: data['isNew'] ?? false,
-      volume: (data['volume'] ?? 0.5).toDouble(),
-      icon: data['icon'] ?? '',
-    );
-  }
-}
+//   factory SoundData.fromFirestore(DocumentSnapshot doc) {
+//     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+//     return SoundData(
+//       id: doc.id,
+//       title: data['title'] ?? '',
+//       musicURL: data['musicURL'] ?? '',
+//       filepath: data['filepath'] ?? '',
+//       isFav: data['isFav'] ?? false,
+//       isLocked: data['isLocked'] ?? false,
+//       isSelected: data['isSelected'] ?? false,
+//       isNew: data['isNew'] ?? false,
+//       volume: (data['volume'] ?? 0.5).toDouble(),
+//       icon: data['icon'] ?? '',
+//     );
+//   }
+// }

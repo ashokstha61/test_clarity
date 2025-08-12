@@ -3,8 +3,10 @@ import 'package:clarity/model/sound_model.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:clarity/view/profile/profile_page.dart';
-import 'package:clarity/view/Sound%20page/soundpage.dart';
+// import 'package:clarity/view/Sound%20page/soundpage.dart';
 import 'package:firebase_database/firebase_database.dart';
+
+import '../Sound page/sound.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -22,7 +24,7 @@ class _HomepageState extends State<Homepage> {
 
   final List<String> _titles = ['Sounds', 'Favourites', 'Settings'];
 
-  List<SoundItem> soundData = [];
+  List<SoundData> soundData = [];
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
   @override
