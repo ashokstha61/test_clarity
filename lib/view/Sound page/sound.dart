@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'bloc/soundbloc.dart' as testbloc;
-import 'package:clarity/view/Sound page/bloc/sound_event.dart';
-import 'package:clarity/view/Sound page/bloc/sound_state.dart';
+import 'package:clarity/view/Sound page/bloc/soundevent.dart';
+import 'package:clarity/view/Sound page/bloc/soundstate.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
 
