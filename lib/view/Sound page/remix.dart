@@ -27,7 +27,7 @@ class RelaxationMixBar extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             Color.fromARGB(255, 193, 193, 242), // top color
-            Color.fromARGB(255, 61, 61, 113), // bottom color
+            Color.fromARGB(255, 41, 41, 102), // bottom color
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,

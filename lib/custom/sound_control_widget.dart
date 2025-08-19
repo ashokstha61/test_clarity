@@ -99,12 +99,7 @@ class SoundControlWidgetState extends State<SoundControlWidget> {
     });
   }
 
-  void _handleVolumeChange(double value) async {
-    setState(() {
-      _volume = value;
-    });
-    await widget.audioPlayer.setVolume(value);
-  }
+ 
 
   @override
   void dispose() {

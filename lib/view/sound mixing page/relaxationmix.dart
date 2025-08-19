@@ -66,27 +66,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
   }
 
-  // Future<void> _fetchRecommendedSounds() async {
-  //   try {
-  //     final snapshot = await _firestore.collection('SoundData').get();
-  //     if (mounted) {
-  //       setState(() {
-  //         _recommendedSounds = snapshot.docs
-  //             .map((doc) => SoundData.fromFirestore(doc))
-  //             .toList();
-  //         _isLoadingRecommendedSounds = false;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _isLoadingRecommendedSounds = false;
-  //       });
-  //     }
-  //     debugPrint('Error fetching sounds: $e');
-  //   }
-  // }
-
   @override
   void dispose() {
     for (var player in _audioPlayers) {
@@ -276,144 +255,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             },
           ),
         ),
-        // const SizedBox(width: 16),
-        // CircleAvatar(
-        //   backgroundColor: Colors.white,
-        //   child: IconButton(
-        //     icon: const Icon(
-        //       Icons.stop,
-        //       size: 24,
-        //       color: Color.fromRGBO(18, 23, 42, 1),
-        //     ),
-        //     onPressed: () async {
-        //       await _stopAllSounds();
-        //       setState(() => _isGlobalPlaying = false);
-        //     },
-        //   ),
-        // ),
       ],
     );
   }
-
-  // Widget _buildRecommendedSoundButton(SoundData sound) {
-  //   // Don't show if sound is already selected
-  //   if (_selectedSounds.contains(sound)) {
-  //     return const SizedBox.shrink();
-  //   }
-
-  //   return Padding(
-  //     padding: const EdgeInsets.only(right: 16.0),
-  //     child: Column(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         InkWell(
-  //           onTap: () {
-  //             setState(() {
-  //               _selectedSounds.add(sound);
-  //               final player = AudioPlayer();
-  //               player.onPlayerComplete.listen((_) {
-  //                 if (_isGlobalPlaying) {
-  //                   player.play(UrlSource(sound.musicURL));
-  //                 }
-  //               });
-  //               _audioPlayers.add(player);
-  //             });
-  //           },
-  //           child: Container(
-  //             width: 80,
-  //             height: 80,
-  //             decoration: BoxDecoration(
-  //               color: const Color.fromRGBO(18, 23, 42, 1),
-  //               borderRadius: BorderRadius.circular(12),
-  //               border: Border.all(color: Colors.teal[50]!),
-  //             ),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 _buildSoundImage(sound, 40),
-  //                 const SizedBox(height: 8),
-  //                 Padding(
-  //                   padding: const EdgeInsets.symmetric(horizontal: 4),
-  //                   child: Text(
-  //                     sound.title.replaceAll('_', ' '),
-  //                     style: const TextStyle(
-  //                       fontSize: 12,
-  //                       color: Colors.white,
-  //                       overflow: TextOverflow.ellipsis,
-  //                     ),
-  //                     maxLines: 1,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildRecommendedSoundButton(SoundData sound) {
-  //   // Don't show if sound is already selected
-  //   if (_selectedSounds.contains(sound)) {
-  //     return const SizedBox.shrink();
-  //   }
-
-  //   return Padding(
-  //     padding: const EdgeInsets.only(right: 16.0),
-  //     child: Column(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         InkWell(
-  //           onTap: () {
-  //             setState(() {
-  //               _selectedSounds.add(sound);
-  //               final player = AudioPlayer();
-  //               player.onPlayerComplete.listen((_) {
-  //                 if (_isGlobalPlaying) {
-  //                   player.play(UrlSource(sound.musicURL));
-  //                 }
-  //               });
-  //               _audioPlayers.add(player);
-  //             });
-  //           },
-  //           child: Container(
-  //             width: 80,
-  //             height: 80,
-  //             decoration: BoxDecoration(
-  //               color: const Color.fromRGBO(18, 23, 42, 1),
-  //               borderRadius: BorderRadius.circular(12),
-  //               border: Border.all(color: Colors.teal[50]!),
-  //             ),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 // Use the icon field here instead of filepath
-  //                 _buildSoundImage(
-  //                   sound.icon,
-  //                   40,
-  //                 ), // Changed from sound.filepath to sound.icon
-  //                 const SizedBox(height: 8),
-  //                 Padding(
-  //                   padding: const EdgeInsets.symmetric(horizontal: 4),
-  //                   child: Text(
-  //                     sound.title.replaceAll('_', ' '),
-  //                     style: const TextStyle(
-  //                       fontSize: 12,
-  //                       color: Colors.white,
-  //                       overflow: TextOverflow.ellipsis,
-  //                     ),
-  //                     maxLines: 1,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildRecommendedSoundButton(SoundData sound) {
     debugPrint('Building button for sound: ${sound.title}');
@@ -591,46 +435,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         .replaceAll(RegExp(r'\.png$'), '') // Remove .png if present
         .toLowerCase();
     debugPrint('Cleaned icon name: $cleanName');
-    // Map all possible icon names to asset paths
-    // const assetMap = {
-    //   'guitar': 'assets/images/guitar_icon.png',
-    //   'keyboard': 'assets/images/keyboard_icon.png',
-    //   'leaves': 'assets/images/leaves_icon.png',
-    //   'baby_lullaby': 'assets/images/baby_lullaby_icon.png',
-    //   'piano': 'assets/images/piano_icon.png',
-    //   'rain': 'assets/images/rain_icon.png',
-    //   'thunder': 'assets/images/thunder_icon.png',
-    //   'snow': 'assets/images/snow_icon.png',
-    //   'forest': 'assets/images/forest_icon.png',
-    //   'wave': 'assets/images/waves_icon.png',
-    //   'spa': 'assets/images/spa_icon.png',
-    //   'sensory': 'assets/images/sensory_icon.png',
-    //   'sunset': 'assets/images/sunset_icon.png',
-    //   'birds': 'assets/images/birds_icon.png',
-    //   'breeze': 'assets/images/breeze_icon.png',
-    //   'fireplace': 'assets/images/fireplace_icon.png',
-    //   'hearts': 'assets/images/hearts_icon.png',
-    //   'mountain': 'assets/images/mountains_icon.png',
-    //   'mountains': 'assets/images/mountains_icon.png',
-    //   'oceans': 'assets/images/ocean_icon.png',
-    //   'streams': 'assets/images/streams_icon.png',
-    //   'sunrise': 'assets/images/sunrise_icon.png',
-    //   // Add all other mappings
-    // };
-
-    // // Try exact match first
-    // if (assetMap.containsKey(cleanName)) {
-    //   debugPrint('Found exact match: ${assetMap[cleanName]}');
-    //   return assetMap[cleanName];
-    // }
-
-    // // Try partial matches if needed
-    // for (final key in assetMap.keys) {
-    //   if (cleanName.contains(key)) {
-    //     debugPrint('Found partial match: $key -> ${assetMap[key]}');
-    //     return assetMap[key];
-    //   }
-    // }
 
     return 'assets/images/$cleanName.png';
   }
@@ -652,51 +456,5 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
   }
 
-  // Future<void> _stopAllSounds() async {
-  //   for (var player in _audioPlayers) {
-  //     await player.stop();
-  //   }
-  // }
 }
 
-// class SoundData {
-//   final String id;
-//   final String title;
-//   final String icon;
-//   final String musicURL;
-//   final String filepath;
-//   final bool isFav;
-//   final bool isLocked;
-//   final bool isSelected;
-//   final bool isNew;
-//   double volume;
-
-//   SoundData({
-//     required this.id,
-//     required this.title,
-//     required this.musicURL,
-//     required this.filepath,
-//     required this.icon,
-//     this.isFav = false,
-//     this.isLocked = false,
-//     this.isSelected = false,
-//     this.isNew = false,
-//     this.volume = 0.5, // Default to 0.5 for safer initial volume
-//   });
-
-//   factory SoundData.fromFirestore(DocumentSnapshot doc) {
-//     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-//     return SoundData(
-//       id: doc.id,
-//       title: data['title'] ?? '',
-//       musicURL: data['musicURL'] ?? '',
-//       filepath: data['filepath'] ?? '',
-//       isFav: data['isFav'] ?? false,
-//       isLocked: data['isLocked'] ?? false,
-//       isSelected: data['isSelected'] ?? false,
-//       isNew: data['isNew'] ?? false,
-//       volume: (data['volume'] ?? 0.5).toDouble(),
-//       icon: data['icon'] ?? '',
-//     );
-//   }
-// }

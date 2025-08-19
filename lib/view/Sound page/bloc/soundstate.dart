@@ -12,8 +12,21 @@ class SoundLoaded extends SoundState {
   SoundLoaded({required this.sounds});
 }
 
+// class SoundLoaded extends SoundState {
+//   final List<SoundData> sounds;
+
+//   SoundLoaded({required this.sounds});
+
+//   SoundLoaded copyWith({List<SoundData>? sounds}) {
+//     return SoundLoaded(
+//       sounds: sounds ?? this.sounds,
+//     );
+//   }
+// }
+
 class SoundError extends SoundState {
   final String message;
 
   SoundError({required this.message});
 }
+

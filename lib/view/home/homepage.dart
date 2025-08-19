@@ -3,10 +3,14 @@ import 'package:clarity/model/sound_model.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:clarity/view/profile/profile_page.dart';
-// import 'package:clarity/view/Sound%20page/soundpage.dart';
+
 import 'package:firebase_database/firebase_database.dart';
 
-import '../Sound page/sound.dart';
+import '../Sound page/testsound.dart';
+// import '../Sound page/Sound.dart';
+// import '../Sound page/multisound.dart';
+
+
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
