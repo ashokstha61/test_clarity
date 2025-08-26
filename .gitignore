@@ -45,3 +45,7 @@ app.*.map.json
 /android/app/release
 
 test_page.dart
+
+# "JSON to Dart Model" generator tracker files locations.
+/.json_models/
+models.jsonc

@@ -1,8 +1,10 @@
-import 'package:clarity/model/sound_model.dart';
+import 'package:clarity/model/model.dart';
+// import 'package:clarity/model/sound_model.dart';
 import 'package:flutter/material.dart';
 
 class SoundTile extends StatelessWidget {
-  final SoundData sound;
+  // final SoundData sound;
+  final NewSoundModel sound;
   final VoidCallback onTap;
 
   const SoundTile({super.key, required this.sound, required this.onTap});
@@ -20,10 +22,12 @@ class SoundTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
             border: Border.all(color: Colors.blueGrey),
-            color: sound.isSelected ? const Color.fromRGBO(176, 176, 224, 1) : null,
+            color: sound.isSelected
+                ? const Color.fromRGBO(176, 176, 224, 1)
+                : null,
           ),
           child: Center(
-            child: sound.hasAsset
+            child: sound.icon.isNotEmpty
                 ? Image.asset(
                     'assets/images/${sound.icon.endsWith('.png') ? sound.icon : '${sound.icon}.png'}',
                     height: 24,
@@ -53,4 +57,3 @@ class SoundTile extends StatelessWidget {
     );
   }
 }
-

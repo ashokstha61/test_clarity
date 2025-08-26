@@ -1,12 +1,13 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:clarity/model/sound_model.dart';
+import 'package:clarity/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 class RelaxationMixPage extends StatefulWidget {
-  const RelaxationMixPage({super.key});
+  List<NewSoundModel> sounds = [];
+  RelaxationMixPage({super.key, required this.sounds});
 
   @override
   State<RelaxationMixPage> createState() => _RelaxationMixPageState();
@@ -15,73 +16,105 @@ class RelaxationMixPage extends StatefulWidget {
 class _RelaxationMixPageState extends State<RelaxationMixPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<AudioPlayer> _audioPlayers = [];
-  final List<SoundData> _selectedSounds = [];
+  final List<NewSoundModel> _selectedSounds = [];
   final Map<int, StreamSubscription> _playerStateSubscriptions = {};
+  // final Map<String, AudioPlayer> _playerMap = {};
 
   bool _isGlobalPlaying = false;
   bool _isLoadingPlayback = false;
-  List<SoundData> _recommendedSounds = [];
+  List<NewSoundModel> _recommendedSounds = [];
   bool _isLoadingRecommendedSounds = false;
+  bool showLoading = false;
+  List<NewSoundModel> _buildUpdatedSounds() {
+    // mark items selected based on _selectedSounds membership
+    return widget.sounds
+        .map((s) => s.copyWith(isSelected: _selectedSounds.contains(s)))
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
-    _initAudioSession();
-    _fetchRecommendedSounds();
+    // _initAudioSession();
+    _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
+    _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
   }
 
-  Future<void> _initAudioSession() async {
-    try {
-      final session = await AudioSession.instance;
-      await session.configure(
-        const AudioSessionConfiguration(
-          avAudioSessionCategory: AVAudioSessionCategory.playback,
-          avAudioSessionCategoryOptions:
-              AVAudioSessionCategoryOptions.mixWithOthers,
-          androidAudioAttributes: AndroidAudioAttributes(
-            contentType: AndroidAudioContentType.music,
-            usage: AndroidAudioUsage.media,
-          ),
-          androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-          androidWillPauseWhenDucked: false,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error configuring audio session: $e');
-    }
-  }
+  // Future<void> _initAudioSession() async {
+  //   try {
+  //     final session = await AudioSession.instance;
+  //     await session.configure(
+  //       const AudioSessionConfiguration(
+  //         avAudioSessionCategory: AVAudioSessionCategory.playback,
+  //         avAudioSessionCategoryOptions:
+  //             AVAudioSessionCategoryOptions.mixWithOthers,
+  //         androidAudioAttributes: AndroidAudioAttributes(
+  //           contentType: AndroidAudioContentType.music,
+  //           usage: AndroidAudioUsage.media,
+  //         ),
+  //         androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+  //         androidWillPauseWhenDucked: false,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     debugPrint('Error configuring audio session: $e');
+  //   }
+  // }
 
-  Future<void> _fetchRecommendedSounds() async {
-    setState(() {
-      _isLoadingRecommendedSounds = true;
-    });
-    debugPrint('Fetching sounds from Firestore...');
+  // void _addSoundToMix(NewSoundModel sound) async {
+  //   if (_selectedSounds.contains(sound)) return;
 
-    try {
-      final snapshot = await _firestore.collection('SoundData').get();
-      debugPrint('Successfully fetched ${snapshot.docs.length} sounds');
+  //   try {
+  //     // Create new audio player
+  //     final player = AudioPlayer();
+  //     final index = _selectedSounds.length;
 
-      if (mounted) {
-        setState(() {
-          _recommendedSounds = snapshot.docs.map((doc) {
-            debugPrint('Sound data: ${doc.data()}');
-            return SoundData.fromFirestore(doc);
-          }).toList();
-          _isLoadingRecommendedSounds = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error fetching sounds: $e');
-      if (mounted) {
-        setState(() {
-          _isLoadingRecommendedSounds = false;
-        });
-        _showErrorSnackBar('Failed to load recommended sounds');
-      }
-    }
-  }
+  //     // Set up audio source and configuration
+  //     await player.setAudioSource(
+  //       AudioSource.uri(Uri.parse(sound.musicUrl)),
+  //       preload: true,
+  //     );
+  //     await player.setLoopMode(LoopMode.all);
+  //     await player.setVolume(sound.volume.toDouble());
 
-  void _addSoundToMix(SoundData sound) async {
+  //     // Set up player state listener
+  //     final subscription = player.playerStateStream.listen(
+  //       (state) {
+  //         if (state.processingState == ProcessingState.idle &&
+  //             state.playing == false &&
+  //             _isGlobalPlaying) {
+  //           debugPrint('Player for ${sound.title} stopped unexpectedly');
+  //         }
+  //       },
+  //       onError: (error) {
+  //         debugPrint('Player error for ${sound.title}: $error');
+  //         _showErrorSnackBar('Audio error occurred for ${sound.title}');
+  //       },
+  //     );
+
+  //     setState(() {
+  //       _selectedSounds.add(sound);
+  //       _audioPlayers.add(player);
+  //       _playerStateSubscriptions[index] = subscription;
+  //     });
+
+  //     // Auto-play logic: Start playing when we have at least one sound
+  //     // If this is the first sound added, start playing it
+  //     if (_selectedSounds.length == 1 && !_isGlobalPlaying) {
+  //       await _playAllSounds();
+  //     }
+  //     // If we're already playing (adding 2nd, 3rd sound, etc.), start this new sound immediately
+  //     else if (_isGlobalPlaying) {
+  //       await player.play();
+  //       await _adjustVolumes();
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error adding sound ${sound.title}: $e');
+  //     _showErrorSnackBar('Failed to add ${sound.title}');
+  //   }
+  // }
+
+  void _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.contains(sound)) return;
 
     try {
@@ -89,15 +122,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       final player = AudioPlayer();
       final index = _selectedSounds.length;
 
-      // Set up audio source and configuration
-      await player.setAudioSource(
-        AudioSource.uri(Uri.parse(sound.musicURL)),
-        preload: true,
-      );
+      await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
       await player.setLoopMode(LoopMode.all);
-      await player.setVolume(sound.volume);
+      await player.setVolume(sound.volume.toDouble());
 
-      // Set up player state listener
       final subscription = player.playerStateStream.listen(
         (state) {
           if (state.processingState == ProcessingState.idle &&
@@ -107,8 +135,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           }
         },
         onError: (error) {
-          debugPrint('Player error for ${sound.title}: $error');
-          _showErrorSnackBar('Audio error occurred for ${sound.title}');
+          _showErrorSnackBar('Audio error for ${sound.title}');
         },
       );
 
@@ -116,52 +143,103 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         _selectedSounds.add(sound);
         _audioPlayers.add(player);
         _playerStateSubscriptions[index] = subscription;
+
+        // Remove from recommended
+        _recommendedSounds.remove(sound);
       });
 
-      // Auto-play logic: Start playing when we have at least one sound
-      // If this is the first sound added, start playing it
-      if (_selectedSounds.length == 1 && !_isGlobalPlaying) {
-        await _playAllSounds();
-      }
-      // If we're already playing (adding 2nd, 3rd sound, etc.), start this new sound immediately
-      else if (_isGlobalPlaying) {
-        await player.play();
-        await _adjustVolumes();
-      }
+      await player.play();
+      await _adjustVolumes();
     } catch (e) {
-      debugPrint('Error adding sound ${sound.title}: $e');
       _showErrorSnackBar('Failed to add ${sound.title}');
     }
   }
 
   // Also modify the _removeSoundFromMix method to handle auto-stop when going back to 1 sound:
 
+  // void _removeSoundFromMix(int index) async {
+  //   if (index >= _selectedSounds.length) return;
+
+  //   try {
+  //     // Cancel subscription and dispose player
+  //     _playerStateSubscriptions[index]?.cancel();
+  //     _playerStateSubscriptions.remove(index);
+
+  //     await _audioPlayers[index].dispose();
+
+  //     setState(() {
+  //       _selectedSounds.removeAt(index);
+  //       _audioPlayers.removeAt(index);
+  //     });
+
+  //     // Only stop playback if all sounds are removed
+  //     if (_selectedSounds.isEmpty && _isGlobalPlaying) {
+  //       await _pauseAllSounds();
+  //     }
+  //     // Adjust volumes for remaining sounds if we're still playing
+  //     else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
+  //       await _adjustVolumes();
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error removing sound at index $index: $e');
+  //     _showErrorSnackBar('Failed to remove sound');
+  //   }
+  // }
+
   void _removeSoundFromMix(int index) async {
-    if (index >= _selectedSounds.length) return;
+    // _showErrorSnackBar(index.toString());
+    // if (index < 0 || index >= _selectedSounds.length) return;
+
+    // // try {
+    // // _playerStateSubscriptions[index]?.cancel();
+    // // _playerStateSubscriptions.remove(index);
+
+    // // await _audioPlayers[index].dispose();
+
+    // setState(() {
+    //   // Remove from selected
+
+    //   final removedSound = _selectedSounds.removeAt(index);
+
+    //   _audioPlayers.removeAt(index);
+
+    //   // Add back to recommended
+    //   _recommendedSounds.add(removedSound.copyWith(isSelected: false));
+    // });
+
+    // print('_selecetedsound $_selectedSounds');
+    // print('_isGlobalPlaying $_isGlobalPlaying');
+
+    // if (_selectedSounds.isEmpty && _isGlobalPlaying) {
+    //   await _pauseAllSounds();
+    // } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
+    //   await _adjustVolumes();
+    // }
+    // } catch (e) {
+    //   print(e);
+    //   _showErrorSnackBar('Failed to remove sound ${e}');
+    // }
+    if (index < 0 || index >= _selectedSounds.length) return;
 
     try {
+      final removedSound = _selectedSounds.removeAt(index);
+      final removedPlayer = _audioPlayers.removeAt(index);
+
       // Cancel subscription and dispose player
+      await removedPlayer.dispose();
       _playerStateSubscriptions[index]?.cancel();
       _playerStateSubscriptions.remove(index);
 
-      await _audioPlayers[index].dispose();
+      // Add back to recommended with isSelected false
+      _recommendedSounds.add(removedSound.copyWith(isSelected: false));
 
-      setState(() {
-        _selectedSounds.removeAt(index);
-        _audioPlayers.removeAt(index);
-      });
-
-      // Only stop playback if all sounds are removed
-      if (_selectedSounds.length == 0 && _isGlobalPlaying) {
+      if (_selectedSounds.isEmpty && _isGlobalPlaying) {
         await _pauseAllSounds();
-      }
-      // Adjust volumes for remaining sounds if we're still playing
-      else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
+      } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
         await _adjustVolumes();
       }
     } catch (e) {
-      debugPrint('Error removing sound at index $index: $e');
-      _showErrorSnackBar('Failed to remove sound');
+      _showErrorSnackBar('Failed to remove sound: $e');
     }
   }
 
@@ -203,7 +281,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     if (_selectedSounds.isEmpty || _isLoadingPlayback) return;
 
     // Only show loading indicator if it's taking too long
-    bool showLoading = false;
+
     Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
         setState(() => _isLoadingPlayback = true);
@@ -220,11 +298,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
       // Cancel the loading timer if it hasn't fired yet
       loadingTimer.cancel();
-
-      setState(() {
-        _isGlobalPlaying = true;
-        _isLoadingPlayback = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGlobalPlaying = true;
+          _isLoadingPlayback = false;
+        });
+      }
     } catch (e) {
       debugPrint('Error playing all sounds: $e');
       // Cancel the loading timer if it hasn't fired yet
@@ -238,7 +317,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     if (_audioPlayers.isEmpty || _isLoadingPlayback) return;
 
     // Only show loading indicator if it's taking too long
-    bool showLoading = false;
+
     Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
         setState(() => _isLoadingPlayback = true);
@@ -262,19 +341,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       loadingTimer.cancel();
       setState(() => _isLoadingPlayback = false);
       _showErrorSnackBar('Failed to pause sounds');
-    }
-  }
-
-  Future<void> _stopAllSounds() async {
-    if (_audioPlayers.isEmpty) return;
-
-    try {
-      await Future.wait(_audioPlayers.map((player) => player.stop()));
-
-      setState(() => _isGlobalPlaying = false);
-    } catch (e) {
-      debugPrint('Error stopping all sounds: $e');
-      _showErrorSnackBar('Failed to stop sounds');
     }
   }
 
@@ -309,10 +375,20 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-        title: const Text(
-          'Your Relaxation Mix',
-          style: TextStyle(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+          onPressed: () {
+            final updated = _buildUpdatedSounds();
+            Navigator.pop(context, updated);
+          },
+        ),
+        toolbarHeight: 80,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: const Text(
+            'Your Relaxation Mix',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(18, 23, 42, 1),
@@ -505,7 +581,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  Widget _buildRecommendedSoundButton(SoundData sound) {
+  Widget _buildRecommendedSoundButton(NewSoundModel sound) {
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: Column(
@@ -547,7 +623,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  Widget _buildSelectedSoundItem(SoundData sound, int index) {
+  Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
     return Card(
       color: const Color.fromRGBO(18, 23, 42, 1),
       elevation: 3,
@@ -609,7 +685,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     children: [
                       Expanded(
                         child: Slider(
-                          value: sound.volume,
+                          value: sound.volume.toDouble(),
                           min: 0.0,
                           max: 1.0,
                           divisions: 20,

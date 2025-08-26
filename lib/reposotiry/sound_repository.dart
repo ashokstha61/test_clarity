@@ -7,7 +7,7 @@ class SoundRepository {
   SoundRepository(this.firestore);
 
   Future<List<SoundData>> fetchSounds() async {
-    final snapshot = await firestore.collection('sounds').get();
+    final snapshot = await firestore.collection('SoundData').get();
     return snapshot.docs.map((doc) => SoundData.fromFirestore(doc)).toList();
   }
 }

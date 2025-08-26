@@ -1,77 +1,162 @@
-import 'package:audioplayers/audioplayers.dart';
+//this file works perfectly fine for sound mixing page
+
+// import 'package:just_audio/just_audio.dart';
 import 'package:clarity/model/model.dart';
-import 'package:clarity/model/sound_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+
+import '../Sound page/testsound.dart';
+
+// Assuming AudioManager is defined in sound_page.dart and accessible
 
 class RelaxationMixPage extends StatefulWidget {
-  const RelaxationMixPage({super.key, required List<NewSoundModel> sounds});
+  final List<NewSoundModel> sounds;
+  const RelaxationMixPage({super.key, required this.sounds});
 
   @override
   State<RelaxationMixPage> createState() => _RelaxationMixPageState();
 }
 
 class _RelaxationMixPageState extends State<RelaxationMixPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final List<AudioPlayer> _audioPlayers = [];
-  final List<SoundData> _selectedSounds = [];
-  bool _isGlobalPlaying = false;
-  List<SoundData> _recommendedSounds = [];
-  bool _isLoadingRecommendedSounds = false;
-  // bool _isMinimized = false;
+  List<NewSoundModel> _selectedSounds = [];
+  List<NewSoundModel> _recommendedSounds = [];
+  bool _isLoadingPlayback = false;
+  final bool _isLoadingRecommendedSounds = false;
+  bool showLoading = false;
+
+  List<NewSoundModel> _buildUpdatedSounds() {
+    return widget.sounds
+        .map(
+          (s) => s.copyWith(
+            isSelected: _selectedSounds.any(
+              (selected) => selected.title == s.title,
+            ),
+          ),
+        )
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
-    _setupAudioPlayers();
-    _fetchRecommendedSounds();
+    _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
+
+    AudioManager().syncPlayers(_selectedSounds);
+    // _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    // _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
   }
 
-  void _setupAudioPlayers() {
-    for (var player in _audioPlayers) {
-      player.onPlayerComplete.listen((event) {
-        final index = _audioPlayers.indexOf(player);
-        if (index != -1 && _isGlobalPlaying) {
-          player.play(UrlSource(_selectedSounds[index].musicURL));
-        }
+  void _addSoundToMix(NewSoundModel sound) async {
+    if (_selectedSounds.any((s) => s.title == sound.title)) {
+      _showErrorSnackBar('Sound already selected');
+      return;
+    }
+
+    setState(() {
+      _selectedSounds = List.from(_selectedSounds)..add(sound);
+      _recommendedSounds.removeWhere((s) => s.title == sound.title);
+    });
+
+    // pass a copy to avoid concurrent modification
+    await AudioManager().syncPlayers(List.from(_selectedSounds));
+  }
+
+  void _removeSoundFromMix(int index) async {
+    if (index < 0 || index >= _selectedSounds.length) return;
+
+    try {
+      final removedSound = _selectedSounds[index];
+      setState(() {
+        _selectedSounds = List.from(_selectedSounds)..removeAt(index);
+        _recommendedSounds = List.from(_recommendedSounds)
+          ..add(removedSound.copyWith(isSelected: false));
       });
+
+      // pass a copy to avoid concurrent modification
+      await AudioManager().syncPlayers(List.from(_selectedSounds));
+    } catch (e) {
+      _showErrorSnackBar('Failed to remove sound: $e');
     }
   }
 
-  Future<void> _fetchRecommendedSounds() async {
+  Future<void> _updateSoundVolume(int index, double volume) async {
+    if (index >= _selectedSounds.length) return;
+
     setState(() {
-      _isLoadingRecommendedSounds = true;
+      _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
-    debugPrint('Fetching sounds from Firestore...');
+
+    await AudioManager().adjustVolumes(_selectedSounds);
+  }
+
+  Future<void> _playAllSounds() async {
+    if (_selectedSounds.isEmpty || _isLoadingPlayback) return;
+
+    Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() => _isLoadingPlayback = true);
+        showLoading = true;
+      }
+    });
 
     try {
-      final snapshot = await _firestore.collection('SoundData').get();
-      debugPrint('Successfully fetched ${snapshot.docs.length} sounds');
+      await AudioManager().playAll();
 
+      loadingTimer.cancel();
       if (mounted) {
         setState(() {
-          _recommendedSounds = snapshot.docs.map((doc) {
-            debugPrint('Sound data: ${doc.data()}'); // Print each sound's data
-            return SoundData.fromFirestore(doc);
-          }).toList();
-          _isLoadingRecommendedSounds = false;
+          _isLoadingPlayback = false;
         });
       }
     } catch (e) {
-      debugPrint('Error fetching sounds: $e');
+      debugPrint('Error playing all sounds: $e');
+      loadingTimer.cancel();
+      setState(() => _isLoadingPlayback = false);
+      _showErrorSnackBar('Failed to play sounds');
+    }
+  }
+
+  Future<void> _pauseAllSounds() async {
+    if (_isLoadingPlayback) return;
+
+    Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
-        setState(() {
-          _isLoadingRecommendedSounds = false;
-        });
+        setState(() => _isLoadingPlayback = true);
+        showLoading = true;
       }
+    });
+
+    try {
+      await AudioManager().pauseAll();
+
+      loadingTimer.cancel();
+
+      setState(() {
+        _isLoadingPlayback = false;
+      });
+    } catch (e) {
+      debugPrint('Error pausing all sounds: $e');
+      loadingTimer.cancel();
+      setState(() => _isLoadingPlayback = false);
+      _showErrorSnackBar('Failed to pause sounds');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 
   @override
   void dispose() {
-    for (var player in _audioPlayers) {
-      player.dispose();
-    }
     super.dispose();
   }
 
@@ -79,11 +164,20 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.keyboard_arrow_down, color: Colors.white),
-
-        title: const Text(
-          'Your Relaxation Mix',
-          style: TextStyle(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+          onPressed: () {
+            final updated = _buildUpdatedSounds();
+            Navigator.pop(context, updated);
+          },
+        ),
+        toolbarHeight: 80,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: const Text(
+            'Your Relaxation Mix',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(18, 23, 42, 1),
@@ -105,18 +199,20 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     const SizedBox(height: 16),
                     SizedBox(
                       height: 120,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _recommendedSounds
-                            .where((s) => !_selectedSounds.contains(s))
-                            .length,
-                        itemBuilder: (context, index) {
-                          final sound = _recommendedSounds
-                              .where((s) => !_selectedSounds.contains(s))
-                              .toList()[index];
-                          return _buildRecommendedSoundButton(sound);
-                        },
-                      ),
+                      child: _isLoadingRecommendedSounds
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _recommendedSounds.length,
+                              itemBuilder: (context, index) {
+                                final sound = _recommendedSounds[index];
+                                return _buildRecommendedSoundButton(sound);
+                              },
+                            ),
                     ),
                     const SizedBox(height: 5),
                     const Text(
@@ -128,7 +224,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       child: _selectedSounds.isEmpty
                           ? const Center(
                               child: Text(
-                                'No sounds selected',
+                                'No sounds selected\nTap on recommended sounds to add them',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.white54),
                               ),
                             )
@@ -168,7 +265,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     icon: Icons.timer_outlined,
                     label: 'Timer',
                     onPressed: () {
-                      /* Timer functionality */
+                      _showErrorSnackBar('Timer feature coming soon!');
                     },
                   ),
                   _buildPlaybackControls(),
@@ -176,7 +273,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     icon: Icons.favorite_border_outlined,
                     label: 'Save Mix',
                     onPressed: () {
-                      /* Save mix functionality */
+                      _showErrorSnackBar('Save mix feature coming soon!');
                     },
                   ),
                 ],
@@ -231,63 +328,42 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  // Playback controls widget
   Widget _buildPlaybackControls() {
-    // Only show controls if sounds are selected
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         CircleAvatar(
           backgroundColor: Colors.white,
+          radius: 28,
           child: IconButton(
             icon: Icon(
-              _isGlobalPlaying ? Icons.pause : Icons.play_arrow,
-              size: 24,
+              AudioManager().isPlaying ? Icons.pause : Icons.play_arrow,
+              size: 28,
               color: const Color.fromRGBO(18, 23, 42, 1),
             ),
-            onPressed: () async {
-              if (_isGlobalPlaying) {
-                await _pauseAllSounds();
-              } else {
-                await _playAllSounds();
-              }
-              setState(() => _isGlobalPlaying = !_isGlobalPlaying);
-            },
+            onPressed: _selectedSounds.isEmpty
+                ? null
+                : () async {
+                    if (AudioManager().isPlaying) {
+                      await _pauseAllSounds();
+                    } else {
+                      await _playAllSounds();
+                    }
+                  },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildRecommendedSoundButton(SoundData sound) {
-    debugPrint('Building button for sound: ${sound.title}');
-    debugPrint('Icon name from Firestore: ${sound.icon}');
-    debugPrint('Music URL: ${sound.musicURL}');
-
-    // Don't show if sound is already selected
-    if (_selectedSounds.contains(sound)) {
-      return const SizedBox.shrink();
-    }
-
+  Widget _buildRecommendedSoundButton(NewSoundModel sound) {
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-            onTap: () {
-              setState(() {
-                _selectedSounds.add(sound);
-                final player = AudioPlayer();
-                player.onPlayerComplete.listen((_) {
-                  if (_isGlobalPlaying) {
-                    player.play(UrlSource(sound.musicURL));
-                  }
-                });
-                _audioPlayers.add(player);
-              });
-            },
+            onTap: () => _addSoundToMix(sound),
             child: Container(
               width: 80,
               height: 80,
@@ -299,7 +375,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Use the icon from Firestore to find matching asset
                   _buildIconImage(sound.icon, 40),
                   const SizedBox(height: 8),
                   Padding(
@@ -323,25 +398,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  Widget _buildIconImage(String iconName, double size) {
-    if (iconName.isEmpty) return _buildFallbackIcon(size);
-    // Get the matching asset path
-    final assetPath = _getMatchingAssetPath(iconName);
-
-    if (assetPath != null) {
-      return Image.asset(
-        assetPath,
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size),
-      );
-    }
-
-    return _buildFallbackIcon(size);
-  }
-
-  Widget _buildSelectedSoundItem(SoundData sound, int index) {
+  Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
     return Card(
       color: const Color.fromRGBO(18, 23, 42, 1),
       elevation: 3,
@@ -368,28 +425,17 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     right: -8,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero, // Remove default padding
-                        minimumSize: Size(24, 24), // Set minimum button size
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(24, 24),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: const CircleBorder(), // Circular button
-                        backgroundColor: const Color.fromRGBO(
-                          92,
-                          67,
-                          108,
-                          1,
-                        ), // Match container color
-                        elevation: 2, // Slight shadow
-                        side: BorderSide(
+                        shape: const CircleBorder(),
+                        backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
+                        elevation: 2,
+                        side: const BorderSide(
                           color: Color.fromRGBO(92, 67, 108, 1),
-                        ), // Border color
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedSounds.removeAt(index);
-                          _audioPlayers[index].dispose();
-                          _audioPlayers.removeAt(index);
-                        });
-                      },
+                      onPressed: () => _removeSoundFromMix(index),
                       child: const Icon(
                         Icons.close,
                         size: 16,
@@ -407,18 +453,32 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 children: [
                   Text(
                     sound.title.replaceAll('_', ' '),
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
-                  Slider(
-                    value: sound.volume,
-                    min: 0.0,
-                    max: 1.0,
-                    activeColor: Color.fromRGBO(128, 128, 178, 1),
-                    inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
-                    onChanged: (value) {
-                      _audioPlayers[index].setVolume(value);
-                      setState(() => sound.volume = value);
-                    },
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Slider(
+                          value: sound.volume.toDouble(),
+                          min: 0.0,
+                          max: 1.0,
+                          divisions: 20,
+                          activeColor: const Color.fromRGBO(128, 128, 178, 1),
+                          inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
+                          onChanged: (value) {
+                            _updateSoundVolume(index, value);
+                          },
+                        ),
+                      ),
+                      Text(
+                        '${(sound.volume * 100).round()}%',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -429,31 +489,28 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  String? _getMatchingAssetPath(String iconName) {
-    debugPrint('Looking for asset matching icon name: $iconName');
-    // Clean the icon name (remove special characters, make lowercase)
-    final cleanName = iconName
-        .replaceAll(RegExp(r'\.png$'), '') // Remove .png if present
-        .toLowerCase();
-    debugPrint('Cleaned icon name: $cleanName');
+  Widget _buildIconImage(String iconName, double size) {
+    if (iconName.isEmpty) return _buildFallbackIcon(size);
 
+    final assetPath = _getMatchingAssetPath(iconName);
+    if (assetPath != null) {
+      return Image.asset(
+        assetPath,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size),
+      );
+    }
+
+    return _buildFallbackIcon(size);
+  }
+
+  String? _getMatchingAssetPath(String iconName) {
+    final cleanName = iconName.replaceAll(RegExp(r'\.png$'), '').toLowerCase();
     return 'assets/images/$cleanName.png';
   }
 
   Widget _buildFallbackIcon(double size) =>
       Icon(Icons.audiotrack, size: size * 0.7, color: Colors.white70);
-
-  Future<void> _playAllSounds() async {
-    for (int i = 0; i < _selectedSounds.length; i++) {
-      await _audioPlayers[i].setReleaseMode(ReleaseMode.loop);
-      await _audioPlayers[i].play(UrlSource(_selectedSounds[i].musicURL));
-      await _audioPlayers[i].setVolume(_selectedSounds[i].volume);
-    }
-  }
-
-  Future<void> _pauseAllSounds() async {
-    for (var player in _audioPlayers) {
-      await player.pause();
-    }
-  }
 }

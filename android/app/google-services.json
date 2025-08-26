@@ -1,46 +1,43 @@
 {
   "project_info": {
-    "project_number": "536456729301",
-    "firebase_url": "https://aura-5fcbb-default-rtdb.firebaseio.com",
-    "project_id": "aura-5fcbb",
-    "storage_bucket": "aura-5fcbb.firebasestorage.app"
+    "project_number": "6205644310",
+    "project_id": "sleepingapp-2fa67",
+    "storage_bucket": "sleepingapp-2fa67.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:536456729301:android:52b2eb852fc4b800ea485c",
-        "android_client_info": {
-          "package_name": "com.apple.fruit"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAI-i2cVYHUNdx9Pgg843DWP4A7qPd-4FM"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:536456729301:android:2d5e00b2007e717eea485c",
+        "mobilesdk_app_id": "1:6205644310:android:2b3a90546be496c7125f37",
         "android_client_info": {
           "package_name": "com.main.clarity"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "6205644310-cv9f2nra2saetl943mknb66tehmbi140.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAI-i2cVYHUNdx9Pgg843DWP4A7qPd-4FM"
+          "current_key": "AIzaSyCpn_e3px8L5vH0PGlxTj4B9V6onq9Uo68"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6205644310-cv9f2nra2saetl943mknb66tehmbi140.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "6205644310-lgh94u891au3id77oqlq5islu35db9kk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Sleephoria1"
+              }
+            }
+          ]
         }
       }
     }

@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.main.clarity"
         minSdk = 23
-        targetSdk = 35  // Updated to match compileSdk
+        targetSdk = 35 // Updated to match compileSdk
         versionCode = flutter.versionCode?.toInt() ?: 1
         versionName = flutter.versionName ?: "1.0"
         multiDexEnabled = true

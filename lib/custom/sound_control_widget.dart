@@ -22,7 +22,7 @@ class SoundControlWidget extends StatefulWidget {
 }
 
 class SoundControlWidgetState extends State<SoundControlWidget> {
-  double _volume = 0.7;
+  final double _volume = 0.7;
   bool _isPlaying = false;
 
   @override
@@ -47,12 +47,13 @@ class SoundControlWidgetState extends State<SoundControlWidget> {
                 right: 0,
                 child: ElevatedButton(
                   onPressed: widget.onRemove,
-                  child: Icon(Icons.close, size: 16),
+                  
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(4),
                     minimumSize: const Size(24, 24),
                   ),
+                  child: Icon(Icons.close, size: 16),
                 ),
               ),
             ],
