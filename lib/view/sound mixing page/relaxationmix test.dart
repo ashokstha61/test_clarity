@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import '../Sound page/testsound.dart';
+import 'timer_screen.dart';
 
 // Assuming AudioManager is defined in sound_page.dart and accessible
 
@@ -265,7 +266,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     icon: Icons.timer_outlined,
                     label: 'Timer',
                     onPressed: () {
-                      _showErrorSnackBar('Timer feature coming soon!');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TimerScreen(onTimerSelected: (Duration) {}),
+                        ),
+                      );
                     },
                   ),
                   _buildPlaybackControls(),
