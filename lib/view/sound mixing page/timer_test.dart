@@ -222,24 +222,23 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(
-              onPressed: () => _controller.restart(duration: widget.duration),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 15,
+                  onPressed: () =>
+                      Navigator.pop(context), // Go back to previous screen
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 15,
+                    ),
+                  ),
+                  child: const Text(
+                    'Quit',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'Restart',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-                
               ],
             ),
             const SizedBox(height: 20),
-            
           ],
         ),
       ),
