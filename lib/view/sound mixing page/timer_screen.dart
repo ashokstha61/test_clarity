@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'timer_test.dart';
+
 class TimerScreen extends StatelessWidget {
   final Function(int) onTimerSelected;
 
@@ -68,8 +70,12 @@ class TimerScreen extends StatelessWidget {
                         onTimerSelected(
                           minutes * 60,
                         ); // Convert minutes to seconds
-                        Navigator.pop(
+                        Navigator.push(
                           context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CircularTimerScreen(duration: minutes * 60),
+                          ),
                         ); // Close the modal after selection
                       },
                     ),
