@@ -1,3 +1,4 @@
+import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -137,9 +138,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             TextButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
                 );
               },
               child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clarity/custom/custom_setting.dart';
 import 'package:clarity/custom/custom_text_field.dart';
 
@@ -39,9 +40,17 @@ class _MyAccountPageState extends State<MyAccountPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextField(labelText: 'Full Name', hintText: 'Name'),
+              CustomTextField(
+                labelText: 'Full Name',
+                hintText: 'Name',
+                initialValue: FirebaseAuth.instance.currentUser?.displayName ?? '',
+              ),
               SizedBox(height: 16.0),
-              CustomTextField(labelText: 'Email', hintText: 'Email'),
+              CustomTextField(
+                labelText: 'Email',
+                hintText: 'Email',
+                initialValue: FirebaseAuth.instance.currentUser?.email ?? '',
+              ),
               SizedBox(height: 16.0),
               CustomSetting(
                 title: 'App Settings',

@@ -56,6 +56,7 @@ dependencies:
   equatable: ^2.0.7
   firebase_auth: ^6.0.1
   google_sign_in: ^6.1.5
+  purchases_flutter: ^9.2.3
 
 dev_dependencies:
   flutter_test:

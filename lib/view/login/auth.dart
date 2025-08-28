@@ -30,20 +30,27 @@ class AuthService {
     }
   }
 
-  Future<User?> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return result.user;
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    }
-  }
+  // Future<User?> RegisterV({
+  //   required String fullName,
+  //   num phone,
+  //   required String email,
+  //   required String password,
+  //   required String conformPassword,
+
+  // }) async {
+  //   try {
+  //     final UserCredential result = await _auth.RegisterV(
+  //       fullName: fullName,
+  //       email: email,
+  //       phoneNo: phone,
+  //       password: password,
+  //       conformPassword:conformPassword,
+  //     );
+  //     return result.user;
+  //   } on FirebaseAuthException catch (e) {
+  //     throw _handleAuthException(e);
+  //   }
+  // }
 
   // Google Sign-In
   Future<User?> signInWithGoogle() async {
@@ -96,11 +103,11 @@ class AuthService {
   // Update User Profile
   Future<void> updateUserProfile({
     String? displayName,
-    String? photoURL,
+   
   }) async {
     try {
       await _auth.currentUser?.updateDisplayName(displayName);
-      await _auth.currentUser?.updatePhotoURL(photoURL);
+      
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     }
