@@ -1,4 +1,5 @@
 import 'package:clarity/view/home/homepage.dart';
+import 'package:clarity/view/splash_screen/splash_screen.dart';
 // import 'package:clarity/view/sound%20mixing%20page/timer_screen.dart';
 // import 'package:clarity/view/testSoundpage.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Homepage(), debugShowCheckedModeBanner: false);
+    return MaterialApp(home: SplashScreen(), debugShowCheckedModeBanner: false);
   }
 }

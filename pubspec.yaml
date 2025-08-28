@@ -54,6 +54,8 @@ dependencies:
   audio_session: ^0.2.2
   mutex: ^3.1.0
   equatable: ^2.0.7
+  firebase_auth: ^6.0.1
+  google_sign_in: ^6.1.5
 
 dev_dependencies:
   flutter_test:
@@ -112,6 +114,7 @@ flutter:
     - assets/images/streams_icon.png
     - assets/images/sunrise_icon.png
     - assets/images/remix_image.png
+    - assets/images/email.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
