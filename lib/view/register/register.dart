@@ -219,6 +219,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -240,6 +241,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isPhoneValid = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _phoneController.addListener(() {
+      if (_phoneController.text.length > 10) {
+        setState(() => _isPhoneValid = false);
+      } else {
+        setState(() => _isPhoneValid = true);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -259,6 +274,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     // Validation
+    if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
+      _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
+      return;
+    }
     if (name.isEmpty) {
       _showAlert("Invalid Input", "Please enter your full name.");
       return;
@@ -344,6 +363,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   // Helper to build TextField with optional password toggle
+  // Widget _buildTextField(
+  //   TextEditingController controller,
+  //   String label,
+  //   bool isDarkMode, {
+  //   bool obscureText = false,
+  //   bool isPasswordField = false,
+  //   VoidCallback? onTogglePassword,
+  //   bool isPasswordVisible = false,
+  //   TextInputType? keyboardType,
+  // }) {
+  //   return TextField(
+  //     controller: controller,
+  //     obscureText: obscureText,
+  //     keyboardType: keyboardType,
+  //     style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+  //     decoration: InputDecoration(
+  //       filled: true,
+  //       fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+  //       labelText: label,
+  //       labelStyle: TextStyle(
+  //         color: isDarkMode ? Colors.white70 : Colors.black54,
+  //       ),
+  //       border: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //         borderSide: BorderSide(
+  //           color: isDarkMode ? Colors.white54 : Colors.black26,
+  //         ),
+  //       ),
+  //       suffixIcon: isPasswordField
+  //           ? IconButton(
+  //               icon: Icon(
+  //                 isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+  //                 color: isDarkMode ? Colors.white : Colors.black,
+  //               ),
+  //               onPressed: onTogglePassword,
+  //             )
+  //           : null,
+  //     ),
+  //   );
+  // }
+
   Widget _buildTextField(
     TextEditingController controller,
     String label,
@@ -353,6 +413,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     VoidCallback? onTogglePassword,
     bool isPasswordVisible = false,
     TextInputType? keyboardType,
+    Color? borderColor,
+    List<TextInputFormatter>? inputFormatters, // new parameter
   }) {
     return TextField(
       controller: controller,
@@ -369,7 +431,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: isDarkMode ? Colors.white54 : Colors.black26,
+            color:
+                borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
           ),
         ),
         suffixIcon: isPasswordField
@@ -417,7 +480,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     "Phone Number",
                     isDarkMode,
                     keyboardType: TextInputType.phone,
+                    borderColor: _isPhoneValid ? null : Colors.red,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly, // only digits
+                      LengthLimitingTextInputFormatter(10), // max 10 digits
+                    ],
                   ),
+
                   const SizedBox(height: 12),
                   _buildTextField(
                     _emailController,

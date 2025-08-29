@@ -48,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (userID == null) throw Exception("User ID is null");
 
       // RevenueCat login
-      await Purchases.logIn(userID);
+      // await Purchases.logIn(userID);
 
       // Save login status
       final prefs = await SharedPreferences.getInstance();

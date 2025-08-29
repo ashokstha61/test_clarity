@@ -66,8 +66,9 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential result =
-          await _auth.signInWithCredential(credential);
+      final UserCredential result = await _auth.signInWithCredential(
+        credential,
+      );
       return result.user;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -101,13 +102,9 @@ class AuthService {
   }
 
   // Update User Profile
-  Future<void> updateUserProfile({
-    String? displayName,
-   
-  }) async {
+  Future<void> updateUserProfile({String? displayName}) async {
     try {
       await _auth.currentUser?.updateDisplayName(displayName);
-      
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     }
