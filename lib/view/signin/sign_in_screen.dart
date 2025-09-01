@@ -29,6 +29,49 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
+  // Future<void> _handleLogin() async {
+  //   final email = _emailController.text.trim();
+  //   final password = _passwordController.text.trim();
+
+  //   if (email.isEmpty || password.isEmpty) {
+  //     _showAlert("Invalid Input", "Please enter both email and password.");
+  //     return;
+  //   }
+
+  //   setState(() => _isLoading = true);
+
+  //   try {
+  //     // Firebase login
+  //     UserCredential result = await FirebaseAuth.instance
+  //         .signInWithEmailAndPassword(email: email, password: password);
+
+  //     final userID = result.user?.uid;
+  //     if (userID == null) throw Exception("User ID is null");
+
+  //     // RevenueCat login
+  //     // await Purchases.logIn(userID);
+
+  //     // Save login status
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool("isUserLoggedIn", true);
+
+  //     if (!mounted) return;
+  //     _showAlert("Login Successful", "Welcome back!", () {
+  //       Navigator.pushAndRemoveUntil(
+  //         context,
+  //         MaterialPageRoute(builder: (_) => const Homepage()),
+  //         (route) => false, // Removes all previous routes
+  //       );
+  //       globals.isUserLoggedIn = true;
+  //     });
+  //   } on FirebaseAuthException catch (_) {
+  //     _showAlert("Login Failed", "Email or Password is incorrect.");
+  //   } catch (e) {
+  //     _showAlert("Error", e.toString());
+  //   } finally {
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -56,14 +99,26 @@ class _SignInScreenState extends State<SignInScreen> {
       await prefs.setBool("isUserLoggedIn", true);
 
       if (!mounted) return;
-      _showAlert("Login Successful", "Welcome back!", () {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const Homepage()),
-          (route) => false, // Removes all previous routes
-        );
-        globals.isUserLoggedIn = true;
-      });
+
+      // Show success message
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(content: const Text("Login Successful")),
+      );
+
+      // Wait for 2 seconds then redirect
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      Navigator.pop(context); // Close the dialog
+      globals.isUserLoggedIn = true;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const Homepage()),
+        (route) => false, // Removes all previous routes
+      );
     } on FirebaseAuthException catch (_) {
       _showAlert("Login Failed", "Email or Password is incorrect.");
     } catch (e) {
