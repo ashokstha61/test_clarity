@@ -1,3 +1,4 @@
+import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clarity/view/login/auth.dart';
@@ -57,16 +58,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Connect with Email',
                     imagePath: 'assets/images/email.png',
                     onPressed: () async {
-                      String email = await _showEmailDialog();
-                      String password = await _showPasswordDialog();
-                      if (email.isNotEmpty && password.isNotEmpty) {
-                        User? user = await _authService.signInWithEmailAndPassword(email: email, password: password);
-                        if (user != null) {
-                          // Navigate to home or show success
-                        } else {
-                          // Show error message
-                        }
-                      }
+                      // String email = await _showEmailDialog();
+                      // String password = await _showPasswordDialog();
+                      // if (email.isNotEmpty && password.isNotEmpty) {
+                      //   User? user = await _authService.signInWithEmailAndPassword(email: email, password: password);
+                      //   if (user != null) {
+                      //     // Navigate to home or show success
+                      //   } else {
+                      //     // Show error message
+                      //   }
+                      // }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignInScreen(),
+                        ),
+                      );
                     },
                   ),
                 ),

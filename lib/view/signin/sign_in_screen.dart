@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clarity/globals.dart' as globals;
 
 import 'sign_in_view.dart';
 // import 'register_screen.dart';
@@ -56,10 +57,12 @@ class _SignInScreenState extends State<SignInScreen> {
 
       if (!mounted) return;
       _showAlert("Login Successful", "Welcome back!", () {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const Homepage()),
+          (route) => false, // Removes all previous routes
         );
+        globals.isUserLoggedIn = true;
       });
     } on FirebaseAuthException catch (_) {
       _showAlert("Login Failed", "Email or Password is incorrect.");
@@ -75,7 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(title),
-        content: Text(message),
+        // content: Text(message),
         actions: [
           TextButton(
             onPressed: () {

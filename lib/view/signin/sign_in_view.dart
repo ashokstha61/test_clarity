@@ -41,6 +41,7 @@ class SignInView extends StatelessWidget {
             // Email
             TextField(
               controller: emailController,
+              keyboardType: TextInputType.emailAddress,
               style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
               decoration: InputDecoration(
                 filled: true,

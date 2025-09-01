@@ -1,3 +1,4 @@
+import 'package:clarity/view/profile/legal_documents_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
@@ -82,10 +83,45 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                CustomListTile(title: 'FAQ', onTap: () {}),
+                CustomListTile(
+                  title: 'FAQ',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const LegalDocumentsPage(type: DocumentType.faq),
+                      ),
+                    );
+                  },
+                ),
 
-                CustomListTile(title: 'Privacy Policy', onTap: () {}),
-                CustomListTile(title: 'Terms and Conditions', onTap: () {}),
+                CustomListTile(
+                  title: 'Privacy Policy',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LegalDocumentsPage(
+                          type: DocumentType.privacyPolicy,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                CustomListTile(
+                  title: 'Terms and Conditions',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LegalDocumentsPage(
+                          type: DocumentType.termsAndConditions,
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 CustomLogoutButton(title: 'Log out', onPressed: () {}),
               ],
             ),

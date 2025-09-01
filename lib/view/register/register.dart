@@ -274,28 +274,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     // Validation
-    if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
-      _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
-      return;
-    }
     if (name.isEmpty) {
       _showAlert("Invalid Input", "Please enter your full name.");
       return;
     }
+    // if (phone.isEmpty) {
+    //   _showAlert("Invalid Input", "Phone number is required.");
+    //   return;
+    // }
+    if (phone.isNotEmpty && phone.length != 10) {
+      _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
+      return;
+    }
+    // else if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
+    //   _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
+    //   return;
+    // }
+
     if (email.isEmpty) {
       _showAlert("Invalid Input", "Email is required.");
       return;
+    } else if (!_isValidEmail(email)) {
+      _showAlert("Error", "Please enter a valid email address.");
+      return;
     }
+
     if (password.isEmpty) {
       _showAlert("Invalid Input", "Password is required.");
       return;
-    }
-    if (password != confirmPassword) {
-      _showAlert("Error", "Passwords do not match.");
+    } else if (password.length < 6) {
+      _showAlert("Error", "Password must be at least 6 characters long.");
+      return;
+    } else if (password.contains(' ')) {
+      _showAlert("Error", "Password should not contain spaces.");
+      return;
+    } else if (!_isValidEmail(email)) {
+      _showAlert("Error", "Please enter a valid email address.");
       return;
     }
-    if (!_isValidEmail(email)) {
-      _showAlert("Error", "Please enter a valid email address.");
+
+    if (confirmPassword.isEmpty) {
+      _showAlert("Invalid Input", "Please confirm your password.");
+      return;
+    } else if (password != confirmPassword) {
+      _showAlert("Error", "Passwords do not match.");
       return;
     }
 

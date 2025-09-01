@@ -37,6 +37,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = theme.brightness == Brightness.dark
+        ? Colors.white
+        : const Color.fromRGBO(37, 45, 65, 1);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -67,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Color.fromRGBO(37, 45, 65, 1),
+                            color: textColor,
                           ),
                         ),
                         SizedBox(height: 10),
@@ -75,10 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             _onboardingData[index]['description'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color.fromRGBO(37, 45, 65, 1),
-                            ),
+                            style: TextStyle(fontSize: 14, color: textColor),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -103,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             SizedBox(height: 20),
             SizedBox(
               width: 334,
-              height: 91,
+              height: 60,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(29, 172, 146, 1),
@@ -147,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'Sign In',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Color.fromARGB(255, 37, 45, 65),
+                  color: textColor,
                   decoration: TextDecoration.underline,
                 ),
               ),
