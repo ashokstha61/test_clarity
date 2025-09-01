@@ -2,7 +2,7 @@ import 'package:clarity/view/home/homepage.dart';
 import 'package:clarity/view/register/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clarity/globals.dart' as globals;
 
