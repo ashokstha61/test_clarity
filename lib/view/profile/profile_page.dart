@@ -1,11 +1,38 @@
+import 'package:clarity/view/login/login_screen.dart';
 import 'package:clarity/view/profile/legal_documents_page.dart';
+import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
 import 'package:clarity/view/profile/my_account_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  bool isLoggedIn = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _logout(BuildContext context) {
+    // Clear global user info
+    setState(() {
+      isLoggedIn = false;
+    });
+
+    // Navigate to login screen
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,7 +149,12 @@ class ProfilePage extends StatelessWidget {
                     );
                   },
                 ),
-                CustomLogoutButton(title: 'Log out', onPressed: () {}),
+                CustomLogoutButton(
+                  title: 'Log out',
+                  onPressed: () {
+                    _logout(context);
+                  },
+                ),
               ],
             ),
           ),

@@ -113,12 +113,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
       Navigator.pop(context); // Close the dialog
       globals.isUserLoggedIn = true;
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const Homepage()),
-        (route) => false, // Removes all previous routes
-      );
+      if (globals.isUserLoggedIn) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const Homepage()),
+          (route) => false, // Removes all previous routes
+        );
+      }
     } on FirebaseAuthException catch (_) {
       _showAlert("Login Failed", "Email or Password is incorrect.");
     } catch (e) {

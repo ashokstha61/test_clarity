@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clarity/view/globals/globals.dart' as globals;
 import 'package:clarity/view/home/homepage.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  // final prefs = await SharedPreferences.getInstance();
+  //   final bool? onboardingSeen = prefs.getBool('onboardingSeen');
+  //    bool isUserLoggedIn = prefs.getBool('isUserLoggedIn') ?? false;
   @override
   void initState() {
     super.initState();
@@ -31,33 +33,23 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateNext() async {
     final prefs = await SharedPreferences.getInstance();
     final bool? onboardingSeen = prefs.getBool('onboardingSeen');
+    final bool isUserLoggedIn = prefs.getBool('isUserLoggedIn') ?? false;
 
     // Wait for 3 seconds to show splash
     await Future.delayed(const Duration(seconds: 3));
 
-    if (globals.isUserLoggedIn) {
-      // Skip onboarding & login → go straight to homepage
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const Homepage()),
-        );
-      }
-    } else {
-      // Show onboarding first
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
-      }
-    }
+    if (!mounted) return;
 
-    if (onboardingSeen == null || onboardingSeen == false) {
-      // Mark onboarding as seen
+    // print(isUserLoggedIn);
+    if (isUserLoggedIn) {
+      // ✅ User already logged in → Go to Homepage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const Homepage()),
+      );
+    } else if (onboardingSeen == null || onboardingSeen == false) {
+      // ✅ First time user → Show onboarding
       await prefs.setBool('onboardingSeen', true);
-
-      // Navigate to OnboardingScreen
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -65,13 +57,11 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }
     } else {
-      // Navigate directly to LoginScreen
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
-      }
+      // ✅ Onboarding seen but not logged in → Go to Login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
     }
   }
 
