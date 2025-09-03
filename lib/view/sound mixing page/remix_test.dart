@@ -1,12 +1,12 @@
 import 'package:just_audio/just_audio.dart';
-import 'package:audio_session/audio_session.dart';
+// import 'package:audio_session/audio_session.dart';
 import 'package:clarity/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 class RelaxationMixPage extends StatefulWidget {
-  List<NewSoundModel> sounds = [];
+   List<NewSoundModel> sounds = [];
   RelaxationMixPage({super.key, required this.sounds});
 
   @override

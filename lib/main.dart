@@ -4,6 +4,7 @@ import 'package:clarity/view/splash_screen/splash_screen.dart';
 // import 'package:clarity/view/testSoundpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'view/sound mixing page/remix test.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
+  // ignore: library_private_types_in_public_api
   static _MyAppState? of(BuildContext context) =>
       context.findAncestorStateOfType<_MyAppState>();
 }
@@ -52,19 +54,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
-      ),
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+    return ScreenUtilInit(
+      designSize: const Size(360, 780),
+      child: MaterialApp(
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          brightness: Brightness.light,
+        ),
+        darkTheme: ThemeData(
+          primarySwatch: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
-      home: SplashScreen(),
-      debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

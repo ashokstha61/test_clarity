@@ -1,6 +1,7 @@
 import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/login/login_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -62,15 +63,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         SizedBox(height: 40),
                         Image.asset(
                           _onboardingData[index]['image'],
-                          width: 334,
-                          height: 458,
+                          width: 334.w,
+                          height: 458.h,
                         ),
                         SizedBox(height: 20),
                         Text(
                           _onboardingData[index]['title'],
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             color: textColor,
                           ),
                         ),
@@ -79,7 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             _onboardingData[index]['description'],
-                            style: TextStyle(fontSize: 14, color: textColor),
+                            style: TextStyle(fontSize: 14.sp, color: textColor),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),

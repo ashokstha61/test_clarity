@@ -68,9 +68,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       //     // Show error message
                       //   }
                       // }
-                      Navigator.push(
+                      // Navigator.pushReplacementNamed(
+                      //   // context,
+                      //   // MaterialPageRoute(builder: (_) => SignInScreen()),
+                      // );
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const SignInScreen(),
+                        ),
+                        // remove all previous
                       );
                     },
                   ),

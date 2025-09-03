@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomLogoutButton extends StatelessWidget {
   final String title;
@@ -26,8 +27,9 @@ class CustomLogoutButton extends StatelessWidget {
           color: textColor,
           decoration: TextDecoration.underline,
           decorationColor: textColor,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w500,
+          fontSize: fontSize.sp,
+          fontWeight: FontWeight.w800,
+          fontFamily: 'Montserrat',
         ),
       ),
     );

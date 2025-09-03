@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomListTile extends StatelessWidget {
   final String title;
@@ -17,7 +18,15 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(title, style: const TextStyle(fontSize: 18)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18.sp,
+
+          fontFamily: 'Montserrat',
+          color: Color.fromRGBO(50, 67, 118, 1.000),
+        ),
+      ),
       trailing: Icon(trailingIcon, color: iconColor),
       onTap: onTap,
     );

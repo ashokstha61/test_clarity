@@ -4,14 +4,12 @@ import 'package:clarity/new_firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:clarity/view/profile/profile_page.dart';
-
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../Sound page/testsound.dart';
 
 // import '../Sound page/Sound.dart';
 // import '../Sound page/multisound.dart';
-
 
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -159,9 +157,9 @@ class _HomepageState extends State<Homepage> {
           _errorMessage = 'Failed to load sounds: $e';
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load sounds: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load sounds: $e')));
       }
     }
   }
@@ -178,40 +176,42 @@ class _HomepageState extends State<Homepage> {
       appBar: AppBar(
         title: Text(
           _titles[_currentIndex],
-          style: const TextStyle(
-            fontSize: 24,
+          style: TextStyle(
+            fontSize: 30.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Recoleta',
+            color: Color.fromRGBO(41, 41, 102, 1.000),
           ),
         ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _errorMessage!,
-                        style: const TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _fetchSoundData,
-                        child: const Text('Retry'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
-                )
-              : _screens[_currentIndex],
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _fetchSoundData,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            )
+          : _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 37, 37, 80),
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Colors.grey,
-        unselectedItemColor: const Color.fromARGB(255, 175, 165, 165),
+        unselectedItemColor: Color.fromRGBO(92, 92, 153, 1.000),
+        selectedItemColor: Color.fromRGBO(190, 190, 245, 1.000),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.audiotrack_outlined),

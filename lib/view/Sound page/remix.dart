@@ -65,10 +65,19 @@ class RelaxationMixBar extends StatelessWidget {
               ],
             ),
           ),
+
+          // IconButton(
+          //   icon: isPlaying
+          //       ? Image.asset('assets/images/pause.png', width: 24, height: 24)
+          //       : Image.asset('assets/images/play.png', width: 24, height: 24),
+          //   onPressed: isPlaying ? onPause : onPlay,
+          // ),
           IconButton(
-            icon: isPlaying
-                ? Image.asset('assets/images/pause.png', width: 24, height: 24)
-                : Image.asset('assets/images/play.png', width: 24, height: 24),
+            icon: Image.asset(
+              isPlaying ? 'assets/images/pause.png' : 'assets/images/play.png',
+              width: 24,
+              height: 24,
+            ),
             onPressed: isPlaying ? onPause : onPlay,
           ),
         ],

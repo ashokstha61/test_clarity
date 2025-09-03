@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum DocumentType { termsAndConditions, privacyPolicy, faq }
 
@@ -137,7 +138,7 @@ A: Yes, use the Sleep Timer feature from the Sound Mixer screen to stop playback
         padding: const EdgeInsets.all(16.0),
         child: Text(
           _getDocumentText(),
-          style: const TextStyle(fontSize: 16, height: 1.5),
+          style: TextStyle(fontSize: 16.sp, height: 1.5),
         ),
       ),
     );

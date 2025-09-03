@@ -1,6 +1,7 @@
 import 'package:clarity/model/model.dart';
 // import 'package:clarity/model/sound_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SoundTile extends StatelessWidget {
   // final SoundData sound;
@@ -12,16 +13,17 @@ class SoundTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(5),
+      margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+      padding: const EdgeInsets.all(8.0),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         onTap: onTap,
         leading: Container(
-          height: 70,
-          width: 77,
+          height: 70.h,
+          width: 70.h,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: Colors.blueGrey),
+            border: Border.all(color: Color.fromRGBO(50, 67, 118, 1.000)),
             color: sound.isSelected
                 ? const Color.fromRGBO(176, 176, 224, 1)
                 : null,
@@ -30,8 +32,8 @@ class SoundTile extends StatelessWidget {
             child: sound.icon.isNotEmpty
                 ? Image.asset(
                     'assets/images/${sound.icon.endsWith('.png') ? sound.icon : '${sound.icon}.png'}',
-                    height: 24,
-                    width: 24,
+                    height: 23.sp,
+                    width: 23.sp,
                     errorBuilder: (context, error, stackTrace) {
                       debugPrint(
                         'Failed to load asset for ${sound.title}: ${sound.icon}',
@@ -44,10 +46,11 @@ class SoundTile extends StatelessWidget {
         ),
         title: Text(
           sound.title,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Montserrat',
+            color: Color.fromRGBO(50, 67, 118, 1.000),
           ),
         ),
         trailing: sound.isSelected

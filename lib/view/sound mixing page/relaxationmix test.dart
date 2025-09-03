@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import '../Sound page/testsound.dart';
+import 'custom_slider.dart';
 import 'timer_screen.dart';
 
 // Assuming AudioManager is defined in sound_page.dart and accessible
@@ -165,8 +166,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 60,
         leading: IconButton(
-          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: Colors.white,
+            size: 35,
+          ),
           onPressed: () {
             final updated = _buildUpdatedSounds();
             Navigator.pop(context, updated);
@@ -177,7 +183,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           padding: const EdgeInsets.only(top: 8.0),
           child: const Text(
             'Your Relaxation Mix',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: 25),
           ),
         ),
         centerTitle: true,
@@ -466,25 +472,57 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: Slider(
-                          value: sound.volume.toDouble(),
-                          min: 0.0,
-                          max: 1.0,
-                          divisions: 20,
-                          activeColor: const Color.fromRGBO(128, 128, 178, 1),
-                          inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
-                          onChanged: (value) {
-                            _updateSoundVolume(index, value);
-                          },
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            thumbShape: CustomImageThumbShape(
+                              imagePath:
+                                  'assets/images/vertical-lines1.png', // Your image path
+                              thumbRadius: 12.0, // Adjust size as needed
+                            ),
+                            trackHeight: 4.0,
+                            activeTrackColor: const Color.fromRGBO(
+                              128,
+                              128,
+                              178,
+                              1,
+                            ),
+                            inactiveTrackColor: const Color.fromRGBO(
+                              113,
+                              109,
+                              150,
+                              1,
+                            ),
+                          ),
+                          child: Slider(
+                            value: sound.volume.toDouble(),
+                            min: 0.0,
+                            max: 1.0,
+                            // divisions: 20,
+                            onChanged: (value) {
+                              _updateSoundVolume(index, value);
+                            },
+                          ),
                         ),
+
+                        // child: Slider(
+                        //   value: sound.volume.toDouble(),
+                        //   min: 0.0,
+                        //   max: 1.0,
+                        //   // divisions: 20,
+                        //   activeColor: const Color.fromRGBO(128, 128, 178, 1),
+                        //   inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
+                        //   onChanged: (value) {
+                        //     _updateSoundVolume(index, value);
+                        //   },
+                        // ),
                       ),
-                      Text(
-                        '${(sound.volume * 100).round()}%',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
+                      // Text(
+                      //   '${(sound.volume * 100).round()}%',
+                      //   style: const TextStyle(
+                      //     color: Colors.white70,
+                      //     fontSize: 12,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

@@ -57,6 +57,7 @@ dependencies:
   firebase_auth: ^6.0.1
   google_sign_in: ^6.1.5
   purchases_flutter: ^9.2.3
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:
@@ -116,7 +117,12 @@ flutter:
     - assets/images/sunrise_icon.png
     - assets/images/remix_image.png
     - assets/images/email.png
+    - assets/images/empty.png
+    - assets/images/empty-min.png
+    - assets/images/ellipse_mix_page.png
 
+    - assets/images/vertical-lines1.png
+    - assets/images/vertical-lines.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

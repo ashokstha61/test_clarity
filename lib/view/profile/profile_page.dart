@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
 import 'package:clarity/view/profile/my_account_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,13 +55,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Text(
                         'Subscription',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 18.sp),
                       ),
                       Text(
                         'Free',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 24.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -72,10 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       foregroundColor: Colors.black,
                       backgroundColor: Color(0xFFD3D3E0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(8.0.r),
                       ),
                     ),
-                    child: Text('Upgrade'),
+                    child: Text('Upgrade', style: TextStyle(fontSize: 16.sp)),
                   ),
                 ],
               ),
@@ -94,8 +95,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                 ),
-                CustomListTile(title: 'Notifications', onTap: () {}),
-                CustomListTile(title: 'Goals and Programs', onTap: () {}),
                 CustomListTile(title: 'Subscription Management', onTap: () {}),
 
                 Divider(),
@@ -103,8 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: Text(
                     'Support',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w500,
                       color: Color.fromRGBO(51, 51, 109, 1),
                     ),
                   ),
@@ -149,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                 ),
                 CustomLogoutButton(
-                  title: 'Log out',
+                  title: 'Log Out',
                   onPressed: () {
                     _logout(context);
                   },

@@ -1,3 +1,4 @@
+import 'package:clarity/view/favourite/empty_file.dart';
 import 'package:flutter/material.dart';
 
 class Favouratepage extends StatelessWidget {
@@ -5,6 +6,6 @@ class Favouratepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Favourate Page'));
+    return Center(child: EmptyFile());
   }
 }
