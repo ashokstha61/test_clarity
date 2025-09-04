@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import '../Sound page/testsound.dart';
-import 'custom_slider.dart';
+
+import 'slider.dart';
 import 'timer_screen.dart';
 
 // Assuming AudioManager is defined in sound_page.dart and accessible
@@ -69,6 +70,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     try {
       final removedSound = _selectedSounds[index];
+      
       setState(() {
         _selectedSounds = List.from(_selectedSounds)..removeAt(index);
         _recommendedSounds = List.from(_recommendedSounds)
@@ -341,31 +343,59 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
+  // Widget _buildPlaybackControls() {
+  //   return Row(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       CircleAvatar(
+  //         backgroundColor: Colors.white,
+  //         radius: 28,
+  //         child: IconButton(
+  //           icon: Icon(
+  //             AudioManager().isPlaying ? Icons.pause : Icons.play_arrow,
+  //             size: 28,
+  //             color: const Color.fromRGBO(18, 23, 42, 1),
+  //           ),
+  //           onPressed: _selectedSounds.isEmpty
+  //               ? null
+  //               : () async {
+  //                   if (AudioManager().isPlaying) {
+  //                     await _pauseAllSounds();
+  //                   } else {
+  //                     await _playAllSounds();
+  //                   }
+  //                 },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
   Widget _buildPlaybackControls() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
+    return ValueListenableBuilder<bool>(
+      valueListenable: AudioManager().isPlayingNotifier,
+      builder: (context, isPlaying, _) {
+        return CircleAvatar(
           backgroundColor: Colors.white,
           radius: 28,
           child: IconButton(
             icon: Icon(
-              AudioManager().isPlaying ? Icons.pause : Icons.play_arrow,
+              isPlaying ? Icons.pause : Icons.play_arrow,
               size: 28,
               color: const Color.fromRGBO(18, 23, 42, 1),
             ),
             onPressed: _selectedSounds.isEmpty
                 ? null
                 : () async {
-                    if (AudioManager().isPlaying) {
+                    if (isPlaying) {
                       await _pauseAllSounds();
                     } else {
                       await _playAllSounds();
                     }
                   },
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -472,21 +502,69 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   Row(
                     children: [
                       Expanded(
+                        // child: SliderTheme(
+                        //   data: SliderTheme.of(context).copyWith(
+                        //     thumbShape: CustomImageThumbShape(
+                        //       imagePath: 'assets/images/thumb.png',
+                        //       thumbRadius:
+                        //           15.0, // Set your desired fixed radius
+                        //     ),
+                        //     // Disable overlay effects that might cause size changes
+                        //     overlayShape: const RoundSliderOverlayShape(
+                        //       overlayRadius: 0,
+                        //     ),
+                        //     // Disable thumb scaling on interaction
+                        //     thumbColor: Colors
+                        //         .transparent, // Let custom shape handle all colors
+                        //     activeTrackColor: const Color.fromRGBO(
+                        //       128,
+                        //       128,
+                        //       178,
+                        //       1,
+                        //     ),
+                        //     inactiveTrackColor: const Color.fromRGBO(
+                        //       113,
+                        //       109,
+                        //       150,
+                        //       1,
+                        //     ),
+                        //     // Ensure consistent track height
+                        //     trackHeight: 4.0,
+                        //   ),
+                        //   child: Slider(
+                        //     value: sound.volume.toDouble(),
+                        //     min: 0.0,
+                        //     max: 1.0,
+                        //     onChanged: (value) {
+                        //       _updateSoundVolume(index, value);
+                        //     },
+                        //   ),
+                        // ),
+                        // child: Slider(
+                        //   value: sound.volume.toDouble(),
+                        //   min: 0.0,
+                        //   max: 1.0,
+
+                        //   // divisions: 20,
+                        //   activeColor: const Color.fromRGBO(128, 128, 178, 1),
+                        //   inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
+                        //   onChanged: (value) {
+                        //     _updateSoundVolume(index, value);
+                        //   },
+
+                        // ),
                         child: SliderTheme(
                           data: SliderTheme.of(context).copyWith(
-                            thumbShape: CustomImageThumbShape(
-                              imagePath:
-                                  'assets/images/vertical-lines1.png', // Your image path
-                              thumbRadius: 12.0, // Adjust size as needed
+                            thumbShape: const CustomImageThumbShape(
+                              imagePath: 'assets/images/thumb.png',
+                              thumbRadius: 18,
                             ),
-                            trackHeight: 4.0,
-                            activeTrackColor: const Color.fromRGBO(
-                              128,
-                              128,
-                              178,
-                              1,
+                            overlayShape: const RoundSliderOverlayShape(
+                              overlayRadius: 0,
                             ),
-                            inactiveTrackColor: const Color.fromRGBO(
+                            trackHeight: 4,
+                            activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
+                            inactiveTrackColor: Color.fromRGBO(
                               113,
                               109,
                               150,
@@ -497,25 +575,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             value: sound.volume.toDouble(),
                             min: 0.0,
                             max: 1.0,
-                            // divisions: 20,
                             onChanged: (value) {
                               _updateSoundVolume(index, value);
                             },
                           ),
                         ),
-
-                        // child: Slider(
-                        //   value: sound.volume.toDouble(),
-                        //   min: 0.0,
-                        //   max: 1.0,
-                        //   // divisions: 20,
-                        //   activeColor: const Color.fromRGBO(128, 128, 178, 1),
-                        //   inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
-                        //   onChanged: (value) {
-                        //     _updateSoundVolume(index, value);
-                        //   },
-                        // ),
                       ),
+
                       // Text(
                       //   '${(sound.volume * 100).round()}%',
                       //   style: const TextStyle(

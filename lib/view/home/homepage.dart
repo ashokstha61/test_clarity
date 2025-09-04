@@ -6,7 +6,8 @@ import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:clarity/view/profile/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../Sound page/testsound.dart';
+import '../Sound page/test2.dart';
+// import '../Sound page/testsound.dart';
 
 // import '../Sound page/Sound.dart';
 // import '../Sound page/multisound.dart';

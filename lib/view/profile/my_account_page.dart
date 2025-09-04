@@ -60,6 +60,17 @@ class _MyAccountPageState extends State<MyAccountPage> {
             Navigator.pop(context);
           },
         ),
+        title: Text(
+          'My Account',
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors
+                      .white // white in dark mode
+                : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -68,7 +79,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
           children: [
             CustomTextField(
               labelText: 'Full Name',
-              hintText: 'Name',
+              hintText: '',
               initialValue: fullName,
               readOnly: true,
             ),
@@ -79,7 +90,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
               initialValue: email,
               readOnly: true,
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 10.0),
             // CustomSetting(
             //   title: 'App Settings',
             //   switchLabel: 'Dark Mode',
@@ -90,6 +101,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
             //     });
             //   },
             // ),
+            Divider(),
             CustomSetting(
               title: 'App Settings',
               switchLabel: 'Dark Mode',

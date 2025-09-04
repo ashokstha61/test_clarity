@@ -22,7 +22,7 @@ class CustomTextField extends StatelessWidget {
     final textColor = readOnly
         ? Theme.of(context).brightness == Brightness.dark
               ? Colors.white
-              : Colors.black
+              : const Color(0xFF3B3B7A)
         : null;
 
     return Column(
@@ -44,12 +44,14 @@ class CustomTextField extends StatelessWidget {
             filled: true,
             fillColor: readOnly
                 ? Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey.shade800
-                      : Colors.grey.shade300
-                : Color.fromRGBO(244, 244, 244, 0.5),
+                      ? const Color(0xFF3B3B7A)
+                      : const Color(0xFF3B3B7A)
+                : const Color(0xFF3B3B7A),
             border: OutlineInputBorder(),
             hintText: hintText,
+            hintStyle: TextStyle(color: Colors.white),
           ),
+          style: TextStyle(color: Colors.white),
         ),
         SizedBox(height: 16.0),
       ],

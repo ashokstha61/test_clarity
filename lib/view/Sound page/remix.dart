@@ -42,7 +42,8 @@ class RelaxationMixBar extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              "assets/images/remix_image.png",
+              // "assets/images/remix_image.png",
+              imagePath,
               width: 60,
               height: 60,
               fit: BoxFit.cover,

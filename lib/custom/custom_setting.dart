@@ -27,17 +27,37 @@ class CustomSettingState extends State<CustomSetting> {
     _switchValue = widget.switchValue;
   }
 
+  Color _getTextColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : const Color(0xFF3B3B7A);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final textColor = _getTextColor(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.title,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+            fontFamily: 'Montserrat',
+          ),
         ),
         SwitchListTile(
-          title: Text(widget.switchLabel),
+          title: Text(
+            widget.switchLabel,
+            style: TextStyle(
+              fontSize: 18,
+              color: textColor,
+              fontFamily: 'Montserrat',
+            ),
+          ),
           value: _switchValue,
           onChanged: (bool value) {
             setState(() {

@@ -58,6 +58,7 @@ dependencies:
   google_sign_in: ^6.1.5
   purchases_flutter: ^9.2.3
   flutter_screenutil: ^5.9.3
+  lottie: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -122,7 +123,8 @@ flutter:
     - assets/images/ellipse_mix_page.png
 
     - assets/images/vertical-lines1.png
-    - assets/images/vertical-lines.png
+    - assets/images/thumb.png
+    - assets/lottie/sleep.json
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

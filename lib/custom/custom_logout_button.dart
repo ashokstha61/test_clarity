@@ -21,8 +21,10 @@ class CustomLogoutButton extends StatelessWidget {
       style: ButtonStyle(alignment: Alignment.centerLeft),
 
       onPressed: onPressed,
+
       child: Text(
         title,
+
         style: TextStyle(
           color: textColor,
           decoration: TextDecoration.underline,

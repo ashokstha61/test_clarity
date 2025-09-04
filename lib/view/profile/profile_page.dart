@@ -1,3 +1,4 @@
+import 'package:clarity/main.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:clarity/view/profile/legal_documents_page.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +16,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool isLoggedIn = true;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
+    final appState = MyApp.of(context);
+    if (appState != null) _isDarkMode = appState.isDarkMode;
   }
 
   void _logout(BuildContext context) {
@@ -55,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Text(
                         'Subscription',
-                        style: TextStyle(color: Colors.white, fontSize: 18.sp),
+                        style: TextStyle(color: Colors.white, fontSize: 16.sp),
                       ),
                       Text(
                         'Free',
@@ -71,12 +75,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      backgroundColor: Color(0xFFD3D3E0),
+                      backgroundColor: Color.fromARGB(255, 157, 157, 190),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0.r),
                       ),
                     ),
-                    child: Text('Upgrade', style: TextStyle(fontSize: 16.sp)),
+                    child: Text(
+                      'Upgrade',
+                      style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -98,16 +105,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 CustomListTile(title: 'Subscription Management', onTap: () {}),
 
                 Divider(),
-                ListTile(
-                  title: Text(
-                    'Support',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color.fromRGBO(51, 51, 109, 1),
-                    ),
+
+                Text(
+                  'Support',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromRGBO(51, 51, 109, 1),
                   ),
                 ),
+
                 CustomListTile(
                   title: 'FAQ',
                   onTap: () {
@@ -147,10 +154,79 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                 ),
+
                 CustomLogoutButton(
                   title: 'Log Out',
-                  onPressed: () {
-                    _logout(context);
+                  onPressed: () async {
+                    final shouldLogout = await showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false, // user must tap a button
+                      builder: (ctx) => AlertDialog(
+                        title: Center(
+                          child: const Text(
+                            "Confirm Logout",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Montserrat',
+                            ),
+                          ),
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Are you sure you want to log out?",
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 15,
+                              ),
+                            ),
+
+                            Divider(),
+                          ],
+                        ),
+                        actionsPadding: EdgeInsets.zero,
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Cancel
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(ctx).pop(true), // Confirm
+                                child: const Text(
+                                  "Logout",
+                                  style: TextStyle(
+                                    color: Colors.red,
+
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (!mounted) return;
+
+                    if (shouldLogout == true) {
+                      _logout(context); // perform logout
+                    }
                   },
                 ),
               ],
