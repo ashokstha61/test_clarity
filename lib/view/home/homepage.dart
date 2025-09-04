@@ -173,6 +173,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -181,7 +182,9 @@ class _HomepageState extends State<Homepage> {
             fontSize: 30.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Recoleta',
-            color: Color.fromRGBO(41, 41, 102, 1.000),
+            color: isDarkMode
+                ? Colors.white
+                : Color.fromRGBO(41, 41, 102, 1.000),
           ),
         ),
       ),
