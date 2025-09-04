@@ -167,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             // Lottie animation
             Lottie.asset(
-              'assets/lottie/sleep.json',
+              "assets/lottie/sleep.json",
               height: 200,
               width: 200,
               fit: BoxFit.contain,
