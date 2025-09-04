@@ -17,6 +17,7 @@ class CustomListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       title: Text(
         title,
@@ -24,7 +25,7 @@ class CustomListTile extends StatelessWidget {
           fontSize: 18.sp,
 
           fontFamily: 'Montserrat',
-          color: Color.fromRGBO(50, 67, 118, 1.000),
+          color: isDarkMode ? Colors.white : Color.fromRGBO(50, 67, 118, 1.000),
         ),
       ),
       trailing: Icon(trailingIcon, color: iconColor),

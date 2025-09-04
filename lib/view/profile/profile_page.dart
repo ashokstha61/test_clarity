@@ -39,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Column(
         children: [
@@ -111,7 +112,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w500,
-                    color: Color.fromRGBO(51, 51, 109, 1),
+                    color: isDarkMode
+                        ? Colors.white
+                        : Color.fromRGBO(51, 51, 109, 1),
                   ),
                 ),
 
