@@ -95,6 +95,7 @@
 // }
 
 import 'dart:async';
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -160,7 +161,9 @@ class _SplashScreenState extends State<SplashScreen> {
         : const Color.fromRGBO(37, 45, 65, 1);
 
     return Scaffold(
-      backgroundColor: Colors.white, // Splash background color
+      backgroundColor: ThemeHelper.backgroundColor(
+        context,
+      ), // Splash background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -193,7 +196,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Text(
               'S L E E P H O R I A',
               style: TextStyle(
-                color: textColor,
+                color: ThemeHelper.textColor(context),
                 fontSize: 24,
                 letterSpacing: 2,
                 fontWeight: FontWeight.w500,

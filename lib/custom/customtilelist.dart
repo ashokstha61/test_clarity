@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,7 +18,7 @@ class CustomListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+   
     return ListTile(
       title: Text(
         title,
@@ -25,7 +26,7 @@ class CustomListTile extends StatelessWidget {
           fontSize: 18.sp,
 
           fontFamily: 'Montserrat',
-          color: isDarkMode ? Colors.white : Color.fromRGBO(50, 67, 118, 1.000),
+          color: ThemeHelper.customListTileColor(context),
         ),
       ),
       trailing: Icon(trailingIcon, color: iconColor),

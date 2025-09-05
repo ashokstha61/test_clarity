@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -19,11 +20,6 @@ class CustomTextField extends StatelessWidget {
     final TextEditingController controller = TextEditingController(
       text: initialValue,
     );
-    final textColor = readOnly
-        ? Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : const Color(0xFF3B3B7A)
-        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +29,7 @@ class CustomTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: ThemeHelper.formTitle(context),
           ),
         ),
         SizedBox(height: 10),

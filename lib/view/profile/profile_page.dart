@@ -1,4 +1,5 @@
 import 'package:clarity/main.dart';
+import 'package:clarity/theme.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:clarity/view/profile/legal_documents_page.dart';
 import 'package:flutter/material.dart';
@@ -112,9 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w500,
-                    color: isDarkMode
-                        ? Colors.white
-                        : Color.fromRGBO(51, 51, 109, 1),
+                    color: ThemeHelper.textTitle(context),
                   ),
                 ),
 

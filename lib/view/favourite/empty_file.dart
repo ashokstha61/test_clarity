@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,7 +21,8 @@ class EmptyFile extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16.sp,
-              color: Color.fromRGBO(50, 67, 118, 1.000),
+              // color: Color.fromRGBO(50, 67, 118, 1.000),
+              color: ThemeHelper.textSubtitle(context),
               fontFamily: 'Montserrat',
               fontWeight: FontWeight.w400,
             ),

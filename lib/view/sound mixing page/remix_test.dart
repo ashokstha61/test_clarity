@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class RelaxationMixPage extends StatefulWidget {
-   List<NewSoundModel> sounds = [];
+  List<NewSoundModel> sounds = [];
   RelaxationMixPage({super.key, required this.sounds});
 
   @override
@@ -23,7 +23,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   bool _isGlobalPlaying = false;
   bool _isLoadingPlayback = false;
   List<NewSoundModel> _recommendedSounds = [];
-  bool _isLoadingRecommendedSounds = false;
+  final bool _isLoadingRecommendedSounds = false;
   bool showLoading = false;
   List<NewSoundModel> _buildUpdatedSounds() {
     // mark items selected based on _selectedSounds membership
@@ -143,6 +143,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         _selectedSounds.add(sound);
         _audioPlayers.add(player);
         _playerStateSubscriptions[index] = subscription;
+        _isGlobalPlaying = true;
 
         // Remove from recommended
         _recommendedSounds.remove(sound);
@@ -186,53 +187,58 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   //   }
   // }
 
+  // void _removeSoundFromMix(int index) async {
+  // _showErrorSnackBar(index.toString());
+  // if (index < 0 || index >= _selectedSounds.length) return;
+
+  // // try {
+  // // _playerStateSubscriptions[index]?.cancel();
+  // // _playerStateSubscriptions.remove(index);
+
+  // // await _audioPlayers[index].dispose();
+
+  // setState(() {
+  //   // Remove from selected
+
+  //   final removedSound = _selectedSounds.removeAt(index);
+
+  //   _audioPlayers.removeAt(index);
+
+  //   // Add back to recommended
+  //   _recommendedSounds.add(removedSound.copyWith(isSelected: false));
+  // });
+
+  // print('_selecetedsound $_selectedSounds');
+  // print('_isGlobalPlaying $_isGlobalPlaying');
+
+  // if (_selectedSounds.isEmpty && _isGlobalPlaying) {
+  //   await _pauseAllSounds();
+  // } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
+  //   await _adjustVolumes();
+  // }
+  // } catch (e) {
+  //   print(e);
+  //   _showErrorSnackBar('Failed to remove sound ${e}');
+  // }
   void _removeSoundFromMix(int index) async {
-    // _showErrorSnackBar(index.toString());
-    // if (index < 0 || index >= _selectedSounds.length) return;
-
-    // // try {
-    // // _playerStateSubscriptions[index]?.cancel();
-    // // _playerStateSubscriptions.remove(index);
-
-    // // await _audioPlayers[index].dispose();
-
-    // setState(() {
-    //   // Remove from selected
-
-    //   final removedSound = _selectedSounds.removeAt(index);
-
-    //   _audioPlayers.removeAt(index);
-
-    //   // Add back to recommended
-    //   _recommendedSounds.add(removedSound.copyWith(isSelected: false));
-    // });
-
-    // print('_selecetedsound $_selectedSounds');
-    // print('_isGlobalPlaying $_isGlobalPlaying');
-
-    // if (_selectedSounds.isEmpty && _isGlobalPlaying) {
-    //   await _pauseAllSounds();
-    // } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
-    //   await _adjustVolumes();
-    // }
-    // } catch (e) {
-    //   print(e);
-    //   _showErrorSnackBar('Failed to remove sound ${e}');
-    // }
     if (index < 0 || index >= _selectedSounds.length) return;
 
     try {
+      // Remove the sound from selected list
       final removedSound = _selectedSounds.removeAt(index);
-      final removedPlayer = _audioPlayers.removeAt(index);
 
-      // Cancel subscription and dispose player
+      // Remove and dispose the corresponding audio player
+      final removedPlayer = _audioPlayers.removeAt(index);
       await removedPlayer.dispose();
+
+      // Cancel and remove its subscription
       _playerStateSubscriptions[index]?.cancel();
       _playerStateSubscriptions.remove(index);
 
-      // Add back to recommended with isSelected false
+      // Add it back to recommended sounds (unselected)
       _recommendedSounds.add(removedSound.copyWith(isSelected: false));
 
+      // Adjust remaining players or pause all if none left
       if (_selectedSounds.isEmpty && _isGlobalPlaying) {
         await _pauseAllSounds();
       } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {

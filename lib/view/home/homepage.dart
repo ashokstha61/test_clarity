@@ -1,5 +1,6 @@
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
+import 'package:clarity/theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:clarity/view/favourite/favouratepage.dart';
@@ -173,7 +174,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -182,9 +183,10 @@ class _HomepageState extends State<Homepage> {
             fontSize: 30.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Recoleta',
-            color: isDarkMode
-                ? Colors.white
-                : Color.fromRGBO(41, 41, 102, 1.000),
+            // color: isDarkMode
+            //     ? Colors.white
+            //     : Color.fromRGBO(41, 41, 102, 1.000),
+            color: ThemeHelper.textColor(context),
           ),
         ),
       ),

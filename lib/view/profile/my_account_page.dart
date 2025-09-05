@@ -1,4 +1,5 @@
 import 'package:clarity/main.dart';
+import 'package:clarity/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,11 +37,20 @@ class _MyAccountPageState extends State<MyAccountPage> {
           .collection('users')
           .doc(user.uid)
           .get();
+      // if (doc.exists) {
+      //   final data = doc.data();
+      //   fullName = data?['fullName'] ?? user.displayName ?? 'No Name';
+      // } else {
+      //   fullName = user.displayName ?? 'No Name';
+      // }
       if (doc.exists) {
         final data = doc.data();
-        fullName = data?['fullName'] ?? user.displayName ?? 'No Name';
-      } else {
-        fullName = user.displayName ?? 'No Name';
+        final fetchedName = data?['fullName'];
+        if (fetchedName != null && fetchedName.isNotEmpty) {
+          setState(() {
+            fullName = fetchedName;
+          });
+        }
       }
     } catch (e) {
       fullName = user.displayName ?? 'No Name';
@@ -63,10 +73,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
         title: Text(
           'My Account',
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors
-                      .white // white in dark mode
-                : Colors.black,
+            color: ThemeHelper.appBarTitle(context),
             fontWeight: FontWeight.bold,
           ),
         ),

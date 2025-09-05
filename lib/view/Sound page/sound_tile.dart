@@ -1,4 +1,5 @@
 import 'package:clarity/model/model.dart';
+import 'package:clarity/theme.dart';
 // import 'package:clarity/model/sound_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -79,7 +80,7 @@ class SoundTile extends StatelessWidget {
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Montserrat',
-            color: Color.fromRGBO(50, 67, 118, 1.000),
+            color: ThemeHelper.soundTitle(context),
           ),
         ),
         trailing: sound.isSelected
