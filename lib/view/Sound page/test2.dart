@@ -138,27 +138,28 @@ class _SoundPageState extends State<SoundPage> {
 
   void _toggleSoundSelection(int index) {
     final sound = _sounds[index];
-    if (sound.isSelected) {
-      // Deselect
+    // if (sound.isSelected) {
+    //   // Deselect
       setState(() {
-        _sounds[index] = _sounds[index].copyWith(isSelected: false);
-      });
-    } else {
-      // Select
-      if (!_sounds.any((s) => s.title == sound.title && s.isSelected)) {
-        setState(() {
-          _sounds[index] = _sounds[index].copyWith(isSelected: true);
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${sound.title} is already selected')),
-        );
-        return;
-      }
-    }
+      _sounds[index].isSelected = !_sounds[index].isSelected;
+      }); 
+    // } else {
+    //   // Select
+    //   if (!_sounds.any((s) => s.title == sound.title && s.isSelected)) {
+    //     setState(() {
+    //       _sounds[index] = _sounds[index].copyWith(isSelected: true);
+    //     });
+    //   } else {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('${sound.title} is already selected')),
+    //     );
+    //     return;
+    //   }
+    // }
 
-    final selected = _sounds.where((s) => s.isSelected).toList();
-    AudioManager().syncPlayers(selected);
+    // final selected = _sounds.where((s) => s.isSelected).toList();
+    // AudioManager().syncPlayers(selected);
+
   }
 
   Future<void> _playAllSelected() async {

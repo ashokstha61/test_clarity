@@ -155,10 +155,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textColor = theme.brightness == Brightness.dark
-        ? Colors.white
-        : const Color.fromRGBO(37, 45, 65, 1);
+    
+   
 
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(

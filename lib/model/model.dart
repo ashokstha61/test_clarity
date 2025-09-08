@@ -2,9 +2,9 @@ class NewSoundModel {
   final String filepath;
   final String icon;
   final bool isFav;
-  final bool isLocked;
-  final bool isNew;
-  final bool isSelected;
+  bool isLocked;
+  bool isNew;
+  bool isSelected;
   final String musicUrl;
   final String title;
    num volume;

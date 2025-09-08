@@ -1,294 +1,127 @@
-import 'package:just_audio/just_audio.dart';
-// import 'package:audio_session/audio_session.dart';
+// Fixed RelaxationMixPage - Key fixes applied
+
 import 'package:clarity/model/model.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import '../Sound page/testsound.dart';
+import 'slider.dart';
+import 'timer_screen.dart';
+
 class RelaxationMixPage extends StatefulWidget {
-  List<NewSoundModel> sounds = [];
-  RelaxationMixPage({super.key, required this.sounds});
+  final List<NewSoundModel> sounds;
+  final Function(List<NewSoundModel>) onSoundsChanged;
+  const RelaxationMixPage({
+    super.key,
+    required this.sounds,
+    required this.onSoundsChanged,
+  });
 
   @override
   State<RelaxationMixPage> createState() => _RelaxationMixPageState();
 }
 
 class _RelaxationMixPageState extends State<RelaxationMixPage> {
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final List<AudioPlayer> _audioPlayers = [];
-  final List<NewSoundModel> _selectedSounds = [];
-  final Map<int, StreamSubscription> _playerStateSubscriptions = {};
-  // final Map<String, AudioPlayer> _playerMap = {};
-
-  bool _isGlobalPlaying = false;
-  bool _isLoadingPlayback = false;
+  List<NewSoundModel> _selectedSounds = [];
   List<NewSoundModel> _recommendedSounds = [];
+  bool _isLoadingPlayback = false;
   final bool _isLoadingRecommendedSounds = false;
   bool showLoading = false;
+
   List<NewSoundModel> _buildUpdatedSounds() {
-    // mark items selected based on _selectedSounds membership
     return widget.sounds
-        .map((s) => s.copyWith(isSelected: _selectedSounds.contains(s)))
+        .map(
+          (s) => s.copyWith(
+            isSelected: _selectedSounds.any(
+              (selected) => selected.title == s.title,
+            ),
+            // Preserve volume changes made in mix page
+            volume: _selectedSounds
+                .firstWhere(
+                  (selected) => selected.title == s.title,
+                  orElse: () => s,
+                )
+                .volume,
+          ),
+        )
         .toList();
   }
 
   @override
   void initState() {
     super.initState();
-    // _initAudioSession();
-    _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
     _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
+
+    AudioManager().syncPlayers(_selectedSounds);
   }
-
-  // Future<void> _initAudioSession() async {
-  //   try {
-  //     final session = await AudioSession.instance;
-  //     await session.configure(
-  //       const AudioSessionConfiguration(
-  //         avAudioSessionCategory: AVAudioSessionCategory.playback,
-  //         avAudioSessionCategoryOptions:
-  //             AVAudioSessionCategoryOptions.mixWithOthers,
-  //         androidAudioAttributes: AndroidAudioAttributes(
-  //           contentType: AndroidAudioContentType.music,
-  //           usage: AndroidAudioUsage.media,
-  //         ),
-  //         androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-  //         androidWillPauseWhenDucked: false,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     debugPrint('Error configuring audio session: $e');
-  //   }
-  // }
-
-  // void _addSoundToMix(NewSoundModel sound) async {
-  //   if (_selectedSounds.contains(sound)) return;
-
-  //   try {
-  //     // Create new audio player
-  //     final player = AudioPlayer();
-  //     final index = _selectedSounds.length;
-
-  //     // Set up audio source and configuration
-  //     await player.setAudioSource(
-  //       AudioSource.uri(Uri.parse(sound.musicUrl)),
-  //       preload: true,
-  //     );
-  //     await player.setLoopMode(LoopMode.all);
-  //     await player.setVolume(sound.volume.toDouble());
-
-  //     // Set up player state listener
-  //     final subscription = player.playerStateStream.listen(
-  //       (state) {
-  //         if (state.processingState == ProcessingState.idle &&
-  //             state.playing == false &&
-  //             _isGlobalPlaying) {
-  //           debugPrint('Player for ${sound.title} stopped unexpectedly');
-  //         }
-  //       },
-  //       onError: (error) {
-  //         debugPrint('Player error for ${sound.title}: $error');
-  //         _showErrorSnackBar('Audio error occurred for ${sound.title}');
-  //       },
-  //     );
-
-  //     setState(() {
-  //       _selectedSounds.add(sound);
-  //       _audioPlayers.add(player);
-  //       _playerStateSubscriptions[index] = subscription;
-  //     });
-
-  //     // Auto-play logic: Start playing when we have at least one sound
-  //     // If this is the first sound added, start playing it
-  //     if (_selectedSounds.length == 1 && !_isGlobalPlaying) {
-  //       await _playAllSounds();
-  //     }
-  //     // If we're already playing (adding 2nd, 3rd sound, etc.), start this new sound immediately
-  //     else if (_isGlobalPlaying) {
-  //       await player.play();
-  //       await _adjustVolumes();
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error adding sound ${sound.title}: $e');
-  //     _showErrorSnackBar('Failed to add ${sound.title}');
-  //   }
-  // }
 
   void _addSoundToMix(NewSoundModel sound) async {
-    if (_selectedSounds.contains(sound)) return;
-
-    try {
-      // Create new audio player
-      final player = AudioPlayer();
-      final index = _selectedSounds.length;
-
-      await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
-      await player.setLoopMode(LoopMode.all);
-      await player.setVolume(sound.volume.toDouble());
-
-      final subscription = player.playerStateStream.listen(
-        (state) {
-          if (state.processingState == ProcessingState.idle &&
-              state.playing == false &&
-              _isGlobalPlaying) {
-            debugPrint('Player for ${sound.title} stopped unexpectedly');
-          }
-        },
-        onError: (error) {
-          _showErrorSnackBar('Audio error for ${sound.title}');
-        },
-      );
-
-      setState(() {
-        _selectedSounds.add(sound);
-        _audioPlayers.add(player);
-        _playerStateSubscriptions[index] = subscription;
-        _isGlobalPlaying = true;
-
-        // Remove from recommended
-        _recommendedSounds.remove(sound);
-      });
-
-      await player.play();
-      await _adjustVolumes();
-    } catch (e) {
-      _showErrorSnackBar('Failed to add ${sound.title}');
+    if (_selectedSounds.any((s) => s.title == sound.title)) {
+      _showErrorSnackBar('Sound already selected');
+      return;
     }
+
+    setState(() {
+      _selectedSounds = List.from(_selectedSounds)..add(sound);
+      _recommendedSounds.removeWhere((s) => s.title == sound.title);
+    });
+
+    await AudioManager().syncPlayers(List.from(_selectedSounds));
+    widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  // Also modify the _removeSoundFromMix method to handle auto-stop when going back to 1 sound:
-
-  // void _removeSoundFromMix(int index) async {
-  //   if (index >= _selectedSounds.length) return;
-
-  //   try {
-  //     // Cancel subscription and dispose player
-  //     _playerStateSubscriptions[index]?.cancel();
-  //     _playerStateSubscriptions.remove(index);
-
-  //     await _audioPlayers[index].dispose();
-
-  //     setState(() {
-  //       _selectedSounds.removeAt(index);
-  //       _audioPlayers.removeAt(index);
-  //     });
-
-  //     // Only stop playback if all sounds are removed
-  //     if (_selectedSounds.isEmpty && _isGlobalPlaying) {
-  //       await _pauseAllSounds();
-  //     }
-  //     // Adjust volumes for remaining sounds if we're still playing
-  //     else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
-  //       await _adjustVolumes();
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error removing sound at index $index: $e');
-  //     _showErrorSnackBar('Failed to remove sound');
-  //   }
-  // }
-
-  // void _removeSoundFromMix(int index) async {
-  // _showErrorSnackBar(index.toString());
-  // if (index < 0 || index >= _selectedSounds.length) return;
-
-  // // try {
-  // // _playerStateSubscriptions[index]?.cancel();
-  // // _playerStateSubscriptions.remove(index);
-
-  // // await _audioPlayers[index].dispose();
-
-  // setState(() {
-  //   // Remove from selected
-
-  //   final removedSound = _selectedSounds.removeAt(index);
-
-  //   _audioPlayers.removeAt(index);
-
-  //   // Add back to recommended
-  //   _recommendedSounds.add(removedSound.copyWith(isSelected: false));
-  // });
-
-  // print('_selecetedsound $_selectedSounds');
-  // print('_isGlobalPlaying $_isGlobalPlaying');
-
-  // if (_selectedSounds.isEmpty && _isGlobalPlaying) {
-  //   await _pauseAllSounds();
-  // } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
-  //   await _adjustVolumes();
-  // }
-  // } catch (e) {
-  //   print(e);
-  //   _showErrorSnackBar('Failed to remove sound ${e}');
-  // }
   void _removeSoundFromMix(int index) async {
     if (index < 0 || index >= _selectedSounds.length) return;
 
+    final removedSound = _selectedSounds[index];
+
     try {
-      // Remove the sound from selected list
-      final removedSound = _selectedSounds.removeAt(index);
+      // First update UI to give immediate feedback
+      setState(() {
+        _selectedSounds = List.from(_selectedSounds)..removeAt(index);
+        _recommendedSounds = List.from(_recommendedSounds)
+          ..add(removedSound.copyWith(isSelected: false));
+      });
 
-      // Remove and dispose the corresponding audio player
-      final removedPlayer = _audioPlayers.removeAt(index);
-      await removedPlayer.stop();
-      await removedPlayer.dispose();
+      // Stop and remove the specific player
+      await AudioManager().removeSound(removedSound.title);
 
-      // Cancel and remove its subscription
-      _playerStateSubscriptions[index]?.cancel();
-      _playerStateSubscriptions.remove(index);
-
-      // Add it back to recommended sounds (unselected)
-      _recommendedSounds.add(removedSound.copyWith(isSelected: false));
-
-      // Adjust remaining players or pause all if none left
-      if (_selectedSounds.isEmpty && _isGlobalPlaying) {
-        await _pauseAllSounds();
-      } else if (_audioPlayers.isNotEmpty && _isGlobalPlaying) {
-        await _adjustVolumes();
+      // Sync remaining sounds to ensure proper playback state
+      if (_selectedSounds.isNotEmpty) {
+        await AudioManager().syncPlayers(List.from(_selectedSounds));
       }
+      widget.onSoundsChanged(_buildUpdatedSounds());
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
+      // Revert UI changes on error
+      setState(() {
+        _selectedSounds = List.from(_selectedSounds)
+          ..insert(index, removedSound);
+        _recommendedSounds.removeWhere((s) => s.title == removedSound.title);
+      });
     }
   }
 
-  Future<void> _adjustVolumes() async {
-    final playerCount = _audioPlayers.length;
-    if (playerCount == 0) return;
 
-    // Calculate base volume adjustment to prevent clipping
-    final baseAdjustment = playerCount > 1 ? 0.8 / playerCount : 1.0;
 
-    for (int i = 0; i < _audioPlayers.length; i++) {
-      try {
-        final adjustedVolume = _selectedSounds[i].volume * baseAdjustment;
-        await _audioPlayers[i].setVolume(adjustedVolume);
-      } catch (e) {
-        debugPrint('Error adjusting volume for player $i: $e');
-      }
-    }
-  }
-
+  // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
     if (index >= _selectedSounds.length) return;
 
-    try {
-      _selectedSounds[index].volume = volume;
+    setState(() {
+      // Create a new list with the updated sound
+      _selectedSounds = List.from(_selectedSounds);
+      _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
+    });
 
-      // Apply volume with adjustment for multiple sounds
-      final playerCount = _audioPlayers.length;
-      final baseAdjustment = playerCount > 1 ? 0.8 / playerCount : 1.0;
-      final adjustedVolume = volume * baseAdjustment;
-
-      await _audioPlayers[index].setVolume(adjustedVolume);
-    } catch (e) {
-      debugPrint('Error updating volume for sound at index $index: $e');
-    }
+    // Apply volume changes to audio players
+    await AudioManager().adjustVolumes(_selectedSounds);
   }
 
   Future<void> _playAllSounds() async {
     if (_selectedSounds.isEmpty || _isLoadingPlayback) return;
 
-    // Only show loading indicator if it's taking too long
-
     Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
         setState(() => _isLoadingPlayback = true);
@@ -297,57 +130,19 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     });
 
     try {
-      // Start all players simultaneously
-      await Future.wait(_audioPlayers.map((player) => player.play()));
+      await AudioManager().playAll();
 
-      // Adjust volumes for simultaneous playback
-      await _adjustVolumes();
-
-      // Cancel the loading timer if it hasn't fired yet
       loadingTimer.cancel();
       if (mounted) {
         setState(() {
-          _isGlobalPlaying = true;
           _isLoadingPlayback = false;
         });
       }
     } catch (e) {
       debugPrint('Error playing all sounds: $e');
-      // Cancel the loading timer if it hasn't fired yet
       loadingTimer.cancel();
       setState(() => _isLoadingPlayback = false);
       _showErrorSnackBar('Failed to play sounds');
-    }
-  }
-
-  Future<void> _pauseAllSounds() async {
-    if (_audioPlayers.isEmpty || _isLoadingPlayback) return;
-
-    // Only show loading indicator if it's taking too long
-
-    Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() => _isLoadingPlayback = true);
-        showLoading = true;
-      }
-    });
-
-    try {
-      await Future.wait(_audioPlayers.map((player) => player.pause()));
-
-      // Cancel the loading timer if it hasn't fired yet
-      loadingTimer.cancel();
-
-      setState(() {
-        _isGlobalPlaying = false;
-        _isLoadingPlayback = false;
-      });
-    } catch (e) {
-      debugPrint('Error pausing all sounds: $e');
-      // Cancel the loading timer if it hasn't fired yet
-      loadingTimer.cancel();
-      setState(() => _isLoadingPlayback = false);
-      _showErrorSnackBar('Failed to pause sounds');
     }
   }
 
@@ -365,16 +160,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
   @override
   void dispose() {
-    // Cancel all subscriptions
-    for (final subscription in _playerStateSubscriptions.values) {
-      subscription.cancel();
-    }
-    _playerStateSubscriptions.clear();
-
-    // Dispose all players
-    for (final player in _audioPlayers) {
-      player.dispose();
-    }
     super.dispose();
   }
 
@@ -382,19 +167,24 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 60,
         leading: IconButton(
-          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: Colors.white,
+            size: 35,
+          ),
           onPressed: () {
             final updated = _buildUpdatedSounds();
             Navigator.pop(context, updated);
           },
         ),
-        toolbarHeight: 80,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: const Text(
+        toolbarHeight: 100,
+        title: const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text(
             'Your Relaxation Mix',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: 25),
           ),
         ),
         centerTitle: true,
@@ -404,7 +194,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         color: const Color.fromRGBO(18, 23, 42, 1),
         child: Column(
           children: [
-            // Status indicator
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -416,8 +205,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
-
-                    // Recommended sounds section
                     SizedBox(
                       height: 120,
                       child: _isLoadingRecommendedSounds
@@ -428,26 +215,19 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             )
                           : ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: _recommendedSounds
-                                  .where((s) => !_selectedSounds.contains(s))
-                                  .length,
+                              itemCount: _recommendedSounds.length,
                               itemBuilder: (context, index) {
-                                final sound = _recommendedSounds
-                                    .where((s) => !_selectedSounds.contains(s))
-                                    .toList()[index];
+                                final sound = _recommendedSounds[index];
                                 return _buildRecommendedSoundButton(sound);
                               },
                             ),
                     ),
-
                     const SizedBox(height: 5),
                     const Text(
                       'Selected Sounds',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
-
-                    // Selected sounds section
                     Expanded(
                       child: _selectedSounds.isEmpty
                           ? const Center(
@@ -469,8 +249,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ),
               ),
             ),
-
-            // Control panel
             Container(
               height: 100,
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
@@ -495,8 +273,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     icon: Icons.timer_outlined,
                     label: 'Timer',
                     onPressed: () {
-                      // Timer functionality
-                      _showErrorSnackBar('Timer feature coming soon!');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TimerScreen(onTimerSelected: (Duration) {}),
+                        ),
+                      );
                     },
                   ),
                   _buildPlaybackControls(),
@@ -504,7 +287,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     icon: Icons.favorite_border_outlined,
                     label: 'Save Mix',
                     onPressed: () {
-                      // Save mix functionality
                       _showErrorSnackBar('Save mix feature coming soon!');
                     },
                   ),
@@ -561,30 +343,30 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Widget _buildPlaybackControls() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
+    return ValueListenableBuilder<bool>(
+      valueListenable: AudioManager().isPlayingNotifier,
+      builder: (context, isPlaying, _) {
+        return CircleAvatar(
           backgroundColor: Colors.white,
           radius: 28,
           child: IconButton(
             icon: Icon(
-              _isGlobalPlaying ? Icons.pause : Icons.play_arrow,
+              isPlaying ? Icons.pause : Icons.play_arrow,
               size: 28,
               color: const Color.fromRGBO(18, 23, 42, 1),
             ),
             onPressed: _selectedSounds.isEmpty
                 ? null
                 : () async {
-                    if (_isGlobalPlaying) {
-                      await _pauseAllSounds();
+                    if (isPlaying) {
+                      await AudioManager().pauseAll();
                     } else {
-                      await _playAllSounds();
+                      await AudioManager().playAll();
                     }
                   },
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -691,24 +473,38 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: Slider(
-                          value: sound.volume.toDouble(),
-                          min: 0.0,
-                          max: 1.0,
-                          divisions: 20,
-                          activeColor: const Color.fromRGBO(128, 128, 178, 1),
-                          inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
-                          onChanged: (value) {
-                            setState(() => sound.volume = value);
-                            _updateSoundVolume(index, value);
-                          },
-                        ),
-                      ),
-                      Text(
-                        '${(sound.volume * 100).round()}%',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            thumbShape: const CustomImageThumbShape(
+                              imagePath: 'assets/images/thumb.png',
+                              thumbRadius: 18,
+                            ),
+                            overlayShape: const RoundSliderOverlayShape(
+                              overlayRadius: 0,
+                            ),
+                            trackHeight: 4,
+                            activeTrackColor: const Color.fromRGBO(
+                              128,
+                              128,
+                              178,
+                              1,
+                            ),
+                            inactiveTrackColor: const Color.fromRGBO(
+                              113,
+                              109,
+                              150,
+                              1,
+                            ),
+                          ),
+                          child: Slider(
+                            value: sound.volume.toDouble(),
+                            min: 0.0,
+                            max: 1.0,
+                            onChanged: (value) {
+                              // FIX: Use proper update method instead of direct modification
+                              _updateSoundVolume(index, value);
+                            },
+                          ),
                         ),
                       ),
                     ],

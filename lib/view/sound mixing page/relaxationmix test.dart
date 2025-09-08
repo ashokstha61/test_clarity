@@ -65,25 +65,49 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     await AudioManager().syncPlayers(List.from(_selectedSounds));
   }
 
+  // void _removeSoundFromMix(int index) async {
+  //   if (index < 0 || index >= _selectedSounds.length) return;
+
+  //   try {
+  //     final removedSound = _selectedSounds[index];
+
+  //     setState(() {
+  //       _selectedSounds = List.from(_selectedSounds)..removeAt(index);
+  //       _recommendedSounds = List.from(_recommendedSounds)
+  //         ..add(removedSound.copyWith(isSelected: false));
+  //     });
+
+  //     // pass a copy to avoid concurrent modification
+  //     await AudioManager().syncPlayers(List.from(_selectedSounds));
+  //   } catch (e) {
+  //     _showErrorSnackBar('Failed to remove sound: $e');
+  //   }
+  // }
   void _removeSoundFromMix(int index) async {
-    if (index < 0 || index >= _selectedSounds.length) return;
+  if (index < 0 || index >= _selectedSounds.length) return;
 
-    try {
-      final removedSound = _selectedSounds[index];
-      
-      setState(() {
-        _selectedSounds = List.from(_selectedSounds)..removeAt(index);
-        _recommendedSounds = List.from(_recommendedSounds)
-          ..add(removedSound.copyWith(isSelected: false));
-      });
+  try {
+    final removedSound = _selectedSounds[index];
 
-      // pass a copy to avoid concurrent modification
-      await AudioManager().syncPlayers(List.from(_selectedSounds));
-    } catch (e) {
-      _showErrorSnackBar('Failed to remove sound: $e');
-    }
+    // ✅ Stop & remove from AudioManager
+    await AudioManager().removeSound(removedSound.title);
+
+    setState(() {
+      _selectedSounds = List.from(_selectedSounds)..removeAt(index);
+      _recommendedSounds = List.from(_recommendedSounds)
+        ..add(removedSound.copyWith(isSelected: false));
+    });
+
+    // ✅ Sync players with the updated list
+    await AudioManager().syncPlayers(List.from(_selectedSounds));
+
+  } catch (e) {
+    _showErrorSnackBar('Failed to remove sound: $e');
   }
+}
 
+
+  
   Future<void> _updateSoundVolume(int index, double volume) async {
     if (index >= _selectedSounds.length) return;
 
@@ -121,31 +145,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
   }
 
-  Future<void> _pauseAllSounds() async {
-    if (_isLoadingPlayback) return;
-
-    Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() => _isLoadingPlayback = true);
-        showLoading = true;
-      }
-    });
-
-    try {
-      await AudioManager().pauseAll();
-
-      loadingTimer.cancel();
-
-      setState(() {
-        _isLoadingPlayback = false;
-      });
-    } catch (e) {
-      debugPrint('Error pausing all sounds: $e');
-      loadingTimer.cancel();
-      setState(() => _isLoadingPlayback = false);
-      _showErrorSnackBar('Failed to pause sounds');
-    }
-  }
+  
 
   void _showErrorSnackBar(String message) {
     if (mounted) {
@@ -343,34 +343,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  // Widget _buildPlaybackControls() {
-  //   return Row(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       CircleAvatar(
-  //         backgroundColor: Colors.white,
-  //         radius: 28,
-  //         child: IconButton(
-  //           icon: Icon(
-  //             AudioManager().isPlaying ? Icons.pause : Icons.play_arrow,
-  //             size: 28,
-  //             color: const Color.fromRGBO(18, 23, 42, 1),
-  //           ),
-  //           onPressed: _selectedSounds.isEmpty
-  //               ? null
-  //               : () async {
-  //                   if (AudioManager().isPlaying) {
-  //                     await _pauseAllSounds();
-  //                   } else {
-  //                     await _playAllSounds();
-  //                   }
-  //                 },
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildPlaybackControls() {
     return ValueListenableBuilder<bool>(
       valueListenable: AudioManager().isPlayingNotifier,
@@ -388,9 +360,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ? null
                 : () async {
                     if (isPlaying) {
-                      await _pauseAllSounds();
+                      await AudioManager().pauseAll();
                     } else {
-                      await _playAllSounds();
+                      await AudioManager().playAll();
                     }
                   },
           ),
@@ -502,57 +474,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   Row(
                     children: [
                       Expanded(
-                        // child: SliderTheme(
-                        //   data: SliderTheme.of(context).copyWith(
-                        //     thumbShape: CustomImageThumbShape(
-                        //       imagePath: 'assets/images/thumb.png',
-                        //       thumbRadius:
-                        //           15.0, // Set your desired fixed radius
-                        //     ),
-                        //     // Disable overlay effects that might cause size changes
-                        //     overlayShape: const RoundSliderOverlayShape(
-                        //       overlayRadius: 0,
-                        //     ),
-                        //     // Disable thumb scaling on interaction
-                        //     thumbColor: Colors
-                        //         .transparent, // Let custom shape handle all colors
-                        //     activeTrackColor: const Color.fromRGBO(
-                        //       128,
-                        //       128,
-                        //       178,
-                        //       1,
-                        //     ),
-                        //     inactiveTrackColor: const Color.fromRGBO(
-                        //       113,
-                        //       109,
-                        //       150,
-                        //       1,
-                        //     ),
-                        //     // Ensure consistent track height
-                        //     trackHeight: 4.0,
-                        //   ),
-                        //   child: Slider(
-                        //     value: sound.volume.toDouble(),
-                        //     min: 0.0,
-                        //     max: 1.0,
-                        //     onChanged: (value) {
-                        //       _updateSoundVolume(index, value);
-                        //     },
-                        //   ),
-                        // ),
-                        // child: Slider(
-                        //   value: sound.volume.toDouble(),
-                        //   min: 0.0,
-                        //   max: 1.0,
-
-                        //   // divisions: 20,
-                        //   activeColor: const Color.fromRGBO(128, 128, 178, 1),
-                        //   inactiveColor: const Color.fromRGBO(113, 109, 150, 1),
-                        //   onChanged: (value) {
-                        //     _updateSoundVolume(index, value);
-                        //   },
-
-                        // ),
+                        //
                         child: SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                             thumbShape: const CustomImageThumbShape(
@@ -576,19 +498,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             min: 0.0,
                             max: 1.0,
                             onChanged: (value) {
-                              _updateSoundVolume(index, value);
+                              // _updateSoundVolume(index, value);
+                              setState(() => sound.volume = value);
+                              AudioManager().adjustVolumes(_selectedSounds);
                             },
                           ),
                         ),
                       ),
-
-                      // Text(
-                      //   '${(sound.volume * 100).round()}%',
-                      //   style: const TextStyle(
-                      //     color: Colors.white70,
-                      //     fontSize: 12,
-                      //   ),
-                      // ),
                     ],
                   ),
                 ],

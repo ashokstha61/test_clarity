@@ -5,27 +5,38 @@ import 'package:clarity/new_firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../sound mixing page/relaxationmix test.dart';
+// import '../sound mixing page/relaxationmix test.dart';
+import '../sound mixing page/fixedrelaxationmix.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
 
 // class AudioManager {
 //   static final AudioManager _instance = AudioManager._internal();
-
 //   factory AudioManager() => _instance;
-
 //   AudioManager._internal();
+//   bool isPlaying = false;
 
 //   final Map<String, AudioPlayer> _players = {};
-//   bool _isPlaying = false;
+
+//   // ✅ Notifier to update UI when playing/paused
+//   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
+
+//   Future<void> removeSound(String title) async {
+//     final player = _players[title]; // access private field internally
+//     if (player != null) {
+//       await player.pause();
+//       await player.dispose();
+//       _players.remove(title);
+//     }
+//     // update notifier if needed
+//     isPlayingNotifier.value = _players.values.any((p) => p.playing);
+//   }
 
 //   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
-//     // 1. Collect keys to remove (safe snapshot)
 //     final keysToRemove = _players.keys
 //         .where((key) => !selectedSounds.any((s) => s.title == key))
 //         .toList();
 
-//     // 2. Stop and dispose players first
 //     for (final key in keysToRemove) {
 //       final player = _players[key];
 //       if (player != null) {
@@ -33,13 +44,10 @@ import 'sound_tile.dart';
 //         await player.dispose();
 //       }
 //     }
-
-//     // 3. Remove them AFTER loop to avoid concurrent modification
 //     for (final key in keysToRemove) {
 //       _players.remove(key);
 //     }
 
-//     // 4. Add or update selected
 //     for (final sound in selectedSounds) {
 //       final key = sound.title;
 //       if (!_players.containsKey(key)) {
@@ -59,60 +67,97 @@ import 'sound_tile.dart';
 
 //     await adjustVolumes(selectedSounds);
 
-//     _isPlaying = _players.values.any((p) => p.playing);
+//     // ✅ Update notifier
+//     isPlayingNotifier.value = _players.values.any((p) => p.playing);
+//     for (final sound in selectedSounds) {
+//       final key = sound.title;
+//       if (!_players.containsKey(key)) {
+//         try {
+//           final player = AudioPlayer();
+//           await player.setAudioSource(
+//             AudioSource.uri(Uri.parse(sound.musicUrl)),
+//           );
+//           await player.setLoopMode(LoopMode.one);
+//           _players[key] = player;
+//           await player.play(); // auto-play
+//         } catch (e) {
+//           print("❌ Failed to initialize ${sound.title}: $e");
+//         }
+//       }
+//     }
+
+//     await adjustVolumes(selectedSounds);
+
+//     // ✅ Update isPlaying correctly: true if any selected sound is playing
+//     isPlaying = selectedSounds.any((s) {
+//       final p = _players[s.title];
+//       return p != null && p.playing;
+//     });
 //   }
 
-//   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
-//     final count = _players.length;
-//     if (count == 0) return;
-//     final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
-
-//     for (final sound in selectedSounds) {
+// 
+//   Future<void> adjustVolumes(List<NewSoundModel> sounds) async {
+//     for (var sound in sounds) {
 //       final player = _players[sound.title];
 //       if (player != null) {
-//         final adjustedVolume = sound.volume * baseAdjustment;
-//         await player.setVolume(adjustedVolume);
+//         player.setVolume(sound.volume.toDouble());
 //       }
 //     }
 //   }
 
+
+
+//   Future<void> stopSound(String title) async {
+//     final player = _players[title];
+//     if (player != null) {
+//       await player.pause();
+//       await player.dispose();
+//       _players.remove(title);
+//     }
+//     isPlayingNotifier.value = _players.values.any((p) => p.playing);
+//   }
+
 //   Future<void> playAll() async {
-//     await Future.wait(
-//       _players.values.map((p) async {
-//         if (!p.playing) {
-//           await p.play();
-//         }
-//       }),
-//     );
-//     _isPlaying = true;
+//     for (var player in _players.values) {
+//       await player.play();
+//     }
+//     isPlayingNotifier.value = true;
 //   }
 
 //   Future<void> pauseAll() async {
-//     await Future.wait(
-//       _players.values.map((p) async {
-//         if (p.playing) {
-//           await p.pause();
-//         }
-//       }),
-//     );
-//     _isPlaying = false;
+//     for (var player in _players.values) {
+//       await player.pause();
+//     }
+//     isPlayingNotifier.value = false;
 //   }
-
-//   bool get isPlaying => _isPlaying;
 // }
+// Fixed AudioManager with proper state management
 
 class AudioManager {
   static final AudioManager _instance = AudioManager._internal();
   factory AudioManager() => _instance;
   AudioManager._internal();
-  bool isPlaying = false;
 
+  bool isPlaying = false;
   final Map<String, AudioPlayer> _players = {};
 
   // ✅ Notifier to update UI when playing/paused
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
 
+  Future<void> removeSound(String title) async {
+    final player = _players[title];
+    if (player != null) {
+      await player.pause();
+      await player.dispose();
+      _players.remove(title);
+    }
+
+    // FIX: Update notifier immediately after removing sound
+    _updatePlayingState();
+  }
+
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
+    // Remove players that are no longer selected
     final keysToRemove = _players.keys
         .where((key) => !selectedSounds.any((s) => s.title == key))
         .toList();
@@ -122,12 +167,11 @@ class AudioManager {
       if (player != null) {
         await player.pause();
         await player.dispose();
+        _players.remove(key);
       }
     }
-    for (final key in keysToRemove) {
-      _players.remove(key);
-    }
 
+    // Add new players for newly selected sounds
     for (final sound in selectedSounds) {
       final key = sound.title;
       if (!_players.containsKey(key)) {
@@ -147,65 +191,107 @@ class AudioManager {
 
     await adjustVolumes(selectedSounds);
 
-    // ✅ Update notifier
-    isPlayingNotifier.value = _players.values.any((p) => p.playing);
-    for (final sound in selectedSounds) {
-      final key = sound.title;
-      if (!_players.containsKey(key)) {
-        try {
-          final player = AudioPlayer();
-          await player.setAudioSource(
-            AudioSource.uri(Uri.parse(sound.musicUrl)),
-          );
-          await player.setLoopMode(LoopMode.one);
-          _players[key] = player;
-          await player.play(); // auto-play
-        } catch (e) {
-          print("❌ Failed to initialize ${sound.title}: $e");
-        }
-      }
-    }
-
-    await adjustVolumes(selectedSounds);
-
-    // ✅ Update isPlaying correctly: true if any selected sound is playing
-    isPlaying = selectedSounds.any((s) {
-      final p = _players[s.title];
-      return p != null && p.playing;
-    });
+    // FIX: Update playing state based on current players
+    _updatePlayingState();
   }
 
-  Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
-    final count = _players.length;
-    if (count == 0) return;
-    final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
+  // Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
+  //   // Store the current playing state before making changes
+  //   final wasPlayingBefore = hasPlayingSounds;
 
-    for (final sound in selectedSounds) {
+  //   // Remove players that are no longer selected
+  //   final keysToRemove = _players.keys
+  //       .where((key) => !selectedSounds.any((s) => s.title == key))
+  //       .toList();
+
+  //   for (final key in keysToRemove) {
+  //     final player = _players[key];
+  //     if (player != null) {
+  //       await player.pause();
+  //       await player.dispose();
+  //       _players.remove(key);
+  //     }
+  //   }
+
+  //   // Add new players for newly selected sounds
+  //   for (final sound in selectedSounds) {
+  //     final key = sound.title;
+  //     if (!_players.containsKey(key)) {
+  //       try {
+  //         final player = AudioPlayer();
+  //         await player.setAudioSource(
+  //           AudioSource.uri(Uri.parse(sound.musicUrl)),
+  //         );
+  //         await player.setLoopMode(LoopMode.one);
+  //         _players[key] = player;
+
+  //         // Only auto-play new sounds if other sounds were already playing
+  //         if (wasPlayingBefore) {
+  //           await player.play();
+  //         }
+  //       } catch (e) {
+  //         print("❌ Failed to initialize ${sound.title}: $e");
+  //       }
+  //     }
+  //   }
+
+  //   await adjustVolumes(selectedSounds);
+
+  //   // Update playing state based on current players
+  //   _updatePlayingState();
+  // }
+
+  Future<void> adjustVolumes(List<NewSoundModel> sounds) async {
+    for (var sound in sounds) {
       final player = _players[sound.title];
       if (player != null) {
-        final adjustedVolume = sound.volume * baseAdjustment;
-        await player.setVolume(adjustedVolume);
+        await player.setVolume(sound.volume.toDouble());
       }
     }
+  }
+
+  Future<void> stopSound(String title) async {
+    final player = _players[title];
+    if (player != null) {
+      await player.pause();
+      await player.dispose();
+      _players.remove(title);
+    }
+    _updatePlayingState();
   }
 
   Future<void> playAll() async {
-    await Future.wait(
-      _players.values.map((p) async {
-        if (!p.playing) await p.play();
-      }),
-    );
-    isPlayingNotifier.value = true; // ✅ notify
+    for (var player in _players.values) {
+      if (!player.playing) {
+        await player.play();
+      }
+    }
+    // FIX: Update state after playing
+    _updatePlayingState();
   }
 
   Future<void> pauseAll() async {
-    await Future.wait(
-      _players.values.map((p) async {
-        if (p.playing) await p.pause();
-      }),
-    );
-    isPlayingNotifier.value = false; // ✅ notify
+    for (var player in _players.values) {
+      if (player.playing) {
+        await player.pause();
+      }
+    }
+    // FIX: Update state after pausing
+    _updatePlayingState();
   }
+
+  // FIX: Helper method to properly update playing state
+  void _updatePlayingState() {
+    final hasPlayingSound = _players.values.any((player) => player.playing);
+    isPlaying = hasPlayingSound;
+    isPlayingNotifier.value = hasPlayingSound;
+  }
+
+  // FIX: Add method to get current playing state
+  bool get hasPlayingSounds => _players.values.any((player) => player.playing);
+
+  // FIX: Add method to get active players count
+  int get activePlayersCount => _players.length;
 }
 
 class SoundPage extends StatefulWidget {
@@ -283,19 +369,15 @@ class _SoundPageState extends State<SoundPage> {
     setState(() {});
   }
 
-  bool _isAnySoundPlaying() {
-    //return AudioManager().isPlaying;
+  // bool _isAnySoundPlaying() {
 
-    // final selectedSounds = _sounds.where((s) => s.isSelected).toList();
-    // return selectedSounds.isNotEmpty && AudioManager().isPlaying;
-
-    final selectedSounds = _sounds.where((s) => s.isSelected).toList();
-    if (selectedSounds.isEmpty) return false;
-    return selectedSounds.any((s) {
-      final player = AudioManager()._players[s.title];
-      return player != null && player.playing;
-    });
-  }
+  //   final selectedSounds = _sounds.where((s) => s.isSelected).toList();
+  //   if (selectedSounds.isEmpty) return false;
+  //   return selectedSounds.any((s) {
+  //     final player = AudioManager()._players[s.title];
+  //     return player != null && player.playing;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -366,81 +448,8 @@ class _SoundPageState extends State<SoundPage> {
                     ),
             ),
           ),
-          // if (selectedSounds.isNotEmpty)
-          //   RelaxationMixBar(
-          //     onArrowTap: () async {
-          //       final result = await showModalBottomSheet(
-          //         context: context,
-          //         isScrollControlled: true,
-          //         backgroundColor: Colors.transparent,
-          //         builder: (context) {
-          //           return Container(
-          //             height: MediaQuery.of(context).size.height,
-          //             decoration: const BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.vertical(
-          //                 top: Radius.circular(16),
-          //               ),
-          //             ),
-          //             child: RelaxationMixPage(
-          //               sounds: _sounds,
-          //             ), // ✅ send full list
-          //           );
-          //         },
-          //       );
 
-          //       if (result != null) {
-          //         setState(() => _sounds = result);
-          //         final selected = _sounds.where((s) => s.isSelected).toList();
-          //         await AudioManager().syncPlayers(selected);
-          //       }
-          //     },
-
-          //     onPlay: _playAllSelected,
-          //     onPause: _pauseAllSelected,
-          //     imagePath: 'assets/images/remix_image.png',
-          //     soundCount: selectedSounds.length,
-          //     isPlaying: _isAnySoundPlaying(),
-          //   ),
           if (selectedSounds.isNotEmpty)
-            // ValueListenableBuilder<bool>(
-            //   valueListenable: AudioManager().isPlayingNotifier,
-            //   builder: (context, isPlaying, _) {
-            //     return RelaxationMixBar(
-            //       onArrowTap: () async {
-            //         final result = await showModalBottomSheet(
-            //           context: context,
-            //           isScrollControlled: true,
-            //           backgroundColor: Colors.transparent,
-            //           builder: (context) {
-            //             return Container(
-            //               height: MediaQuery.of(context).size.height,
-            //               decoration: const BoxDecoration(
-            //                 color: Colors.white,
-            //                 borderRadius: BorderRadius.vertical(
-            //                   top: Radius.circular(16),
-            //                 ),
-            //               ),
-            //               child: RelaxationMixPage(sounds: _sounds),
-            //             );
-            //           },
-            //         );
-            //         if (result != null) {
-            //           setState(() => _sounds = result);
-            //           final selected = _sounds
-            //               .where((s) => s.isSelected)
-            //               .toList();
-            //           await AudioManager().syncPlayers(selected);
-            //         }
-            //       },
-            //       onPlay: _playAllSelected,
-            //       onPause: _pauseAllSelected,
-            //       imagePath: 'assets/images/remix_image.png',
-            //       soundCount: selectedSounds.length,
-            //       isPlaying: _isAnySoundPlaying(), // ✅ reactive state
-            //     );
-            //   },
-            // ),
             ValueListenableBuilder<bool>(
               valueListenable: AudioManager().isPlayingNotifier,
               builder: (context, isPlaying, _) {
@@ -459,7 +468,14 @@ class _SoundPageState extends State<SoundPage> {
                               top: Radius.circular(16),
                             ),
                           ),
-                          child: RelaxationMixPage(sounds: _sounds),
+                          child: RelaxationMixPage(
+                            sounds: _sounds,
+                            onSoundsChanged: (updatedSounds) {
+                              setState(() {
+                                _sounds = updatedSounds;
+                              });
+                            },
+                          ),
                         );
                       },
                     );
