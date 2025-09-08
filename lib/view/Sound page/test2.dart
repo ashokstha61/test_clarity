@@ -17,8 +17,10 @@ class AudioManager {
   final Map<String, AudioPlayer> _players = {};
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
   bool isPlaying = false;
+  List<String> selectedSoundTitles = []; // store selected sound titles
 
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
+    selectedSoundTitles = selectedSounds.map((s) => s.title).toList();
     // 1. Remove players not in selection
     final keysToRemove = _players.keys
         .where((key) => !selectedSounds.any((s) => s.title == key))
@@ -62,6 +64,10 @@ class AudioManager {
 
     // 4. Update notifier
     isPlayingNotifier.value = _players.values.any((p) => p.playing);
+  }
+
+  bool isSelected(String title) {
+    return selectedSoundTitles.contains(title);
   }
 
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
@@ -149,6 +155,10 @@ class _SoundPageState extends State<SoundPage> {
 
     try {
       final sounds = await _firebaseService.fetchSoundData();
+      // Restore selected state
+      for (var sound in sounds) {
+        sound.isSelected = AudioManager().isSelected(sound.title);
+      }
       setState(() {
         _sounds = sounds;
         _isLoading = false;
