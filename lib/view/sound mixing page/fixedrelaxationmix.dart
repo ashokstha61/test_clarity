@@ -4,7 +4,8 @@ import 'package:clarity/model/model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import '../Sound page/testsound.dart';
+import '../Sound page/test2.dart';
+import '../Sound page/testsound.dart' hide AudioManager;
 import 'slider.dart';
 import 'timer_screen.dart';
 
