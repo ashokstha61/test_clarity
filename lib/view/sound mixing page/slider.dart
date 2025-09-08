@@ -48,10 +48,7 @@ class CustomImageThumbShape extends SliderComponentShape {
   final String imagePath;
   final double thumbRadius;
 
-  const CustomImageThumbShape({
-    required this.imagePath,
-    this.thumbRadius = 15,
-  });
+  const CustomImageThumbShape({required this.imagePath, this.thumbRadius = 15});
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -80,7 +77,7 @@ class CustomImageThumbShape extends SliderComponentShape {
     final ImageStream stream = image.resolve(const ImageConfiguration());
     final listener = ImageStreamListener((ImageInfo info, bool _) {
       final img = info.image;
-      final src = Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble());
+      // final src = Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble());
       final dst = Rect.fromCircle(center: center, radius: thumbRadius);
       paintImage(canvas: canvas, rect: dst, image: img, fit: BoxFit.cover);
     });
@@ -89,4 +86,3 @@ class CustomImageThumbShape extends SliderComponentShape {
     stream.removeListener(listener); // prevent memory leaks
   }
 }
-
