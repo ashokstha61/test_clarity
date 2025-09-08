@@ -137,6 +137,7 @@ class SoundPage extends StatefulWidget {
 
 class _SoundPageState extends State<SoundPage> {
   final DatabaseService _firebaseService = DatabaseService();
+  static List<NewSoundModel>? _cachedSounds;
   List<NewSoundModel> _sounds = [];
   bool _isLoading = false;
   String? _errorMessage;
@@ -144,7 +145,13 @@ class _SoundPageState extends State<SoundPage> {
   @override
   void initState() {
     super.initState();
-    _loadSounds();
+    // _loadSounds();
+    if (_cachedSounds != null) {
+      // Use cached sounds if already loaded
+      _sounds = _cachedSounds!;
+    } else {
+      _loadSounds();
+    }
   }
 
   Future<void> _loadSounds() async {
@@ -159,6 +166,8 @@ class _SoundPageState extends State<SoundPage> {
       for (var sound in sounds) {
         sound.isSelected = AudioManager().isSelected(sound.title);
       }
+      _cachedSounds = sounds; // save to cache
+
       setState(() {
         _sounds = sounds;
         _isLoading = false;
