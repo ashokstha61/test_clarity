@@ -27,14 +27,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Continue with Apple',
-                    imagePath: 'assets/images/apple.png',
-                    onPressed: () {},
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 15),
+                //   child: CustomLoginButton(
+                //     label: 'Continue with Apple',
+                //     imagePath: 'assets/images/apple.png',
+                //     onPressed: () {},
+                //   ),
+                // ),
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       //   // context,
                       //   // MaterialPageRoute(builder: (_) => SignInScreen()),
                       // );
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const SignInScreen(),
