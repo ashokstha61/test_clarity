@@ -2,6 +2,8 @@ import 'package:clarity/view/home/homepage.dart';
 import 'package:clarity/view/register/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,14 +109,23 @@ class _SignInScreenState extends State<SignInScreen> {
       //   builder: (_) =>
       //       AlertDialog(content: Center(child: Text("Login Successful"))),
       // );
-      Fluttertoast.showToast(
-        msg: "Login Successful",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
+      showToast(
+        "Login Successful",
+        context: context,
+        animation: StyledToastAnimation.scale,
+        reverseAnimation: StyledToastAnimation.fade,
+        position: StyledToastPosition.center,
+        duration: Duration(seconds: 2),
         backgroundColor: Colors.black54,
-        textColor: Colors.white,
-        fontSize: 16.0,
+        textStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+        borderRadius: BorderRadius.circular(0), // Makes it rectangular
+        shapeBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0), // Completely rectangular
+        ),
       );
 
       // Wait for 2 seconds then redirect

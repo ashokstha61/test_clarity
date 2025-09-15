@@ -61,6 +61,7 @@ dependencies:
   lottie: ^3.3.1
   audioplayers: ^6.5.0
   fluttertoast: ^8.2.12
+  flutter_styled_toast: ^2.2.1
 
 dev_dependencies:
   flutter_test:
