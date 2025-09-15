@@ -70,7 +70,7 @@ class TimerScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   'Choose your timer duration',
                   style: TextStyle(
@@ -81,10 +81,12 @@ class TimerScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+
               ...[5, 10, 15, 30, 60, 120, 240, 480].map((minutes) {
                 return Column(
                   children: [
                     ListTile(
+                      visualDensity: VisualDensity(vertical: -4),
                       contentPadding: EdgeInsets.symmetric(horizontal: 0),
                       title: Text(
                         (minutes ~/ 60 > 0)
@@ -105,8 +107,10 @@ class TimerScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                CircularTimerScreen(duration: minutes * 60, soundCount: soundCount),
+                            builder: (_) => CircularTimerScreen(
+                              duration: minutes * 60,
+                              soundCount: soundCount,
+                            ),
                           ),
                         ); // Close the modal after selection
                       },

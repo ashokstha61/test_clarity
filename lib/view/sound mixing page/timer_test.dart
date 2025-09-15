@@ -255,35 +255,46 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
+                IconButton(
                   onPressed: _togglePauseResume,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[800],
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 15,
-                    ),
-                  ),
-                  child: Text(
-                    _isPaused ? 'Resume' : 'Pause',
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+
+                  icon: Column(
+                    children: [
+                      Image.asset(
+                        _isPaused
+                            ? "assets/images/playImage.png"
+                            : "assets/images/pauseImage.png",
+                        width: 30,
+                        height: 30,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        _isPaused ? 'Resume' : 'Pause',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () =>
-                      Navigator.pop(context), // Go back to previous screen
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 15,
-                    ),
-                  ),
-                  child: const Text(
-                    'Quit',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Column(
+                    children: [
+                      Image.asset(
+                        "assets/images/quit.png",
+                        width: 30,
+                        height: 30,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Quit',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ],
+                  ), // Go back to previous screen
                 ),
               ],
             ),
