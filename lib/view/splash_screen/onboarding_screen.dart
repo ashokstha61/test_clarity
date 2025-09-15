@@ -1,3 +1,4 @@
+import 'package:clarity/view/register/register.dart';
 import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/login/login_screen.dart';
@@ -43,7 +44,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ? Colors.white
         : const Color.fromRGBO(37, 45, 65, 1);
     return Scaffold(
-      body: SafeArea(
+      body: Padding(
+        padding: EdgeInsetsGeometry.all(10.sp),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -60,13 +62,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   return Center(
                     child: Column(
                       children: [
-                        SizedBox(height: 40),
+                        SizedBox(height: 40.h),
                         Image.asset(
                           _onboardingData[index]['image'],
                           width: 334.w,
                           height: 458.h,
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         Text(
                           _onboardingData[index]['title'],
                           style: TextStyle(
@@ -75,12 +77,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: textColor,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             _onboardingData[index]['description'],
-                            style: TextStyle(fontSize: 14.sp, color: textColor,),
+                            style: TextStyle(fontSize: 14.sp, color: textColor),
                             maxLines: 2,
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
@@ -93,22 +95,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
 
             SmoothPageIndicator(
               controller: _pageController,
               count: _onboardingData.length,
-              
+
               effect: ExpandingDotsEffect(
                 radius: 5.sp,
                 activeDotColor: Color.fromRGBO(29, 172, 146, 1),
               ),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             SizedBox(
-              width: 334,
-              height: 60,
+              width: 334.w,
+              height: 60.h,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(29, 172, 146, 1),
@@ -134,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ? 'Let\'s Begin'
                       : 'Next',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Color.fromRGBO(255, 255, 255, 1),
                   ),
                 ),
@@ -145,13 +147,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const SignInScreen(),
+                  ),
                 );
               },
               child: Text(
                 'Sign In',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   color: textColor,
                   decoration: TextDecoration.underline,
                 ),

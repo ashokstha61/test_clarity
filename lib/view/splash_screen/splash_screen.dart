@@ -97,6 +97,7 @@
 import 'dart:async';
 import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clarity/view/home/homepage.dart';
@@ -155,9 +156,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
-   
-
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(
         context,
@@ -169,8 +167,8 @@ class _SplashScreenState extends State<SplashScreen> {
             // Lottie animation
             Lottie.asset(
               "assets/lottie/sleep.json",
-              height: 200,
-              width: 200,
+              height: 200.h,
+              width: 200.h,
               fit: BoxFit.contain,
               repeat: false,
             ),
@@ -195,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> {
               'S L E E P H O R I A',
               style: TextStyle(
                 color: ThemeHelper.textColor(context),
-                fontSize: 24,
+                fontSize: 24.sp,
                 letterSpacing: 2,
                 fontWeight: FontWeight.w500,
               ),
