@@ -1,23 +1,54 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 
 import 'timer_test.dart';
 
 class TimerScreen extends StatelessWidget {
-  final Function(int) onTimerSelected;
+  // final Function(int) onTimerSelected;
+  final int soundCount;
 
-  const TimerScreen({super.key, required this.onTimerSelected});
+  const TimerScreen({
+    super.key,
+    // required this.onTimerSelected,
+    required this.soundCount,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.music_note, size: 28),
+        leading: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(
+              Icons.music_note,
+              size: 28,
+              color: ThemeHelper.textColorTimer(context),
+            ),
+            Positioned(
+              right: 0, // adjust position
+              top: 0,
+              child: Container(
+                padding: EdgeInsets.all(4),
+
+                child: Text(
+                  "$soundCount", // count of selected sounds
+                  style: TextStyle(
+                    color: ThemeHelper.textColorTimer(context),
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         title: Text(
           'Timer',
           style: TextStyle(
             fontFamily: 'Roboto',
             fontWeight: FontWeight.bold,
             fontSize: 24,
+            color: ThemeHelper.textColorTimer(context),
           ),
           textAlign: TextAlign.center,
         ),
@@ -44,8 +75,8 @@ class TimerScreen extends StatelessWidget {
                   'Choose your timer duration',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    fontFamily: 'montserrat',
+                    color: ThemeHelper.textColor(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -60,21 +91,22 @@ class TimerScreen extends StatelessWidget {
                             ? '${minutes ~/ 60} Hour${minutes ~/ 60 > 1 ? 's' : ''}'
                             : '$minutes Minutes',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black87,
+                          color: ThemeHelper.textColorTimer(context),
                         ),
                         textAlign: TextAlign.center,
                       ),
                       onTap: () {
-                        onTimerSelected(
-                          minutes * 60,
-                        ); // Convert minutes to seconds
+                        // onTimerSelected(
+                        //   minutes * 60,
+                        // ); // Convert minutes to seconds
+                        minutes * 60;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                CircularTimerScreen(duration: minutes * 60),
+                                CircularTimerScreen(duration: minutes * 60, soundCount: soundCount),
                           ),
                         ); // Close the modal after selection
                       },

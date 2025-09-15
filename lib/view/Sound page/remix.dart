@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 
 class RelaxationMixBar extends StatelessWidget {
@@ -36,7 +37,11 @@ class RelaxationMixBar extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.keyboard_arrow_up),
+            icon: Icon(
+              Icons.keyboard_arrow_up,
+              color: ThemeHelper.iconColorRemix(context),
+              size: 30,
+            ),
             onPressed: onArrowTap,
           ),
           ClipRRect(
@@ -55,13 +60,20 @@ class RelaxationMixBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Your Relaxation Mix",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: ThemeHelper.iconAndTextColorRemix(context),
+                  ),
                 ),
                 Text(
-                  "$soundCount sounds",
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  "$soundCount sound selected",
+                  style: TextStyle(
+                    color: ThemeHelper.iconAndTextColorRemix(context),
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),

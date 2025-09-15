@@ -48,9 +48,28 @@ class ThemeHelper {
         ? Colors.white
         : Color.fromRGBO(50, 67, 118, 1.000);
   }
+
   static Color soundTitle(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white
         : Color.fromRGBO(50, 67, 118, 1.000);
+  }
+
+  static Color iconColorRemix(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.white;
+  }
+
+  static Color iconAndTextColorRemix(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.white;
+  }
+
+  static Color textColorTimer(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
   }
 }

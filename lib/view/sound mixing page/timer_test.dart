@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
@@ -125,9 +126,14 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 // }
 
 class CircularTimerScreen extends StatefulWidget {
-  final int duration; // in seconds
+  final int duration;
+  final int soundCount; // in seconds
 
-  const CircularTimerScreen({super.key, required this.duration});
+  const CircularTimerScreen({
+    super.key,
+    required this.duration,
+    required this.soundCount,
+  });
 
   @override
   State<CircularTimerScreen> createState() => _CircularTimerScreenState();
@@ -150,7 +156,50 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.black),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(
+            children: [
+              Icon(
+                Icons.music_note,
+                color: ThemeHelper.iconAndTextColorRemix(context),
+              ),
+              Positioned(
+                right: 0, // adjust position
+                top: 0,
+                child: Container(
+                  padding: EdgeInsets.all(4),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.red,
+                  //   shape: BoxShape.circle,
+                  // ),
+                  child: Text(
+                    "${widget.soundCount}", // count of selected sounds
+                    style: TextStyle(
+                      color: ThemeHelper.iconAndTextColorRemix(context),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.close,
+              size: 28,
+              color: ThemeHelper.iconAndTextColorRemix(context),
+            ),
+            onPressed: () {
+              Navigator.pop(context); // Close the modal
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.black,
       body: Center(
         child: Column(
@@ -180,7 +229,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   strokeWidth: 12,
                   strokeCap: StrokeCap.round,
                   textStyle: const TextStyle(
-                    fontSize: 36,
+                    fontSize: 24,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

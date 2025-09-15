@@ -249,7 +249,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               ),
             ),
             Container(
-              height: 100,
+              height: 150,
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(194, 194, 244, 244),
@@ -266,7 +266,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildControlButton(
                     icon: Icons.timer_outlined,
@@ -275,8 +275,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              TimerScreen(onTimerSelected: (Duration) {}),
+                          builder: (context) => TimerScreen(
+                            // onTimerSelected: (Duration) {},
+                            soundCount: _selectedSounds.length,
+                          ),
                         ),
                       );
                     },
