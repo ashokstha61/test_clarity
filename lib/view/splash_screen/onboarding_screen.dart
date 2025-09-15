@@ -80,8 +80,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             _onboardingData[index]['description'],
-                            style: TextStyle(fontSize: 14.sp, color: textColor),
+                            style: TextStyle(fontSize: 14.sp, color: textColor,),
                             maxLines: 2,
+                            textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -97,7 +98,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             SmoothPageIndicator(
               controller: _pageController,
               count: _onboardingData.length,
+              
               effect: ExpandingDotsEffect(
+                radius: 5.sp,
                 activeDotColor: Color.fromRGBO(29, 172, 146, 1),
               ),
             ),

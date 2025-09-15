@@ -1,6 +1,7 @@
 import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // class CircularTimerScreen extends StatefulWidget {
 //   const CircularTimerScreen({super.key});
@@ -157,9 +158,9 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: ThemeHelper.timerBackgroundColor(context),
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.sp),
           child: Stack(
             children: [
               Icon(
@@ -179,7 +180,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                     "${widget.soundCount}", // count of selected sounds
                     style: TextStyle(
                       color: ThemeHelper.iconAndTextColorRemix(context),
-                      fontSize: 12,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),
@@ -200,20 +201,21 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: ThemeHelper.timerBackgroundColor(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Timer',
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
+                color: ThemeHelper.iconAndTextColorRemix(context),
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             Stack(
               alignment: Alignment.center,
               children: [
@@ -221,17 +223,18 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   duration: widget.duration, // 👈 use passed duration
                   initialDuration: 0,
                   controller: _controller,
-                  width: 200,
-                  height: 200,
+                  width: 200.w,
+                  height: 200.h,
                   ringColor: Colors.grey[800]!,
-                  fillColor: Colors.blueAccent,
+                  fillColor: Color(0xFFE5E5E5),
                   backgroundColor: Colors.transparent,
                   strokeWidth: 12,
                   strokeCap: StrokeCap.round,
-                  textStyle: const TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
+                  textStyle: TextStyle(
+                    fontSize: 20.sp,
+                    color: ThemeHelper.iconAndTextColorRemix(context),
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Montserrat',
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
@@ -243,61 +246,88 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   top: 35,
                   child: Image.asset(
                     "assets/images/moon.png",
-                    width: 40,
-                    height: 40,
+                    width: 35.w,
+                    height: 35.h,
                     color: Colors.purple,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 40),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: _togglePauseResume,
-
-                  icon: Column(
-                    children: [
-                      Image.asset(
-                        _isPaused
-                            ? "assets/images/playImage.png"
-                            : "assets/images/pauseImage.png",
-                        width: 30,
-                        height: 30,
+            SizedBox(height: 40.h),
+            Spacer(),
+            SizedBox(
+              height: 180.h,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 25.sp),
+                      child: Image.asset(
+                        "assets/images/ellipse_mix_page.png",
+                        fit: BoxFit
+                            .cover, // adjust as needed (cover/contain/fill)
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        _isPaused ? 'Resume' : 'Pause',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Column(
-                    children: [
-                      Image.asset(
-                        "assets/images/quit.png",
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Quit',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ],
-                  ), // Go back to previous screen
-                ),
-              ],
+                  Positioned(
+                    top: -5, // adjust for spacing from status bar
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _togglePauseResume,
+
+                          icon: Column(
+                            children: [
+                              Image.asset(
+                                _isPaused
+                                    ? "assets/images/playImage.png"
+                                    : "assets/images/pauseImage.png",
+                                width: 50.w,
+                                height: 50.h,
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                _isPaused ? 'Resume' : 'Pause',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 20.w),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: Column(
+                            children: [
+                              Image.asset(
+                                "assets/images/quit.png",
+                                width: 50.w,
+                                height: 50.h,
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                'Quit',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ), // Go back to previous screen
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),

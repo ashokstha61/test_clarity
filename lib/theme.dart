@@ -64,12 +64,24 @@ class ThemeHelper {
   static Color iconAndTextColorRemix(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white
-        : Colors.white;
+        : Colors.black;
   }
 
   static Color textColorTimer(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white
         : Colors.black;
+  }
+
+  static Color timerBackgroundColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Color.fromRGBO(34, 32, 51, 1)
+        : Colors.white;
+  }
+
+  static Color timerscreenBackgrundColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color.fromRGBO(18, 23, 42, 1)
+        : Colors.white;
   }
 }
