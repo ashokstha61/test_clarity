@@ -426,49 +426,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   //   );
   // }
 
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool isDarkMode, {
-    bool obscureText = false,
-    bool isPasswordField = false,
-    VoidCallback? onTogglePassword,
-    bool isPasswordVisible = false,
-    TextInputType? keyboardType,
-    Color? borderColor,
-    List<TextInputFormatter>? inputFormatters, // new parameter
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-        labelText: label,
-        labelStyle: TextStyle(
-          color: isDarkMode ? Colors.white70 : Colors.black54,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color:
-                borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
-          ),
-        ),
-        suffixIcon: isPasswordField
-            ? IconButton(
-                icon: Icon(
-                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-                onPressed: onTogglePassword,
-              )
-            : null,
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +434,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(61, 67, 89, 1.000),
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: Stack(
         children: [
           SafeArea(
@@ -488,7 +446,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text(
                     "Register",
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -550,9 +508,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Colors.blueAccent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: _registerUser,
@@ -597,4 +555,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+}
+
+
+Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    bool isDarkMode, {
+      bool obscureText = false,
+      bool isPasswordField = false,
+      VoidCallback? onTogglePassword,
+      bool isPasswordVisible = false,
+      TextInputType? keyboardType,
+      Color? borderColor,
+      List<TextInputFormatter>? inputFormatters, // new parameter
+    }) {
+  return TextField(
+    controller: controller,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+      labelText: label,
+      labelStyle: TextStyle(
+        color: isDarkMode ? Colors.white70 : Colors.black54,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color:
+          borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+        ),
+      ),
+      suffixIcon: isPasswordField
+          ? IconButton(
+        icon: Icon(
+          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+        onPressed: onTogglePassword,
+      )
+          : null,
+    ),
+  );
 }

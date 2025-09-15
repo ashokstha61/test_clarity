@@ -106,30 +106,10 @@ class _SignInScreenState extends State<SignInScreen> {
       //   builder: (_) =>
       //       AlertDialog(content: Center(child: Text("Login Successful"))),
       // );
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => Dialog(
-          backgroundColor: Colors.transparent, // make background transparent
-          elevation: 0,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              // semi-transparent background for text
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              "Login Successful",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login Successfully')),
       );
+
 
       // Wait for 2 seconds then redirect
       await Future.delayed(const Duration(seconds: 2));
@@ -183,13 +163,6 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: const Color.fromRGBO(61, 67, 89, 1.000),
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: Colors.white),
-      //     onPressed: () => Navigator.of(context).pop(),
-      //   ),
-      // ),
       backgroundColor: Color.fromRGBO(61, 67, 89, 1.000),
       body: Stack(
         children: [

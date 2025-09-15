@@ -42,13 +42,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Container(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               padding: EdgeInsets.all(16.0),
-
               decoration: BoxDecoration(
                 color: Color.fromRGBO(59, 59, 122, 1),
                 borderRadius: BorderRadius.circular(10),
@@ -90,151 +91,131 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(16.0),
-              children: [
-                CustomListTile(
-                  title: 'My Account',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyAccountPage()),
-                    );
-                  },
-                ),
-                CustomListTile(title: 'Subscription Management', onTap: () {}),
+            CustomListTile(
+              title: 'My Account',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyAccountPage()),
+                );
+              },
+            ),
+            CustomListTile(title: 'Subscription Management', onTap: () {}),
+            Divider(),
+            Text(
+              'Support',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w500,
+                color: ThemeHelper.textTitle(context),
+              ),
+            ),
 
-                Divider(),
-
-                Text(
-                  'Support',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w500,
-                    color: ThemeHelper.textTitle(context),
+            CustomListTile(
+              title: 'FAQ',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                    const LegalDocumentsPage(type: DocumentType.faq),
                   ),
-                ),
+                );
+              },
+            ),
 
-                CustomListTile(
-                  title: 'FAQ',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            const LegalDocumentsPage(type: DocumentType.faq),
-                      ),
-                    );
-                  },
-                ),
-
-                CustomListTile(
-                  title: 'Privacy Policy',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const LegalDocumentsPage(
-                          type: DocumentType.privacyPolicy,
+            CustomListTile(
+              title: 'Privacy Policy',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentsPage(
+                      type: DocumentType.privacyPolicy,
+                    ),
+                  ),
+                );
+              },
+            ),
+            CustomListTile(
+              title: 'Terms and Conditions',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentsPage(
+                      type: DocumentType.termsAndConditions,
+                    ),
+                  ),
+                );
+              },
+            ),
+            CustomLogoutButton(
+              title: 'Log Out',
+              onPressed: () async {
+                final shouldLogout = await showDialog<bool>(
+                  context: context,
+                  barrierDismissible: false, // user must tap a button
+                  builder: (ctx) => AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: const Center(
+                      child: Text(
+                        "Confirm Logout",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
-                    );
-                  },
-                ),
-                CustomListTile(
-                  title: 'Terms and Conditions',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const LegalDocumentsPage(
-                          type: DocumentType.termsAndConditions,
-                        ),
+                    ),
+                    content: const Text(
+                      "Are you sure you want to log out?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 15,
                       ),
-                    );
-                  },
-                ),
-
-                CustomLogoutButton(
-                  title: 'Log Out',
-                  onPressed: () async {
-                    final shouldLogout = await showDialog<bool>(
-                      context: context,
-                      barrierDismissible: false, // user must tap a button
-                      builder: (ctx) => AlertDialog(
-                        title: Center(
-                          child: const Text(
-                            "Confirm Logout",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Montserrat',
+                    ),
+                    actionsPadding: EdgeInsets.zero,
+                    actions: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false), // Cancel
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontFamily: 'Montserrat',
+                              ),
                             ),
                           ),
-                        ),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "Are you sure you want to log out?",
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(true), // Confirm
+                            child: const Text(
+                              "Logout",
                               style: TextStyle(
+                                color: Colors.red,
                                 fontFamily: 'Montserrat',
-                                fontSize: 15,
                               ),
                             ),
-
-                            Divider(),
-                          ],
-                        ),
-                        actionsPadding: EdgeInsets.zero,
-                        actions: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Cancel
-                                },
-                                child: const Text(
-                                  "Cancel",
-                                  style: TextStyle(
-                                    color: Colors.blue,
-
-                                    fontFamily: 'Montserrat',
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(ctx).pop(true), // Confirm
-                                child: const Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                    color: Colors.red,
-
-                                    fontFamily: 'Montserrat',
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
-                    );
+                    ],
+                  ),
+                );
 
-                    if (!mounted) return;
-
-                    if (shouldLogout == true) {
-                      _logout(context); // perform logout
-                    }
-                  },
-                ),
-              ],
+                if (shouldLogout == true) {
+                  _logout(context); // Call your logout logic
+                }
+              },
             ),
-          ),
-        ],
+
+          ],
+        ),
       ),
     );
   }

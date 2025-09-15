@@ -14,39 +14,13 @@ class SoundTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         onTap: onTap,
-        // leading: Container(
-        //   height: 70.h,
-        //   width: 70.h,
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(5),
-        //     border: Border.all(color: Color.fromRGBO(50, 67, 118, 1.000)),
-        //     color: sound.isSelected
-        //         ? const Color.fromRGBO(176, 176, 224, 1)
-        //         : null,
-        //   ),
-        //   child: Center(
-        //     child: sound.icon.isNotEmpty
-        //         ? Image.asset(
-        //             'assets/images/${sound.icon.endsWith('.png') ? sound.icon : '${sound.icon}.png'}',
-        //             height: 23.sp,
-        //             width: 23.sp,
-        //             errorBuilder: (context, error, stackTrace) {
-        //               debugPrint(
-        //                 'Failed to load asset for ${sound.title}: ${sound.icon}',
-        //               );
-        //               return const Icon(Icons.music_note);
-        //             },
-        //           )
-        //         : const Icon(Icons.music_note),
-        //   ),
-        // ),
-        leading: SizedBox.square(
-          dimension: 70.h, // same height and width
+        leading: SizedBox(
+          width: 53.w,
+          height: 53.h, // same height and width
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),

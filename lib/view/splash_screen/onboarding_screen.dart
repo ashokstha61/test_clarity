@@ -22,17 +22,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
     {
       'image': 'assets/images/image2.png',
-      'title': 'RELAX MORE.',
-      'description': 'Unwind and find serenity in a guided meditation sessions',
+      'title': 'RELAX MORE',
+      'description': 'Unwind and find serenity in a guided meditation sessions.',
     },
     {
       'image': 'assets/images/image3.png',
-      'title': 'SLEEP LONGER.',
+      'title': 'SLEEP LONGER',
       'description': 'Calm racing mind and prepare your body for deep sleep.',
     },
     {
       'image': 'assets/images/image4.png',
-      'title': 'LIVE BETTER.',
+      'title': 'LIVE BETTER',
       'description': 'Invest in personal sense of inner peace and balance.',
     },
   ];
@@ -43,7 +43,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ? Colors.white
         : const Color.fromRGBO(37, 45, 65, 1);
     return Scaffold(
-      body: SafeArea(
+      body: Padding(
+        padding: EdgeInsets.all(16.sp),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -57,60 +58,58 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 40),
-                        Image.asset(
-                          _onboardingData[index]['image'],
-                          width: 334.w,
-                          height: 458.h,
+                  return Column(
+                    children: [
+                      SizedBox(height: 30.h),
+                      Image.asset(
+                        _onboardingData[index]['image'],
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 20.h),
+                      Text(
+                        _onboardingData[index]['title'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                          color: textColor,
                         ),
-                        SizedBox(height: 20),
-                        Text(
-                          _onboardingData[index]['title'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.sp,
-                            color: textColor,
-                          ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 40.h),
+                        child: Text(
+                          _onboardingData[index]['description'],
+                          style: TextStyle(fontSize: 14.sp, color: textColor),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 10),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            _onboardingData[index]['description'],
-                            style: TextStyle(fontSize: 14.sp, color: textColor),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),
             ),
-
-            SizedBox(height: 20),
-
             SmoothPageIndicator(
               controller: _pageController,
               count: _onboardingData.length,
               effect: ExpandingDotsEffect(
+                dotHeight: 10.r,
+                dotWidth: 10.r,
+                radius: 20.r,
+                expansionFactor: 2.5,
                 activeDotColor: Color.fromRGBO(29, 172, 146, 1),
               ),
             ),
-
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             SizedBox(
-              width: 334,
-              height: 60,
+              width: double.infinity,
+              height: 50.h,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(29, 172, 146, 1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
                 onPressed: () {
@@ -131,29 +130,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ? 'Let\'s Begin'
                       : 'Next',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Color.fromRGBO(255, 255, 255, 1),
                   ),
                 ),
               ),
             ),
-
+            SizedBox(height: 20.h),
             TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
               child: Text(
                 'Sign In',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 15.sp,
                   color: textColor,
                   decoration: TextDecoration.underline,
                 ),
               ),
             ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
@@ -161,16 +161,4 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-Widget circularIndicator(bool isActive) {
-  return Container(
-    margin: EdgeInsets.symmetric(horizontal: 5),
-    width: isActive ? 12 : 10,
-    height: isActive ? 12 : 10,
-    decoration: BoxDecoration(
-      color: isActive
-          ? Color.fromRGBO(29, 172, 146, 1)
-          : Color.fromRGBO(210, 238, 233, 1),
-      borderRadius: BorderRadius.circular(10),
-    ),
-  );
-}
+
