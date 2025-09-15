@@ -1,4 +1,3 @@
-import 'package:clarity/view/register/register.dart';
 import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/login/login_screen.dart';
@@ -147,9 +146,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
                 );
               },
               child: Text(

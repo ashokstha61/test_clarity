@@ -119,8 +119,9 @@ class _SignInScreenState extends State<SignInScreen> {
         backgroundColor: Colors.black54,
         textStyle: TextStyle(
           color: Colors.white,
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
+          fontSize: 16.sp,
+
+          fontFamily: 'montserrat',
         ),
         borderRadius: BorderRadius.circular(0), // Makes it rectangular
         shapeBorder: RoundedRectangleBorder(
