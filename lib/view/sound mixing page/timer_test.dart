@@ -255,76 +255,81 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
             ),
             SizedBox(height: 40.h),
             Spacer(),
-            SizedBox(
-              height: 180.h,
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 25.sp),
-                      child: Image.asset(
-                        "assets/images/ellipse_mix_page.png",
-                        fit: BoxFit
-                            .cover, // adjust as needed (cover/contain/fill)
+
+            Transform.translate(
+              offset: Offset(0, 20),
+              child: SizedBox(
+                height: 180.h,
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      bottom: -50,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 25.sp),
+                        child: Image.asset(
+                          "assets/images/ellipse_mix_page.png",
+                          fit: BoxFit
+                              .cover, // adjust as needed (cover/contain/fill)
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: -5, // adjust for spacing from status bar
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: _togglePauseResume,
+                    Positioned(
+                      top: -5, // adjust for spacing from status bar
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _togglePauseResume,
 
-                          icon: Column(
-                            children: [
-                              Image.asset(
-                                _isPaused
-                                    ? "assets/images/playImage.png"
-                                    : "assets/images/pauseImage.png",
-                                width: 50.w,
-                                height: 50.h,
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                _isPaused ? 'Resume' : 'Pause',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.sp,
+                            icon: Column(
+                              children: [
+                                Image.asset(
+                                  _isPaused
+                                      ? "assets/images/playImage.png"
+                                      : "assets/images/pauseImage.png",
+                                  width: 50.w,
+                                  height: 50.h,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 4.h),
+                                Text(
+                                  _isPaused ? 'Resume' : 'Pause',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 20.w),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: Column(
-                            children: [
-                              Image.asset(
-                                "assets/images/quit.png",
-                                width: 50.w,
-                                height: 50.h,
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                'Quit',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.sp,
+                          SizedBox(width: 20.w),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Column(
+                              children: [
+                                Image.asset(
+                                  "assets/images/quit.png",
+                                  width: 50.w,
+                                  height: 50.h,
                                 ),
-                              ),
-                            ],
-                          ), // Go back to previous screen
-                        ),
-                      ],
+                                SizedBox(height: 4.h),
+                                Text(
+                                  'Quit',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
+                            ), // Go back to previous screen
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
