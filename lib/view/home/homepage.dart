@@ -8,7 +8,7 @@ import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:clarity/view/profile/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../Sound page/test2.dart';
+import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});

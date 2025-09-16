@@ -1,4 +1,5 @@
 import 'package:clarity/theme.dart';
+import 'package:clarity/view/Sound%20page/sound.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -115,7 +116,8 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
-                  onComplete: () {
+                  onComplete: () async{
+                    await AudioManager().pauseAll();
                     setState(() {
                       _isPaused = true;
                     });

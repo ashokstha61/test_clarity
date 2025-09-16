@@ -4,7 +4,7 @@ import 'package:clarity/model/model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import '../Sound page/test2.dart';
+import '../Sound page/sound.dart';
 
 import 'slider.dart';
 import 'timer_screen.dart';

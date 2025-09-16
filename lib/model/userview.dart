@@ -1,3 +1,5 @@
+//To be used in to fetch the user info from firebase and display it in profile page
+
 import 'package:clarity/model/usermodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

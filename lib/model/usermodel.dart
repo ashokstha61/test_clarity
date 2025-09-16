@@ -1,3 +1,5 @@
+
+//to be used to fetch user info from firebase and display it in profile page
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserModel {

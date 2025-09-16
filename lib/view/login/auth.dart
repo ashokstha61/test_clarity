@@ -54,12 +54,7 @@ class AuthService {
     }
   }
 
-  // Apple Sign-In (if you want to implement it later)
-  Future<User?> signInWithApple() async {
-    // Apple sign-in implementation would go here
-    // This requires additional setup with Apple Developer account
-    throw UnimplementedError('Apple sign-in not implemented yet');
-  }
+ 
 
   // Sign Out
   Future<void> signOut() async {

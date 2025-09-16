@@ -27,14 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 15),
-                //   child: CustomLoginButton(
-                //     label: 'Continue with Apple',
-                //     imagePath: 'assets/images/apple.png',
-                //     onPressed: () {},
-                //   ),
-                // ),
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -58,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Connect with Email',
                     imagePath: 'assets/images/email.png',
                     onPressed: () async {
-                     
                       Navigator.push(
                         context,
                         MaterialPageRoute(
