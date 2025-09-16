@@ -260,13 +260,11 @@ class _SoundPageState extends State<SoundPage> {
                       itemBuilder: (context, index) {
                         return Column(
                           children: [
-                            const Divider(height: 1),
                             SoundTile(
                               sound: _sounds[index],
                               onTap: () => _toggleSoundSelection(index),
                             ),
-                            if (index == _sounds.length - 1)
-                              const Divider(height: 1),
+                            Divider(height: 1),
                           ],
                         );
                       },

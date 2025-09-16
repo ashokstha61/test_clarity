@@ -18,12 +18,11 @@ class CustomListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     return ListTile(
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 18.sp,
+          fontSize: 14.sp,
 
           fontFamily: 'Montserrat',
           color: ThemeHelper.customListTileColor(context),

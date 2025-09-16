@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.main.clarity"
-    compileSdk = 35  // Updated to 35 for plugin compatibility
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId = "com.main.clarity"
-        minSdk = 23
-        targetSdk = 35 // Updated to match compileSdk
+        minSdk = 28
+        targetSdk = 37
         versionCode = flutter.versionCode?.toInt() ?: 1
         versionName = flutter.versionName ?: "1.0"
         multiDexEnabled = true
