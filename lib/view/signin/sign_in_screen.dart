@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clarity/globals.dart' as globals;

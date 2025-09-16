@@ -30,27 +30,6 @@ class AuthService {
     }
   }
 
-  // Future<User?> RegisterV({
-  //   required String fullName,
-  //   num phone,
-  //   required String email,
-  //   required String password,
-  //   required String conformPassword,
-
-  // }) async {
-  //   try {
-  //     final UserCredential result = await _auth.RegisterV(
-  //       fullName: fullName,
-  //       email: email,
-  //       phoneNo: phone,
-  //       password: password,
-  //       conformPassword:conformPassword,
-  //     );
-  //     return result.user;
-  //   } on FirebaseAuthException catch (e) {
-  //     throw _handleAuthException(e);
-  //   }
-  // }
 
   // Google Sign-In
   Future<User?> signInWithGoogle() async {

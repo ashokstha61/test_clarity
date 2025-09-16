@@ -270,7 +270,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                         child: Image.asset(
                           "assets/images/ellipse_mix_page.png",
                           fit: BoxFit
-                              .cover, // adjust as needed (cover/contain/fill)
+                              .fill, // adjust as needed (cover/contain/fill)
                         ),
                       ),
                     ),

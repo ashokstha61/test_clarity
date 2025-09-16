@@ -58,20 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Connect with Email',
                     imagePath: 'assets/images/email.png',
                     onPressed: () async {
-                      // String email = await _showEmailDialog();
-                      // String password = await _showPasswordDialog();
-                      // if (email.isNotEmpty && password.isNotEmpty) {
-                      //   User? user = await _authService.signInWithEmailAndPassword(email: email, password: password);
-                      //   if (user != null) {
-                      //     // Navigate to home or show success
-                      //   } else {
-                      //     // Show error message
-                      //   }
-                      // }
-                      // Navigator.pushReplacementNamed(
-                      //   // context,
-                      //   // MaterialPageRoute(builder: (_) => SignInScreen()),
-                      // );
+                     
                       Navigator.push(
                         context,
                         MaterialPageRoute(

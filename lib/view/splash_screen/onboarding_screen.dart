@@ -1,4 +1,3 @@
-import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -193,22 +193,7 @@ class _SoundPageState extends State<SoundPage> {
 
     // Sync AudioManager with the updated selection
     await AudioManager().syncPlayers(selected);
-    // } else {
-    //   // Select
-    //   if (!_sounds.any((s) => s.title == sound.title && s.isSelected)) {
-    //     setState(() {
-    //       _sounds[index] = _sounds[index].copyWith(isSelected: true);
-    //     });
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('${sound.title} is already selected')),
-    //     );
-    //     return;
-    //   }
-    // }
-
-    // final selected = _sounds.where((s) => s.isSelected).toList();
-    // AudioManager().syncPlayers(selected);
+    
   }
 
   Future<void> _playAllSelected() async {
