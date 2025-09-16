@@ -21,6 +21,7 @@ class CircularTimerScreen extends StatefulWidget {
 class _CircularTimerScreenState extends State<CircularTimerScreen> {
   final CountDownController _controller = CountDownController();
   bool _isPaused = false;
+  bool _isCompleted = false;
   void _togglePauseResume() {
     setState(() {
       if (_isPaused) {
@@ -50,10 +51,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                 top: 0,
                 child: Container(
                   padding: EdgeInsets.all(4),
-                  // decoration: BoxDecoration(
-                  //   color: Colors.red,
-                  //   shape: BoxShape.circle,
-                  // ),
+
                   child: Text(
                     "${widget.soundCount}", // count of selected sounds
                     style: TextStyle(
@@ -116,10 +114,11 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
-                  onComplete: () async{
+                  onComplete: () async {
                     await AudioManager().pauseAll();
                     setState(() {
                       _isPaused = true;
+                      _isCompleted = true;
                     });
                   },
                 ),
@@ -138,55 +137,66 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
             Spacer(),
 
             Transform.translate(
-              offset: Offset(0, 20),
+              offset: Offset(0, 20.h),
               child: SizedBox(
-                height: 180.h,
-                width: double.infinity,
+                height: 200.h,
+                // width: double.infinity,
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      bottom: -50,
+                      bottom: -70.sp,
                       child: Padding(
-                        padding: EdgeInsets.only(top: 25.sp),
+                        padding: EdgeInsets.only(top: 10.sp),
                         child: Image.asset(
                           "assets/images/ellipse_mix_page.png",
                           fit: BoxFit
-                              .fill, // adjust as needed (cover/contain/fill)
+                              .contain, // adjust as needed (cover/contain/fill)
+                          filterQuality: FilterQuality.high,
                         ),
                       ),
                     ),
                     Positioned(
-                      top: -5, // adjust for spacing from status bar
+                      top: 50, // adjust for spacing from status bar
                       left: 0,
                       right: 0,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            onPressed: _togglePauseResume,
+                          Opacity(
+                            opacity: _isCompleted ? 0.5 : 1.0,
+                            child: IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onPressed: _isCompleted
+                                  ? null
+                                  : _togglePauseResume,
 
-                            icon: Column(
-                              children: [
-                                Image.asset(
-                                  _isPaused
-                                      ? "assets/images/playImage.png"
-                                      : "assets/images/pauseImage.png",
-                                  width: 50.w,
-                                  height: 50.h,
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  _isPaused ? 'Play' : 'Pause',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14.sp,
+                              icon: Column(
+                                children: [
+                                  Image.asset(
+                                    _isPaused
+                                        ? "assets/images/playImage.png"
+                                        : "assets/images/pauseImage.png",
+                                    width: 50.w,
+                                    height: 50.h,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    _isPaused ? 'Play' : 'Pause',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.sp,
+                                      fontFamily: 'Montserrat',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(width: 20.w),
                           IconButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                             onPressed: () => _controller.reset(),
                             icon: Column(
                               children: [

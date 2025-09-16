@@ -1,47 +1,4 @@
-// import 'package:flutter/material.dart';
 
-// class ImageSliderThumb extends SliderComponentShape {
-//   final String imagePath;
-//   final double size;
-
-//   const ImageSliderThumb({required this.imagePath, this.size = 20});
-
-//   @override
-//   Size getPreferredSize(bool isEnabled, bool isDiscrete) => Size(size, size);
-
-//   @override
-//   void paint(
-//     PaintingContext context,
-//     Offset center, {
-//     required Animation<double> activationAnimation,
-//     required Animation<double> enableAnimation,
-//     required bool isDiscrete,
-//     required TextPainter labelPainter,
-//     required RenderBox parentBox,
-//     required SliderThemeData sliderTheme,
-//     required TextDirection textDirection,
-//     required double value,
-//     required double textScaleFactor,
-//     required Size sizeWithOverflow,
-//   }) {
-//     final canvas = context.canvas;
-//     final image = AssetImage(imagePath);
-//     final paintBounds = Rect.fromCenter(center: center, width: size, height: size);
-
-//     // Load the image
-//     image.resolve(const ImageConfiguration()).addListener(
-//       ImageStreamListener((info, _) {
-//         final imagePaint = Paint();
-//         canvas.drawImageRect(
-//           info.image,
-//           Rect.fromLTWH(0, 0, info.image.width.toDouble(), info.image.height.toDouble()),
-//           paintBounds,
-//           imagePaint,
-//         );
-//       }),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 
 class CustomImageThumbShape extends SliderComponentShape {

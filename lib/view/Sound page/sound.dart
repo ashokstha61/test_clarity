@@ -186,7 +186,7 @@ class _SoundPageState extends State<SoundPage> {
     //   // Deselect
     final sound = _sounds[index];
     setState(() {
-      _sounds[index].isSelected = !sound.isSelected;
+      sound.isSelected = !sound.isSelected;
     });
 
     final selected = _sounds.where((s) => s.isSelected).toList();

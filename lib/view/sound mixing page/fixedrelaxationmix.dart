@@ -118,32 +118,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     await AudioManager().adjustVolumes(_selectedSounds);
   }
 
-  // Future<void> _playAllSounds() async {
-  //   if (_selectedSounds.isEmpty || _isLoadingPlayback) return;
-
-  //   Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
-  //     if (mounted) {
-  //       setState(() => _isLoadingPlayback = true);
-  //       showLoading = true;
-  //     }
-  //   });
-
-  //   try {
-  //     await AudioManager().playAll();
-
-  //     loadingTimer.cancel();
-  //     if (mounted) {
-  //       setState(() {
-  //         _isLoadingPlayback = false;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error playing all sounds: $e');
-  //     loadingTimer.cancel();
-  //     setState(() => _isLoadingPlayback = false);
-  //     _showErrorSnackBar('Failed to play sounds');
-  //   }
-  // }
+  
 
   void _showErrorSnackBar(String message) {
     if (mounted) {
@@ -337,6 +312,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             color: Colors.white,
             fontSize: 12,
             fontWeight: FontWeight.w500,
+            fontFamily: 'Montserrat',
           ),
         ),
       ],
