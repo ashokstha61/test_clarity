@@ -1,80 +1,78 @@
+import 'dart:async';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-
 import '../sound mixing page/fixedrelaxationmix.dart';
-// import '../sound mixing page/relaxationmix test.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
 
-/// Singleton Audio Manager
 class AudioManager {
-  static final AudioManager _instance = AudioManager._internal();
-  factory AudioManager() => _instance;
-  AudioManager._internal();
-
   final Map<String, AudioPlayer> _players = {};
+  final Map<String, StreamSubscription<bool>> _subscriptions = {};
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
-  bool isPlaying = false;
-  List<String> selectedSoundTitles = []; // store selected sound titles
 
-  Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
-    selectedSoundTitles = selectedSounds.map((s) => s.title).toList();
-    // 1. Remove players not in selection
-    final keysToRemove = _players.keys
-        .where((key) => !selectedSounds.any((s) => s.title == key))
-        .toList();
-
-    for (final key in keysToRemove) {
-      final player = _players[key];
-      if (player != null) {
-        await player.pause();
-        await player.dispose();
-      }
-      _players.remove(key);
-    }
-
-    // 2. Add missing players
-    for (final sound in selectedSounds) {
-      final key = sound.title;
-      if (!_players.containsKey(key)) {
-        try {
-          final player = AudioPlayer();
-          await player.setAudioSource(
-            AudioSource.uri(Uri.parse(sound.musicUrl)),
-          );
-          await player.setLoopMode(LoopMode.one);
-          _players[key] = player;
-
-          // 👇 listen to each player's state
-          player.playingStream.listen((_) {
-            isPlayingNotifier.value = _players.values.any((p) => p.playing);
-          });
-
-          await player.play(); // auto-play
-        } catch (e) {
-          print("❌ Failed to initialize ${sound.title}: $e");
-        }
-      }
-    }
-
-    // 3. Adjust volumes
-    await adjustVolumes(selectedSounds);
-
-    // 4. Update notifier
-    isPlayingNotifier.value = _players.values.any((p) => p.playing);
-  }
+  List<String> selectedSoundTitles = [];
 
   bool isSelected(String title) {
     return selectedSoundTitles.contains(title);
   }
 
+  Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
+    selectedSoundTitles = selectedSounds.map((s) => s.title).toList();
+
+    // Remove players not in selection
+    final keysToRemove = _players.keys
+        .where((key) => !selectedSounds.any((s) => s.title == key))
+        .toList();
+
+    for (final key in keysToRemove) {
+      final player = _players.remove(key);
+      if (player != null) {
+        await player.pause();
+        await player.dispose();
+      }
+      await _subscriptions[key]?.cancel();
+      _subscriptions.remove(key);
+    }
+
+    // Add missing players in parallel
+    final futures = selectedSounds.map((sound) async {
+      final key = sound.title;
+      if (!_players.containsKey(key)) {
+        try {
+          final player = AudioPlayer();
+          _players[key] = player;
+
+          // Setup audio source and loop mode
+          await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+          await player.setLoopMode(LoopMode.one);
+
+          // Listen to player state
+          _subscriptions[key] = player.playingStream.listen((_) {
+            _updatePlayingState();
+          });
+
+          // Auto-play
+          await player.play();
+        } catch (e) {
+          debugPrint("❌ Failed to initialize ${sound.title}: $e");
+        }
+      }
+    });
+
+    // Wait for all players to finish initializing
+    await Future.wait(futures);
+
+    await adjustVolumes(selectedSounds);
+    _updatePlayingState();
+  }
+
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     final count = _players.length;
     if (count == 0) return;
-    final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
 
+    final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
     for (final sound in selectedSounds) {
       final player = _players[sound.title];
       if (player != null) {
@@ -85,49 +83,50 @@ class AudioManager {
   }
 
   Future<void> removeSound(String title) async {
-    final player = _players[title];
+    final player = _players.remove(title);
     if (player != null) {
       await player.pause();
       await player.dispose();
-      _players.remove(title);
     }
-
-    // FIX: Update notifier immediately after removing sound
+    await _subscriptions[title]?.cancel();
+    _subscriptions.remove(title);
     _updatePlayingState();
   }
 
   void _updatePlayingState() {
-    final hasPlayingSound = _players.values.any((player) => player.playing);
-    isPlaying = hasPlayingSound;
-    isPlayingNotifier.value = hasPlayingSound;
+    isPlayingNotifier.value = _players.values.any((p) => p.playing);
   }
 
-  // FIX: Add method to get current playing state
-  bool get hasPlayingSounds => _players.values.any((player) => player.playing);
-
-  // FIX: Add method to get active players count
-  int get activePlayersCount => _players.length;
-
   Future<void> playAll() async {
-    await Future.wait(
-      _players.values.map((p) async {
-        if (!p.playing) await p.play();
-      }),
-    );
+    await Future.wait(_players.values.map((p) async {
+      if (!p.playing) await p.play();
+    }));
     isPlayingNotifier.value = true;
   }
 
   Future<void> pauseAll() async {
-    await Future.wait(
-      _players.values.map((p) async {
-        if (p.playing) await p.pause();
-      }),
-    );
+    await Future.wait(_players.values.map((p) async {
+      if (p.playing) await p.pause();
+    }));
     isPlayingNotifier.value = false;
+  }
+
+  Future<void> dispose() async {
+    for (final sub in _subscriptions.values) {
+      await sub.cancel();
+    }
+    _subscriptions.clear();
+
+    for (final player in _players.values) {
+      await player.dispose();
+    }
+    _players.clear();
   }
 }
 
+
 /// UI Page
+
 class SoundPage extends StatefulWidget {
   const SoundPage({super.key});
 
@@ -137,6 +136,8 @@ class SoundPage extends StatefulWidget {
 
 class _SoundPageState extends State<SoundPage> {
   final DatabaseService _firebaseService = DatabaseService();
+  final AudioManager _audioManager = AudioManager(); // 👈 instance here
+
   static List<NewSoundModel>? _cachedSounds;
   List<NewSoundModel> _sounds = [];
   bool _isLoading = false;
@@ -145,13 +146,17 @@ class _SoundPageState extends State<SoundPage> {
   @override
   void initState() {
     super.initState();
-    // _loadSounds();
     if (_cachedSounds != null) {
-      // Use cached sounds if already loaded
       _sounds = _cachedSounds!;
     } else {
       _loadSounds();
     }
+  }
+
+  @override
+  void dispose() {
+    _audioManager.dispose(); // 👈 clean up players
+    super.dispose();
   }
 
   Future<void> _loadSounds() async {
@@ -162,11 +167,10 @@ class _SoundPageState extends State<SoundPage> {
 
     try {
       final sounds = await _firebaseService.fetchSoundData();
-      // Restore selected state
       for (var sound in sounds) {
-        sound.isSelected = AudioManager().isSelected(sound.title);
+        sound.isSelected = _audioManager.selectedSoundTitles.contains(sound.title);
       }
-      _cachedSounds = sounds; // save to cache
+      _cachedSounds = sounds;
 
       setState(() {
         _sounds = sounds;
@@ -181,27 +185,13 @@ class _SoundPageState extends State<SoundPage> {
   }
 
   void _toggleSoundSelection(int index) async {
-    // final sound = _sounds[index];
-    // if (sound.isSelected) {
-    //   // Deselect
     final sound = _sounds[index];
     setState(() {
-      _sounds[index].isSelected = !sound.isSelected;
+      sound.isSelected = !sound.isSelected;
     });
 
     final selected = _sounds.where((s) => s.isSelected).toList();
-
-    // Sync AudioManager with the updated selection
-    await AudioManager().syncPlayers(selected);
-    
-  }
-
-  Future<void> _playAllSelected() async {
-    await AudioManager().playAll();
-  }
-
-  Future<void> _pauseAllSelected() async {
-    await AudioManager().pauseAll();
+    await _audioManager.syncPlayers(selected);
   }
 
   @override
@@ -216,16 +206,9 @@ class _SoundPageState extends State<SoundPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                _errorMessage!,
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
+              Text(_errorMessage!, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loadSounds,
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: _loadSounds, child: const Text('Retry')),
             ],
           ),
         ),
@@ -241,39 +224,26 @@ class _SoundPageState extends State<SoundPage> {
             child: RefreshIndicator(
               onRefresh: _loadSounds,
               child: _sounds.isEmpty
-                  ? SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: SizedBox(
-                        height:
-                            MediaQuery.sizeOf(context).height - kToolbarHeight,
-                        child: const Center(
-                          child: Text(
-                            'No sounds available',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    )
+                  ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _sounds.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            SoundTile(
-                              sound: _sounds[index],
-                              onTap: () => _toggleSoundSelection(index),
-                            ),
-                            Divider(height: 1),
-                          ],
-                        );
-                      },
-                    ),
+                itemCount: _sounds.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      SoundTile(
+                        sound: _sounds[index],
+                        onTap: () => _toggleSoundSelection(index),
+                      ),
+                      const Divider(height: 1),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
           if (selectedSounds.isNotEmpty)
             ValueListenableBuilder<bool>(
-              valueListenable: AudioManager().isPlayingNotifier,
+              valueListenable: _audioManager.isPlayingNotifier,
               builder: (context, isPlaying, _) {
                 return RelaxationMixBar(
                   onArrowTap: () async {
@@ -292,22 +262,19 @@ class _SoundPageState extends State<SoundPage> {
                           ),
                           child: RelaxationMixPage(
                             sounds: _sounds,
-                            onSoundsChanged: (onSoundsChanged) {},
+                            onSoundsChanged: (newSounds) {},
                           ),
                         );
                       },
                     );
-
                     if (result != null) {
                       setState(() => _sounds = result);
-                      final selected = _sounds
-                          .where((s) => s.isSelected)
-                          .toList();
-                      await AudioManager().syncPlayers(selected);
+                      final selected = _sounds.where((s) => s.isSelected).toList();
+                      await _audioManager.syncPlayers(selected);
                     }
                   },
-                  onPlay: _playAllSelected,
-                  onPause: _pauseAllSelected,
+                  onPlay: _audioManager.playAll,
+                  onPause: _audioManager.pauseAll,
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,
                   isPlaying: isPlaying,
@@ -319,3 +286,4 @@ class _SoundPageState extends State<SoundPage> {
     );
   }
 }
+

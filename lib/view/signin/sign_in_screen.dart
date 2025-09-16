@@ -4,13 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clarity/globals.dart' as globals;
-
 import 'sign_in_view.dart';
-// import 'register_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -32,7 +28,6 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
- 
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -52,9 +47,6 @@ class _SignInScreenState extends State<SignInScreen> {
       final userID = result.user?.uid;
       if (userID == null) throw Exception("User ID is null");
 
-      // RevenueCat login
-      // await Purchases.logIn(userID);
-
       // Save login status
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool("isUserLoggedIn", true);
@@ -62,11 +54,6 @@ class _SignInScreenState extends State<SignInScreen> {
       if (!mounted) return;
 
       // Show success message
-      // showDialog(
-      //   context: context,
-      //   builder: (_) =>
-      //       AlertDialog(content: Center(child: Text("Login Successful"))),
-      // );
       showToast(
         "Login Successful",
         context: context,
@@ -86,7 +73,6 @@ class _SignInScreenState extends State<SignInScreen> {
           borderRadius: BorderRadius.circular(0), // Completely rectangular
         ),
       );
-
 
       // Wait for 2 seconds then redirect
       await Future.delayed(const Duration(seconds: 2));

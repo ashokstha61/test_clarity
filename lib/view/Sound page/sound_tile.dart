@@ -23,9 +23,10 @@ class SoundTile extends StatelessWidget {
           height: 53.h, // same height and width
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: const Color.fromRGBO(50, 67, 118, 1.000),
+                width: 2,
+                color: const Color.fromRGBO(176, 176, 224, 1),
               ),
               color: sound.isSelected
                   ? const Color.fromRGBO(176, 176, 224, 1)
@@ -58,7 +59,7 @@ class SoundTile extends StatelessWidget {
           ),
         ),
         trailing: sound.isSelected
-            ? const Icon(Icons.check, color: Colors.blue, size: 24)
+            ? const Icon(Icons.check, color: Colors.white, size: 24)
             : null,
       ),
     );
