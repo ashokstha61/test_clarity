@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../Sound page/AudioManager.dart';
+
 class CircularTimerScreen extends StatefulWidget {
   final int duration;
   final int soundCount; // in seconds

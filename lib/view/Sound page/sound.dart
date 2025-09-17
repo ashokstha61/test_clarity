@@ -2,130 +2,10 @@ import 'dart:async';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import '../sound mixing page/fixedrelaxationmix.dart';
+import 'AudioManager.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
-
-class AudioManager {
-  final Map<String, AudioPlayer> _players = {};
-  final Map<String, StreamSubscription<bool>> _subscriptions = {};
-  final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
-
-  List<String> selectedSoundTitles = [];
-
-  bool isSelected(String title) {
-    return selectedSoundTitles.contains(title);
-  }
-
-  Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
-    selectedSoundTitles = selectedSounds.map((s) => s.title).toList();
-
-    // Remove players not in selection
-    final keysToRemove = _players.keys
-        .where((key) => !selectedSounds.any((s) => s.title == key))
-        .toList();
-
-    for (final key in keysToRemove) {
-      final player = _players.remove(key);
-      if (player != null) {
-        await player.pause();
-        await player.dispose();
-      }
-      await _subscriptions[key]?.cancel();
-      _subscriptions.remove(key);
-    }
-
-    // Add missing players in parallel
-    final futures = selectedSounds.map((sound) async {
-      final key = sound.title;
-      if (!_players.containsKey(key)) {
-        try {
-          final player = AudioPlayer();
-          _players[key] = player;
-
-          // Setup audio source and loop mode
-          await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
-          await player.setLoopMode(LoopMode.one);
-
-          // Listen to player state
-          _subscriptions[key] = player.playingStream.listen((_) {
-            _updatePlayingState();
-          });
-
-          // Auto-play
-          await player.play();
-        } catch (e) {
-          debugPrint("❌ Failed to initialize ${sound.title}: $e");
-        }
-      }
-    });
-
-    // Wait for all players to finish initializing
-    await Future.wait(futures);
-
-    await adjustVolumes(selectedSounds);
-    _updatePlayingState();
-  }
-
-  Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
-    final count = _players.length;
-    if (count == 0) return;
-
-    final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
-    for (final sound in selectedSounds) {
-      final player = _players[sound.title];
-      if (player != null) {
-        final adjustedVolume = sound.volume * baseAdjustment;
-        await player.setVolume(adjustedVolume);
-      }
-    }
-  }
-
-  Future<void> removeSound(String title) async {
-    final player = _players.remove(title);
-    if (player != null) {
-      await player.pause();
-      await player.dispose();
-    }
-    await _subscriptions[title]?.cancel();
-    _subscriptions.remove(title);
-    _updatePlayingState();
-  }
-
-  void _updatePlayingState() {
-    isPlayingNotifier.value = _players.values.any((p) => p.playing);
-  }
-
-  Future<void> playAll() async {
-    await Future.wait(_players.values.map((p) async {
-      if (!p.playing) await p.play();
-    }));
-    isPlayingNotifier.value = true;
-  }
-
-  Future<void> pauseAll() async {
-    await Future.wait(_players.values.map((p) async {
-      if (p.playing) await p.pause();
-    }));
-    isPlayingNotifier.value = false;
-  }
-
-  Future<void> dispose() async {
-    for (final sub in _subscriptions.values) {
-      await sub.cancel();
-    }
-    _subscriptions.clear();
-
-    for (final player in _players.values) {
-      await player.dispose();
-    }
-    _players.clear();
-  }
-}
-
-
-/// UI Page
 
 class SoundPage extends StatefulWidget {
   const SoundPage({super.key});
@@ -151,6 +31,14 @@ class _SoundPageState extends State<SoundPage> {
     } else {
       _loadSounds();
     }
+    _audioManager.selectedTitlesNotifier.addListener(() {
+      final selectedTitles = _audioManager.selectedSoundTitles;
+      setState(() {
+        for (var sound in _sounds) {
+          sound.isSelected = selectedTitles.contains(sound.title);
+        }
+      });
+    });
   }
 
   @override
@@ -190,8 +78,13 @@ class _SoundPageState extends State<SoundPage> {
       sound.isSelected = !sound.isSelected;
     });
 
-    final selected = _sounds.where((s) => s.isSelected).toList();
-    await _audioManager.syncPlayers(selected);
+    if (sound.isSelected) {
+      final selected = _sounds.where((s) => s.isSelected).toList();
+      _audioManager.ensurePlayers(selected);
+      _audioManager.playSound(sound.title);
+    } else {
+      _audioManager.pauseSound(sound.title);
+    }
   }
 
   @override
@@ -267,14 +160,13 @@ class _SoundPageState extends State<SoundPage> {
                         );
                       },
                     );
-                    if (result != null) {
-                      setState(() => _sounds = result);
-                      final selected = _sounds.where((s) => s.isSelected).toList();
-                      await _audioManager.syncPlayers(selected);
-                    }
                   },
-                  onPlay: _audioManager.playAll,
-                  onPause: _audioManager.pauseAll,
+                  onPlay: () async {
+                    await _audioManager.playAll();
+                  },
+                  onPause: () async {
+                    await _audioManager.pauseAll();
+                  },
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,
                   isPlaying: isPlaying,
