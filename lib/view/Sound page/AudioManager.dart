@@ -68,8 +68,7 @@ class AudioManager {
     final player = _players[title];
     if (player != null && !player.playing) {
       await player.play();
-      _updatePlayingState();
-      _updateSelectedTitlesFromPlaying();
+      isPlayingNotifier.value = true;
     }
   }
 
@@ -77,8 +76,7 @@ class AudioManager {
     final player = _players[title];
     if (player != null && player.playing) {
       await player.pause();
-      _updatePlayingState();
-      _updateSelectedTitlesFromPlaying();
+      isPlayingNotifier.value = false;
     }
   }
 
@@ -86,16 +84,14 @@ class AudioManager {
     await Future.wait(_players.values.map((p) async {
       if (!p.playing) await p.play();
     }));
-    _updatePlayingState();
-    // _updateSelectedTitlesFromPlaying();
+    isPlayingNotifier.value = true;
   }
 
   Future<void> pauseAll() async {
     await Future.wait(_players.values.map((p) async {
       if (p.playing) await p.pause();
     }));
-    _updatePlayingState();
-    // _updateSelectedTitlesFromPlaying();
+    isPlayingNotifier.value = false;
   }
 
   /// Adjust volume based on number of playing sounds
@@ -112,21 +108,6 @@ class AudioManager {
         await player.setVolume(adjustedVolume);
       }
     }
-  }
-
-  void _updatePlayingState() {
-    isPlayingNotifier.value = _players.values.any((p) => p.playing);
-    debugPrint("isPlaying: ${isPlayingNotifier.value}");
-  }
-
-  void _updateSelectedTitlesFromPlaying() {
-    final playingTitles = _players.entries
-        .where((entry) => entry.value.playing)
-        .map((entry) => entry.key)
-        .toList();
-    selectedTitlesNotifier.value = playingTitles;
-
-    debugPrint("Selected from playing: $playingTitles");
   }
 
   void _updateSelectedTitles(List<NewSoundModel> selectedSounds) {
