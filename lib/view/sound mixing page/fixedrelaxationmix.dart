@@ -1,10 +1,7 @@
 import 'package:clarity/model/model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import '../Sound page/AudioManager.dart';
-import '../Sound page/sound.dart';
-
 import 'slider.dart';
 import 'timer_screen.dart';
 
@@ -312,14 +309,14 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           radius: 28,
           child: IconButton(
             icon: Icon(
-              isPlaying ? Icons.pause : Icons.play_arrow,
+              isSoundPlaying ? Icons.pause : Icons.play_arrow,
               size: 28,
               color: const Color.fromRGBO(18, 23, 42, 1),
             ),
             onPressed: _selectedSounds.isEmpty
             ? null
             : () {
-                if (isPlaying) {
+                if (isSoundPlaying) {
                   _audioManager.pauseAll();
                 } else {
                   _audioManager.playAll();

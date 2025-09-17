@@ -82,6 +82,7 @@ class _SoundPageState extends State<SoundPage> {
       final selected = _sounds.where((s) => s.isSelected).toList();
       _audioManager.ensurePlayers(selected);
       _audioManager.playSound(sound.title);
+      _audioManager.playAll();
     } else {
       _audioManager.pauseSound(sound.title);
     }
@@ -169,7 +170,7 @@ class _SoundPageState extends State<SoundPage> {
                   },
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,
-                  isPlaying: isPlaying,
+                  isPlaying: isSoundPlaying,
                 );
               },
             ),

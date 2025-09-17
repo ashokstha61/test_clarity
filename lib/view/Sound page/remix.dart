@@ -1,4 +1,3 @@
-import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,7 +16,7 @@ class RelaxationMixBar extends StatelessWidget {
     required this.onPause,
     required this.imagePath,
     required this.soundCount,
-    required this.isPlaying,
+    this.isPlaying = true,
   });
 
   @override

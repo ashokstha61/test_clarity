@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../model/model.dart';
 
+bool isSoundPlaying = false;
+
 class AudioManager {
   // Singleton
   static final AudioManager _instance = AudioManager._internal();
@@ -66,17 +68,18 @@ class AudioManager {
 
   Future<void> playSound(String title) async {
     final player = _players[title];
+    print(player);
     if (player != null && !player.playing) {
       await player.play();
-      isPlayingNotifier.value = true;
     }
+    isPlayingNotifier.value = true;
+    isSoundPlaying = true;
   }
 
   Future<void> pauseSound(String title) async {
     final player = _players[title];
     if (player != null && player.playing) {
       await player.pause();
-      isPlayingNotifier.value = false;
     }
   }
 
@@ -85,6 +88,7 @@ class AudioManager {
       if (!p.playing) await p.play();
     }));
     isPlayingNotifier.value = true;
+    isSoundPlaying = true;
   }
 
   Future<void> pauseAll() async {
@@ -92,6 +96,7 @@ class AudioManager {
       if (p.playing) await p.pause();
     }));
     isPlayingNotifier.value = false;
+    isSoundPlaying = false;
   }
 
   /// Adjust volume based on number of playing sounds
@@ -122,7 +127,7 @@ class AudioManager {
       await player.dispose();
     }
     _players.clear();
-    selectedTitlesNotifier.dispose();
-    isPlayingNotifier.dispose();
+    // selectedTitlesNotifier.dispose();
+    // isPlayingNotifier.dispose();
   }
 }
