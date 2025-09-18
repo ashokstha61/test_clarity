@@ -37,12 +37,6 @@ class _MyAccountPageState extends State<MyAccountPage> {
           .collection('users')
           .doc(user.uid)
           .get();
-      // if (doc.exists) {
-      //   final data = doc.data();
-      //   fullName = data?['fullName'] ?? user.displayName ?? 'No Name';
-      // } else {
-      //   fullName = user.displayName ?? 'No Name';
-      // }
       if (doc.exists) {
         final data = doc.data();
         final fetchedName = data?['fullName'];
@@ -56,8 +50,6 @@ class _MyAccountPageState extends State<MyAccountPage> {
       fullName = user.displayName ?? 'No Name';
       print("Error fetching user details: $e");
     }
-
-    setState(() {});
   }
 
   @override

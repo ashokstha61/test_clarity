@@ -33,6 +33,21 @@ class UserModel {
     );
   }
 
+  // Convert Firestore Map to UserModel
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      uid: map['uid'] ?? '',
+      email: map['email'],
+      providerId: map['providerId'] ?? 'Unknown',
+      creationDate: map['createdAt'] != null
+          ? (map['createdAt']).toDate()
+          : null,
+      lastSignInDate: map['lastSignInDate'] != null
+          ? (map['lastSignInDate']).toDate()
+          : null,
+    );
+  }
+
   // Helper: format date
   String formatDate(DateTime? date) {
     if (date == null) return "Unknown";
