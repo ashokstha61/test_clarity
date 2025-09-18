@@ -1,5 +1,7 @@
 import 'package:clarity/model/model.dart';
-import 'package:clarity/view/favourite/favouratepage.dart';
+import 'package:clarity/theme.dart';
+import 'package:clarity/view/favourite/favouratemanager.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
@@ -67,25 +69,101 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
   }
 
-  // Future<void> _addSoundToMix(NewSoundModel sound) async {
-  //   if (_selectedSounds.any((s) => s.title == sound.title)) {
-  //     _showErrorSnackBar('Sound already selected');
-  //     return;
-  //   }
+  Future<void> _saveMix() async {
+    if (_selectedSounds.isEmpty) {
+      _showErrorSnackBar('Please select at least one sound to save.');
+      return;
+    }
 
-  //   setState(() {
-  //     _recommendedSounds.removeWhere((s) => s.title == sound.title);
-  //     _selectedSounds.add(sound);
-  //   });
+    String? mixName = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        TextEditingController controller = TextEditingController();
+        return AlertDialog(
+          title: Column(
+            children: [
+              Text(
+                'Name Your Mix',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: ThemeHelper.textColor(context),
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Enter a name for your sound mix',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+            ],
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'My Sleep Mix',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              filled: true,
+              fillColor: Colors.grey[200],
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+          actionsAlignment:
+              MainAxisAlignment.spaceEvenly, // evenly spaced buttons
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
 
-  //   // Sync players: create missing players
-  //   await _audioManager.syncPlayers(_selectedSounds);
+    if (mixName == null || mixName.trim().isEmpty) {
+      _showErrorSnackBar('Please enter a valid name.');
+      return;
+    }
 
-  //   // Play the newly added sound
-  //   _audioManager.playSound(sound.title);
+    // Create a "mix" object using NewSoundModel
+    final mix = NewSoundModel(
+      title: mixName.trim(),
+      icon: 'mix_icon.png',
+      isSelected: true,
+      isFav: true,
+      isLocked: false,
+      isNew: false,
+      filepath: '', // optional placeholder
+      musicUrl: '',
+      volume: 1.0, // default volume
+    );
 
-  //   widget.onSoundsChanged(_buildUpdatedSounds());
-  // }
+    // Save to favorites page or local storage
+    FavoriteManager.instance.addFavorite(mix);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Mix "$mixName" saved successfully!'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   Future<void> _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.any((s) => s.title == sound.title)) {
       _showErrorSnackBar('Sound already selected');
@@ -315,14 +393,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   _buildControlButton(
                     imagePath: "assets/images/saveMix.png",
                     label: 'Save Mix',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Favouratepage(),
-                        ),
-                      );
-                    },
+                    onPressed: _saveMix,
                   ),
                 ],
               ),
