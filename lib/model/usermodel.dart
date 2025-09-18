@@ -1,4 +1,3 @@
-
 //to be used to fetch user info from firebase and display it in profile page
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -30,6 +29,19 @@ class UserModel {
       providerId: providerId,
       creationDate: metadata.creationTime,
       lastSignInDate: metadata.lastSignInTime,
+    );
+  }
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      uid: map['uid'] ?? '',
+      email: map['email'],
+      providerId: map['providerId'] ?? 'Unknown',
+      creationDate: map['createdAt'] != null
+          ? (map['createdAt']).toDate()
+          : null,
+      lastSignInDate: map['lastSignInDate'] != null
+          ? (map['lastSignInDate']).toDate()
+          : null,
     );
   }
 
