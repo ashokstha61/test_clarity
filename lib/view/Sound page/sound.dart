@@ -239,13 +239,13 @@ class _SoundPageState extends State<SoundPage> {
     print(trialEndDate.toString());
 
     if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate!)) {
+      if (!mounted) return;
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: const Text('Free Trial Ended'),
-          content: const Text(
-              'You have completed our 7-day free trail'),
+          content: const Text('You have completed our 7-day free trail'),
           actions: [
             TextButton(
               onPressed: () {

@@ -20,7 +20,7 @@ class AudioManager {
 
   bool isSelected(String title) => selectedSoundTitles.contains(title);
 
-   void saveVolume(String title, double volume) {
+  void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
   }
 
@@ -106,13 +106,13 @@ class AudioManager {
   }
 
   Future<void> playAll() async {
+    isPlayingNotifier.value = true;
+    isSoundPlaying = true;
     await Future.wait(
       _players.values.map((p) async {
         if (!p.playing) await p.play();
       }),
     );
-    isPlayingNotifier.value = true;
-    isSoundPlaying = true;
   }
 
   Future<void> pauseAll() async {
