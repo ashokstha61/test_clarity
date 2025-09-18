@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'fixedrelaxationmix.dart';
+import 'global_timer.dart';
+
 class CircularTimerScreen extends StatefulWidget {
   final int duration;
   final int soundCount; // in seconds
@@ -19,22 +22,57 @@ class CircularTimerScreen extends StatefulWidget {
 }
 
 class _CircularTimerScreenState extends State<CircularTimerScreen> {
-  final CountDownController _controller = CountDownController();
+  // final CountDownController _controller = CountDownController();
   bool _isPaused = false;
   bool _isCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!globalTimer.isRunning) {
+      globalTimer.duration = widget.duration;
+      globalTimer.startTime = DateTime.now();
+      globalTimer.isRunning = true;
+      globalTimer.isPaused = false;
+      globalTimer.pausedDuration = Duration.zero;
+    }
+
+    _isPaused = globalTimer.isPaused;
+  }
+
   void _togglePauseResume() {
+    // setState(() {
+    //   if (_isPaused) {
+    //     _controller.resume(); // Resume timer
+    //   } else {
+    //     _controller.pause(); // Pause timer
+    //   }
+    //   _isPaused = !_isPaused; // flip state
+    // });
     setState(() {
       if (_isPaused) {
-        _controller.resume(); // Resume timer
+        // Resume
+        globalTimer.controller.resume();
       } else {
-        _controller.pause(); // Pause timer
+        // Pause
+        globalTimer.controller.pause();
       }
-      _isPaused = !_isPaused; // flip state
+      _isPaused = !_isPaused;
+      globalTimer.isPaused = _isPaused;
     });
+  }
+
+  void _quitTimer() {
+    globalTimer.controller.reset();
+    globalTimer.isRunning = false;
+    globalTimer.isPaused = false;
+    globalTimer.pausedDuration = Duration.zero;
+    globalTimer.startTime = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final remainingTime = globalTimer.remaining;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ThemeHelper.timerBackgroundColor(context),
@@ -96,16 +134,21 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               alignment: Alignment.center,
               children: [
                 CircularCountDownTimer(
-                  duration: widget.duration, // 👈 use passed duration
-                  initialDuration: 0,
-                  controller: _controller,
+                  duration:
+                      globalTimer.duration ??
+                      widget.duration, // 👈 use passed duration
+                  // initialDuration: 0,
+                  initialDuration:
+                      (globalTimer.duration ?? widget.duration) - remainingTime,
+                  // controller: _controller,
+                  controller: globalTimer.controller,
                   width: 200.w,
                   height: 200.h,
                   ringColor: Colors.grey[800]!,
                   fillColor: Color(0xFFE5E5E5),
                   backgroundColor: Colors.transparent,
                   strokeWidth: 12,
-                  strokeCap: StrokeCap.round,
+                  strokeCap: StrokeCap.square,
                   textStyle: TextStyle(
                     fontSize: 20.sp,
                     color: ThemeHelper.iconAndTextColorRemix(context),
@@ -114,10 +157,19 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
+                  // isReverseAnimation: true,
+                  onChange: (time) {
+                    // Update remaining time dynamically
+                  },
                   onComplete: () async {
                     await AudioManager().pauseAll();
+                    // setState(() {
+                    //   _isPaused = true;
+                    //   _isCompleted = true;
+                    // });
+                    globalTimer.isRunning = false;
+                    globalTimer.isPaused = true;
                     setState(() {
-                      _isPaused = true;
                       _isCompleted = true;
                     });
                   },
@@ -195,9 +247,9 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                           ),
                           SizedBox(width: 20.w),
                           IconButton(
+                            // onPressed: () => _controller.reset(),
+                            onPressed: _quitTimer,
                             splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onPressed: () => _controller.reset(),
                             icon: Column(
                               children: [
                                 Image.asset(
@@ -214,7 +266,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                                   ),
                                 ),
                               ],
-                            ), // Go back to previous screen
+                            ),
                           ),
                         ],
                       ),
