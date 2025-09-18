@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'fixedrelaxationmix.dart';
 import 'global_timer.dart';
+import '../Sound page/AudioManager.dart';
 
 class CircularTimerScreen extends StatefulWidget {
   final int duration;

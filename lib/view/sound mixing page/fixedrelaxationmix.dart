@@ -1,5 +1,3 @@
-// Fixed RelaxationMixPage - Key fixes applied
-
 import 'package:clarity/model/model.dart';
 import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import 'dart:async';
 import '../Sound page/sound.dart';
 
 import 'global_timer.dart';
+import '../Sound page/AudioManager.dart';
 import 'slider.dart';
 import 'timer_screen.dart';
 import 'timer_test.dart';
@@ -29,6 +28,7 @@ class RelaxationMixPage extends StatefulWidget {
 class _RelaxationMixPageState extends State<RelaxationMixPage> {
   List<NewSoundModel> _selectedSounds = [];
   List<NewSoundModel> _recommendedSounds = [];
+  final AudioManager _audioManager = AudioManager();
   // bool _isLoadingPlayback = false;
   final bool _isLoadingRecommendedSounds = false;
   bool showLoading = false;
@@ -57,57 +57,44 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     super.initState();
     _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
-
-    AudioManager().syncPlayers(_selectedSounds);
   }
 
-  void _addSoundToMix(NewSoundModel sound) async {
+  Future<void> _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.any((s) => s.title == sound.title)) {
       _showErrorSnackBar('Sound already selected');
       return;
     }
 
     setState(() {
-      _selectedSounds = List.from(_selectedSounds)..add(sound);
       _recommendedSounds.removeWhere((s) => s.title == sound.title);
+      _selectedSounds.add(sound);
     });
 
-    await AudioManager().syncPlayers(List.from(_selectedSounds));
+    // Sync players: create missing players
+    await _audioManager.syncPlayers(_selectedSounds);
+
+    // Play the newly added sound
+    _audioManager.playSound(sound.title);
+
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  void _removeSoundFromMix(int index) async {
-    if (index < 0 || index >= _selectedSounds.length) return;
-
-    final removedSound = _selectedSounds[index];
-
+  Future<void> _removeSoundFromMix(NewSoundModel sound) async {
     try {
-      // First update UI to give immediate feedback
       setState(() {
-        _selectedSounds = List.from(_selectedSounds)..removeAt(index);
-        _recommendedSounds = List.from(_recommendedSounds)
-          ..add(removedSound.copyWith(isSelected: false));
+        _recommendedSounds.add(sound);
+        _selectedSounds.removeWhere((s) => s.title == sound.title);
       });
 
-      // Stop and remove the specific player
-      await AudioManager().removeSound(removedSound.title);
 
-      // Sync remaining sounds to ensure proper playback state
-      if (_selectedSounds.isNotEmpty) {
-        await AudioManager().syncPlayers(List.from(_selectedSounds));
-      }
+      _audioManager.pauseSound(sound.title);
+      await _audioManager.syncPlayers(_selectedSounds);
+
       widget.onSoundsChanged(_buildUpdatedSounds());
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
-      // Revert UI changes on error
-      setState(() {
-        _selectedSounds = List.from(_selectedSounds)
-          ..insert(index, removedSound);
-        _recommendedSounds.removeWhere((s) => s.title == removedSound.title);
-      });
     }
   }
-
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
     if (index >= _selectedSounds.length) return;
@@ -119,7 +106,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     });
 
     // Apply volume changes to audio players
-    await AudioManager().adjustVolumes(_selectedSounds);
+    _audioManager.adjustVolumes(_selectedSounds);
   }
 
   void _showErrorSnackBar(String message) {
@@ -354,7 +341,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
   Widget _buildPlaybackControls() {
     return ValueListenableBuilder<bool>(
-      valueListenable: AudioManager().isPlayingNotifier,
+      valueListenable: _audioManager.isPlayingNotifier,
       builder: (context, isPlaying, _) {
         return IconButton(
           splashColor: Colors.transparent,
@@ -363,6 +350,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             isPlaying ? "assets/images/pause.png" : "assets/images/play.png",
             height: 25.sp,
             width: 25.sp,
+
           ),
           onPressed: _selectedSounds.isEmpty
               ? null
@@ -452,7 +440,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         color: Color.fromRGBO(92, 67, 108, 1),
                       ),
                     ),
-                    onPressed: () => _removeSoundFromMix(index),
+                    onPressed: () => _removeSoundFromMix(sound),
                     child: const Icon(
                       Icons.close,
                       size: 16,

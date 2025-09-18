@@ -17,13 +17,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool isLoggedIn = true;
-  bool _isDarkMode = false;
+  // bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
-    final appState = MyApp.of(context);
-    if (appState != null) _isDarkMode = appState.isDarkMode;
+    // final appState = MyApp.of(context);
+    // if (appState != null) _isDarkMode = appState.isDarkMode;
   }
 
   void _logout(BuildContext context) {
