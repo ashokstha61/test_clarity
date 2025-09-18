@@ -11,6 +11,9 @@ import 'AudioManager.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
 
+bool _trialDialogShown = false;
+bool isTrial = true;
+
 class SoundPage extends StatefulWidget {
   const SoundPage({super.key});
 
@@ -29,6 +32,8 @@ class _SoundPageState extends State<SoundPage> {
   String? _errorMessage;
   Timer? _freeTrialTimer;
   bool isTrial = true;
+
+
   // bool _trialDialogShown = false;
 
   @override
@@ -47,6 +52,7 @@ class _SoundPageState extends State<SoundPage> {
         }
       });
     });
+
     loadUserInfo();
   }
 
@@ -134,19 +140,22 @@ class _SoundPageState extends State<SoundPage> {
               child: _sounds.isEmpty
                   ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-                      itemCount: _sounds.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            SoundTile(
-                              sound: _sounds[index],
-                              onTap: () => _toggleSoundSelection(index),
-                            ),
-                            const Divider(height: 1),
-                          ],
-                        );
-                      },
-                    ),
+
+                itemCount: _sounds.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      SoundTile(
+                        sound: _sounds[index],
+                        onTap: () => _toggleSoundSelection(index),
+                        isTrail: isTrial,
+                      ),
+                      const Divider(height: 1),
+                    ],
+                  );
+                },
+              ),
+
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -193,6 +202,7 @@ class _SoundPageState extends State<SoundPage> {
     );
   }
 
+
   Future<void> loadUserInfo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -223,7 +233,9 @@ class _SoundPageState extends State<SoundPage> {
 
     // Check every minute
     _freeTrialTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      _checkFreeTrialStatus(user);
+      if(isTrial){
+        _checkFreeTrialStatus(user);
+      }
     });
   }
 
@@ -239,23 +251,31 @@ class _SoundPageState extends State<SoundPage> {
     print(trialEndDate.toString());
 
     if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate!)) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Text('Free Trial Ended'),
-          content: const Text('You have completed our 7-day free trail'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // just pop for now
-              },
-              child: const Text('Upgrade'),
-            ),
-          ],
-        ),
-      );
+      setState(() {
+        isTrial = false;
+      });
+
+      if (!_trialDialogShown) {
+        _trialDialogShown = true;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text('Free Trial Ended'),
+            content: const Text( 'You have completed our 7-day free trail'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Upgrade'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 }
+
+
