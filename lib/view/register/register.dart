@@ -216,6 +216,7 @@
 //   }
 // }
 
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -384,57 +385,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // Helper to build TextField with optional password toggle
-  // Widget _buildTextField(
-  //   TextEditingController controller,
-  //   String label,
-  //   bool isDarkMode, {
-  //   bool obscureText = false,
-  //   bool isPasswordField = false,
-  //   VoidCallback? onTogglePassword,
-  //   bool isPasswordVisible = false,
-  //   TextInputType? keyboardType,
-  // }) {
-  //   return TextField(
-  //     controller: controller,
-  //     obscureText: obscureText,
-  //     keyboardType: keyboardType,
-  //     style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-  //     decoration: InputDecoration(
-  //       filled: true,
-  //       fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-  //       labelText: label,
-  //       labelStyle: TextStyle(
-  //         color: isDarkMode ? Colors.white70 : Colors.black54,
-  //       ),
-  //       border: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(8),
-  //         borderSide: BorderSide(
-  //           color: isDarkMode ? Colors.white54 : Colors.black26,
-  //         ),
-  //       ),
-  //       suffixIcon: isPasswordField
-  //           ? IconButton(
-  //               icon: Icon(
-  //                 isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-  //                 color: isDarkMode ? Colors.white : Colors.black,
-  //               ),
-  //               onPressed: onTogglePassword,
-  //             )
-  //           : null,
-  //     ),
-  //   );
-  // }
-
-
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: ThemeHelper.registerColor(context),
       body: Stack(
         children: [
           SafeArea(
@@ -448,7 +405,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
+                      color: ThemeHelper.registerTextColor(context),
                     ),
                     textAlign: TextAlign.start,
                   ),
@@ -557,19 +514,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-
 Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool isDarkMode, {
-      bool obscureText = false,
-      bool isPasswordField = false,
-      VoidCallback? onTogglePassword,
-      bool isPasswordVisible = false,
-      TextInputType? keyboardType,
-      Color? borderColor,
-      List<TextInputFormatter>? inputFormatters, // new parameter
-    }) {
+  TextEditingController controller,
+  String label,
+  bool isDarkMode, {
+  bool obscureText = false,
+  bool isPasswordField = false,
+  VoidCallback? onTogglePassword,
+  bool isPasswordVisible = false,
+  TextInputType? keyboardType,
+  Color? borderColor,
+  List<TextInputFormatter>? inputFormatters, // new parameter
+}) {
   return TextField(
     controller: controller,
     obscureText: obscureText,
@@ -585,18 +541,17 @@ Widget _buildTextField(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(
-          color:
-          borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+          color: borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
         ),
       ),
       suffixIcon: isPasswordField
           ? IconButton(
-        icon: Icon(
-          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-          color: isDarkMode ? Colors.white : Colors.black,
-        ),
-        onPressed: onTogglePassword,
-      )
+              icon: Icon(
+                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              onPressed: onTogglePassword,
+            )
           : null,
     ),
   );
