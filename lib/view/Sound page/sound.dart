@@ -223,7 +223,9 @@ class _SoundPageState extends State<SoundPage> {
 
     // Check every minute
     _freeTrialTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      _checkFreeTrialStatus(user);
+      if(isTrial){
+        _checkFreeTrialStatus(user);
+      }
     });
   }
 
