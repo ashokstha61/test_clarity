@@ -12,6 +12,7 @@ class AudioManager {
   AudioManager._internal();
 
   final Map<String, AudioPlayer> _players = {};
+  final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
 
@@ -27,7 +28,9 @@ class AudioManager {
         try {
           final player = AudioPlayer();
           _players[key] = player;
-          await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+          await player.setAudioSource(
+            AudioSource.uri(Uri.parse(sound.musicUrl)),
+          );
           await player.setLoopMode(LoopMode.one);
           await player.setVolume(1);
         } catch (e) {
@@ -62,8 +65,23 @@ class AudioManager {
       }
     }
 
+    // Restore saved volumes
+    for (final sound in selectedSounds) {
+      final savedVolume = getSavedVolume(
+        sound.title,
+        defaultValue: sound.volume.toDouble(),
+      );
+      sound.volume = savedVolume; // ✅ update model
+      _volumeMap[sound.title] = savedVolume;
+      await _players[sound.title]?.setVolume(savedVolume);
+    }
+
     _updateSelectedTitles(selectedSounds);
     await adjustVolumes(selectedSounds);
+  }
+
+  double getSavedVolume(String title, {double defaultValue = 0.8}) {
+    return _volumeMap[title] ?? defaultValue;
   }
 
   Future<void> playSound(String title) async {
@@ -84,40 +102,40 @@ class AudioManager {
   }
 
   Future<void> playAll() async {
-    await Future.wait(_players.values.map((p) async {
-      if (!p.playing) await p.play();
-    }));
+    await Future.wait(
+      _players.values.map((p) async {
+        if (!p.playing) await p.play();
+      }),
+    );
     isPlayingNotifier.value = true;
     isSoundPlaying = true;
   }
 
   Future<void> pauseAll() async {
-    await Future.wait(_players.values.map((p) async {
-      if (p.playing) await p.pause();
-    }));
+    await Future.wait(
+      _players.values.map((p) async {
+        if (p.playing) await p.pause();
+      }),
+    );
     isPlayingNotifier.value = false;
     isSoundPlaying = false;
   }
 
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
-    final count = selectedSounds.length;
-    if (count == 0) return;
-
-    final baseAdjustment = count > 1 ? 0.8 / count : 1.0;
-
-    for (final sound in selectedSounds) {
-      final player = _players[sound.title];
+    for (final s in selectedSounds) {
+      final player = _players[s.title];
       if (player != null) {
-        final adjustedVolume = sound.volume * baseAdjustment;
-        await player.setVolume(adjustedVolume);
+        _volumeMap[s.title] = s.volume.toDouble();
+        await player.setVolume(
+          s.volume.toDouble(),
+        ); // use the actual slider value
       }
     }
   }
 
   void _updateSelectedTitles(List<NewSoundModel> selectedSounds) {
-    selectedTitlesNotifier.value =
-        selectedSounds.map((s) => s.title).toList();
+    selectedTitlesNotifier.value = selectedSounds.map((s) => s.title).toList();
 
     debugPrint("Selected from sync: ${selectedTitlesNotifier.value}");
   }

@@ -3,9 +3,6 @@ import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
-
-import '../Sound page/sound.dart';
-
 import 'global_timer.dart';
 import '../Sound page/AudioManager.dart';
 import 'slider.dart';
@@ -55,26 +52,64 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   @override
   void initState() {
     super.initState();
-    _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    _selectedSounds = widget.sounds
+        .where((s) => s.isSelected)
+        .map(
+          (s) => s.copyWith(
+            volume: _audioManager.getSavedVolume(
+              s.title,
+              defaultValue: s.volume.toDouble(),
+            ),
+          ),
+        )
+        .toList();
+    // _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
   }
 
+  // Future<void> _addSoundToMix(NewSoundModel sound) async {
+  //   if (_selectedSounds.any((s) => s.title == sound.title)) {
+  //     _showErrorSnackBar('Sound already selected');
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     _recommendedSounds.removeWhere((s) => s.title == sound.title);
+  //     _selectedSounds.add(sound);
+  //   });
+
+  //   // Sync players: create missing players
+  //   await _audioManager.syncPlayers(_selectedSounds);
+
+  //   // Play the newly added sound
+  //   _audioManager.playSound(sound.title);
+
+  //   widget.onSoundsChanged(_buildUpdatedSounds());
+  // }
   Future<void> _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.any((s) => s.title == sound.title)) {
       _showErrorSnackBar('Sound already selected');
       return;
     }
 
+    // Ensure new sounds start with a reasonable volume (say 0.8)
+    final normalizedSound = sound.copyWith(
+      volume: sound.volume > 0 ? sound.volume : 0.8,
+    );
+
     setState(() {
-      _recommendedSounds.removeWhere((s) => s.title == sound.title);
-      _selectedSounds.add(sound);
+      _recommendedSounds.removeWhere((s) => s.title == normalizedSound.title);
+      _selectedSounds.add(normalizedSound);
     });
 
     // Sync players: create missing players
     await _audioManager.syncPlayers(_selectedSounds);
 
+    // Apply correct volume right away
+    await _audioManager.adjustVolumes(_selectedSounds);
+
     // Play the newly added sound
-    _audioManager.playSound(sound.title);
+    _audioManager.playSound(normalizedSound.title);
 
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
@@ -86,7 +121,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         _selectedSounds.removeWhere((s) => s.title == sound.title);
       });
 
-
       _audioManager.pauseSound(sound.title);
       await _audioManager.syncPlayers(_selectedSounds);
 
@@ -95,6 +129,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _showErrorSnackBar('Failed to remove sound: $e');
     }
   }
+
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
     if (index >= _selectedSounds.length) return;
@@ -244,15 +279,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     imagePath: "assets/images/timer_button.png",
                     label: 'Timer',
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => TimerScreen(
-                      //       // onTimerSelected: (Duration) {},
-                      //       soundCount: _selectedSounds.length,
-                      //     ),
-                      //   ),
-                      // );
                       if (globalTimer.isRunning && globalTimer.remaining > 0) {
                         // Timer already running → go back to same timer
                         Navigator.push(
@@ -350,7 +376,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             isPlaying ? "assets/images/pause.png" : "assets/images/play.png",
             height: 25.sp,
             width: 25.sp,
-
           ),
           onPressed: _selectedSounds.isEmpty
               ? null
@@ -508,7 +533,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         width: size,
         height: size,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size),
       );
     }
 

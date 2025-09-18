@@ -56,7 +56,9 @@ class _SoundPageState extends State<SoundPage> {
     try {
       final sounds = await _firebaseService.fetchSoundData();
       for (var sound in sounds) {
-        sound.isSelected = _audioManager.selectedSoundTitles.contains(sound.title);
+        sound.isSelected = _audioManager.selectedSoundTitles.contains(
+          sound.title,
+        );
       }
       _cachedSounds = sounds;
 
@@ -102,7 +104,10 @@ class _SoundPageState extends State<SoundPage> {
             children: [
               Text(_errorMessage!, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
-              ElevatedButton(onPressed: _loadSounds, child: const Text('Retry')),
+              ElevatedButton(
+                onPressed: _loadSounds,
+                child: const Text('Retry'),
+              ),
             ],
           ),
         ),
@@ -120,19 +125,19 @@ class _SoundPageState extends State<SoundPage> {
               child: _sounds.isEmpty
                   ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-                itemCount: _sounds.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      SoundTile(
-                        sound: _sounds[index],
-                        onTap: () => _toggleSoundSelection(index),
-                      ),
-                      const Divider(height: 1),
-                    ],
-                  );
-                },
-              ),
+                      itemCount: _sounds.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            SoundTile(
+                              sound: _sounds[index],
+                              onTap: () => _toggleSoundSelection(index),
+                            ),
+                            const Divider(height: 1),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -141,7 +146,7 @@ class _SoundPageState extends State<SoundPage> {
               builder: (context, isPlaying, _) {
                 return RelaxationMixBar(
                   onArrowTap: () async {
-                    final result = await showModalBottomSheet(
+                    await showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
@@ -179,4 +184,3 @@ class _SoundPageState extends State<SoundPage> {
     );
   }
 }
-
