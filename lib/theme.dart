@@ -87,11 +87,18 @@ class ThemeHelper {
 
   static Color registerColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : const Color.fromRGBO(41, 41, 102, 1.0);
+        ? const Color.fromRGBO(41, 41, 102, 1.0):Colors.white;
+
   }
 
   static Color registerTextColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white : Colors.black;
+  }
+  static Color loginAndRegisterTitleColor(BuildContext context){
+    return Theme.of(context).brightness==Brightness.dark?Colors.white : Colors.black;
+  }
+  static Color registerBackgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white : Colors.black;
   }
