@@ -214,7 +214,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             ),
             Container(
               height: 150,
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              padding: EdgeInsets.all(16.0.sp),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -238,21 +238,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildControlButton(
                     imagePath: "assets/images/timer_button.png",
                     label: 'Timer',
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => TimerScreen(
-                      //       // onTimerSelected: (Duration) {},
-                      //       soundCount: _selectedSounds.length,
-                      //     ),
-                      //   ),
-                      // );
                       if (globalTimer.isRunning && globalTimer.remaining > 0) {
                         // Timer already running → go back to same timer
                         Navigator.push(
@@ -266,6 +257,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             ),
                           ),
                         );
+
                       } else {
                         // Start a fresh timer
                         Navigator.push(
@@ -277,6 +269,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         );
                       }
                     },
+                    leading: 35.w
                   ),
                   _buildPlaybackControls(),
                   _buildControlButton(
@@ -289,7 +282,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                           builder: (context) => Favouratepage(),
                         ),
                       );
-                    },
+                    }, leading: 30.w,
                   ),
                 ],
               ),
@@ -304,35 +297,46 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     required String imagePath,
     required String label,
     required VoidCallback onPressed,
+    required double leading,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        SizedBox(
-          width: 60.w,
-          height: 60.h,
-          child: ClipOval(
-            child: IconButton(
-              icon: Image.asset(
-                imagePath,
-                height: 100.h,
-                width: 100.h,
-                fit: BoxFit.cover,
-              ),
-
-              onPressed: onPressed,
-              padding: EdgeInsets.zero,
+      GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        height: 110.h,
+        width: 110.h,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black38, // shadow color
+              blurRadius: 5,
+              spreadRadius: -20,// spread of the shadow
+              offset: Offset(-6.2, -5.7),  // position of the shadow
             ),
+          ],
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.cover, // fills circle without transparent space
           ),
         ),
+      ),
+    ),
 
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Montserrat',
+    Positioned(
+          top: 90,
+          left: leading,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Montserrat',
+            ),
           ),
         ),
       ],
