@@ -134,8 +134,6 @@ flutter:
     - assets/images/pauseImage.png
     - assets/images/playImage.png
     - assets/images/saveMix.png
-    - assets/images/timer_button3x.png
-    - assets/images/saveMix3x.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
