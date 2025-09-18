@@ -266,7 +266,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
+                    color:  Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
