@@ -20,6 +20,10 @@ class AudioManager {
 
   bool isSelected(String title) => selectedSoundTitles.contains(title);
 
+   void saveVolume(String title, double volume) {
+    _volumeMap[title] = volume;
+  }
+
   /// Create players only if they don't exist
   Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
     final futures = sounds.map((sound) async {
@@ -80,7 +84,7 @@ class AudioManager {
     await adjustVolumes(selectedSounds);
   }
 
-  double getSavedVolume(String title, {double defaultValue = 0.8}) {
+  double getSavedVolume(String title, {double defaultValue = 1.0}) {
     return _volumeMap[title] ?? defaultValue;
   }
 

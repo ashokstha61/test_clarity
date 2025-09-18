@@ -107,6 +107,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
+    _audioManager.saveVolume(
+      normalizedSound.title,
+      normalizedSound.volume.toDouble(),
+    );
 
     // Play the newly added sound
     _audioManager.playSound(normalizedSound.title);
@@ -122,6 +126,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       });
 
       _audioManager.pauseSound(sound.title);
+      _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
       await _audioManager.syncPlayers(_selectedSounds);
 
       widget.onSoundsChanged(_buildUpdatedSounds());
@@ -139,9 +144,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
+    _audioManager.saveVolume(_selectedSounds[index].title, volume);
 
     // Apply volume changes to audio players
-    _audioManager.adjustVolumes(_selectedSounds);
+    await _audioManager.adjustVolumes(_selectedSounds);
+    widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
   void _showErrorSnackBar(String message) {
@@ -266,7 +273,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color:  Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
+                    color: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
