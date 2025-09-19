@@ -182,6 +182,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     // Sync players: create missing players
     await _audioManager.syncPlayers(_selectedSounds);
+    if (_selectedSounds.isNotEmpty)
+      setState(() {
+        isSoundPlaying = true;
+      });
+
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
@@ -206,6 +211,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _audioManager.pauseSound(sound.title);
       _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
       await _audioManager.syncPlayers(_selectedSounds);
+      if (_selectedSounds.isEmpty)
+        setState(() {
+          isSoundPlaying = false;
+        });
+
 
       widget.onSoundsChanged(_buildUpdatedSounds());
     } catch (e) {
@@ -358,7 +368,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildControlButton(
                     imagePath: "assets/images/timer_button.png",
@@ -388,7 +398,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         );
                       }
                     },
-                    leading: 35.w,
+                    leading: 32.w,
                   ),
                   _buildPlaybackControls(),
                   _buildControlButton(
@@ -396,7 +406,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     label: 'Save Mix',
 
                     onPressed: _saveMix,
-                    leading: 30.w,
+                    leading: 25.w,
                   ),
                 ],
               ),
@@ -461,23 +471,28 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     return ValueListenableBuilder<bool>(
       valueListenable: _audioManager.isPlayingNotifier,
       builder: (context, isPlaying, _) {
-        return IconButton(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          icon: Image.asset(
-            isPlaying ? "assets/images/pause.png" : "assets/images/play.png",
-            height: 25.sp,
-            width: 25.sp,
-          ),
-          onPressed: _selectedSounds.isEmpty
-              ? null
-              : () async {
-                  if (isPlaying) {
-                    await AudioManager().pauseAll();
-                  } else {
-                    await AudioManager().playAll();
-                  }
-                },
+        return Column(
+          children: [
+            SizedBox(height: 25.h,),
+            IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Image.asset(
+                isSoundPlaying ? "assets/images/pause.png" : "assets/images/play.png",
+                height: 25.sp,
+                width: 25.sp,
+              ),
+              onPressed: _selectedSounds.isEmpty
+                  ? null
+                  : () async {
+                      if (isSoundPlaying) {
+                        await AudioManager().pauseAll();
+                      } else {
+                        await AudioManager().playAll();
+                      }
+                    },
+            ),
+          ],
         );
       },
     );
