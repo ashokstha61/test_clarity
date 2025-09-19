@@ -24,8 +24,6 @@ class SignInView extends StatefulWidget {
 }
 
 class _SignInViewState extends State<SignInView> {
-
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode =
@@ -70,10 +68,10 @@ class _SignInViewState extends State<SignInView> {
               widget.passwordController,
               "Password",
               isDarkMode,
-              obscureText: ! widget.isPasswordVisible,
+              obscureText: !widget.isPasswordVisible,
               isPasswordField: true,
-              isPasswordVisible:  widget.isPasswordVisible,
-              onTogglePassword:  widget.onTogglePassword,
+              isPasswordVisible: widget.isPasswordVisible,
+              onTogglePassword: widget.onTogglePassword,
             ),
             const SizedBox(height: 20),
 
@@ -89,7 +87,10 @@ class _SignInViewState extends State<SignInView> {
                   ),
                 ),
                 onPressed: widget.onLogin,
-                child: const Text("Login", style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  "Login",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -123,17 +124,17 @@ class _SignInViewState extends State<SignInView> {
 }
 
 Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool isDarkMode, {
-      bool obscureText = false,
-      bool isPasswordField = false,
-      VoidCallback? onTogglePassword,
-      bool isPasswordVisible = false,
-      TextInputType? keyboardType,
-      Color? borderColor,
-      List<TextInputFormatter>? inputFormatters,
-    }) {
+  TextEditingController controller,
+  String label,
+  bool isDarkMode, {
+  bool obscureText = false,
+  bool isPasswordField = false,
+  VoidCallback? onTogglePassword,
+  bool isPasswordVisible = false,
+  TextInputType? keyboardType,
+  Color? borderColor,
+  List<TextInputFormatter>? inputFormatters,
+}) {
   return TextField(
     controller: controller,
     obscureText: obscureText,
@@ -155,12 +156,12 @@ Widget _buildTextField(
       ),
       suffixIcon: isPasswordField
           ? IconButton(
-        icon: Icon(
-          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-          color: isDarkMode ? Colors.white : Colors.black,
-        ),
-        onPressed: onTogglePassword,
-      )
+              icon: Icon(
+                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              onPressed: onTogglePassword,
+            )
           : null,
     ),
   );
