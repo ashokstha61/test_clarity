@@ -481,6 +481,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        overlayColor:
+                            Colors.transparent, // 👈 removes ripple/animation
+                        splashFactory:
+                            NoSplash.splashFactory, // 👈 removes splash
+                      ),
                       child: const Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
@@ -537,6 +543,9 @@ Widget _buildTextField(
       labelText: label,
       labelStyle: TextStyle(
         color: isDarkMode ? Colors.white70 : Colors.black54,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: isDarkMode ? Colors.grey : Colors.black,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),

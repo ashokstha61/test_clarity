@@ -1,10 +1,7 @@
 import 'package:clarity/theme.dart';
-import 'package:clarity/view/Sound%20page/sound.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'fixedrelaxationmix.dart';
 import 'global_timer.dart';
 import '../Sound page/AudioManager.dart';
 
@@ -73,6 +70,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     final remainingTime = globalTimer.remaining;
     return Scaffold(
       appBar: AppBar(
@@ -111,7 +109,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               color: ThemeHelper.iconAndTextColorRemix(context),
             ),
             onPressed: () {
-              Navigator.pop(context); // Close the modal
+              
             },
           ),
         ],
@@ -247,11 +245,13 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                             ),
                           ),
                           SizedBox(width: 20.w),
-                          IconButton(
+                          InkWell(
                             // onPressed: () => _controller.reset(),
-                            onPressed: _quitTimer,
+                            onTap: _quitTimer,
                             splashColor: Colors.transparent,
-                            icon: Column(
+                            highlightColor: Colors.transparent,
+                            splashFactory: NoSplash.splashFactory,
+                            child: Column(
                               children: [
                                 Image.asset(
                                   "assets/images/quit.png",

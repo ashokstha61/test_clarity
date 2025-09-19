@@ -40,7 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -79,6 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
                       backgroundColor: Color.fromARGB(255, 157, 157, 190),
+                      overlayColor:
+                          Colors.transparent, // 👈 removes ripple/animation
+                      splashFactory: NoSplash.splashFactory,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0.r),
                       ),
@@ -118,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
-                    const LegalDocumentsPage(type: DocumentType.faq),
+                        const LegalDocumentsPage(type: DocumentType.faq),
                   ),
                 );
               },
@@ -172,10 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     content: const Text(
                       "Are you sure you want to log out?",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
                     ),
                     actionsPadding: EdgeInsets.zero,
                     actions: [
@@ -183,7 +182,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(false), // Cancel
+                            onPressed: () =>
+                                Navigator.of(ctx).pop(false), // Cancel
                             child: const Text(
                               "Cancel",
                               style: TextStyle(
@@ -193,7 +193,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(true), // Confirm
+                            onPressed: () =>
+                                Navigator.of(ctx).pop(true), // Confirm
                             child: const Text(
                               "Logout",
                               style: TextStyle(
@@ -213,7 +214,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
               },
             ),
-
           ],
         ),
       ),

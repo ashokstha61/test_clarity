@@ -35,7 +35,7 @@ class _SignInViewState extends State<SignInView> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: ThemeHelper.iconColorRemix(context),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: ThemeHelper.backgroundColor(context),
@@ -100,6 +100,11 @@ class _SignInViewState extends State<SignInView> {
             Center(
               child: TextButton(
                 onPressed: widget.onRegister,
+                style: TextButton.styleFrom(
+                  overlayColor:
+                      Colors.transparent, // 👈 removes ripple/animation
+                  splashFactory: NoSplash.splashFactory, // 👈 removes splash
+                ),
                 child: const Text.rich(
                   TextSpan(
                     text: "Don't have an account? ",
@@ -148,6 +153,10 @@ Widget _buildTextField(
       labelText: label,
       labelStyle: TextStyle(
         color: isDarkMode ? Colors.white70 : Colors.black54,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: isDarkMode ? Colors.grey : Colors.black,
+        fontWeight: FontWeight.bold,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),

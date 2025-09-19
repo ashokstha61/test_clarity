@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body: Column(
         children: [
           SizedBox(height: 60),
@@ -48,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: CustomLoginButton(
                     label: 'Connect with Email',
-                    imagePath: 'assets/images/email.png',
+                    imagePath: 'assets/images/mail.png',
                     onPressed: () async {
                       Navigator.push(
                         context,
