@@ -1,3 +1,4 @@
+import 'package:clarity/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -30,14 +31,14 @@ class _SignInViewState extends State<SignInView> {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: ThemeHelper.backgroundColor(context),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: isDarkMode ? Colors.white : Colors.black,
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Colors.black87,
+        backgroundColor: ThemeHelper.backgroundColor(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -49,7 +50,7 @@ class _SignInViewState extends State<SignInView> {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: ThemeHelper.loginAndRegisterTitleColor(context),
               ),
             ),
             const SizedBox(height: 30),
