@@ -1,5 +1,6 @@
 import 'package:clarity/main.dart';
 import 'package:clarity/theme.dart';
+import 'package:clarity/view/login/auth.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:clarity/view/profile/legal_documents_page.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool isLoggedIn = true;
+
   // bool _isDarkMode = false;
 
   @override
@@ -29,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _logout(BuildContext context) {
     // Clear global user info
     setState(() {
-      isLoggedIn = false;
+      AuthService().signOut();
     });
 
     // Navigate to login screen

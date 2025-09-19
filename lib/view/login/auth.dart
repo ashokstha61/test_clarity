@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+bool isLoggedIn = false ;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final prefs = SharedPreferences.getInstance();
 
   // Stream to listen to authentication state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -12,7 +16,7 @@ class AuthService {
   User? get currentUser => _auth.currentUser;
 
   // Check if user is logged in
-  bool get isLoggedIn => _auth.currentUser != null;
+
 
   // Email and Password Authentication
   Future<User?> signInWithEmailAndPassword({
@@ -24,6 +28,7 @@ class AuthService {
         email: email,
         password: password,
       );
+      await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -48,19 +53,24 @@ class AuthService {
       final UserCredential result = await _auth.signInWithCredential(
         credential,
       );
+      await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     }
   }
 
- 
+  Future<void> _setLoginState(bool isLoggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isUserLoggedIn', isLoggedIn);
+  }
 
   // Sign Out
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
+      await _setLoginState(false);
     } catch (e) {
       throw Exception('Failed to sign out: $e');
     }
