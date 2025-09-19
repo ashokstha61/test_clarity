@@ -484,7 +484,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: const Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
-                          style: TextStyle(color: Colors.white70),
+                          style: TextStyle(color: Colors.grey),
                           children: [
                             TextSpan(
                               text: "Login",
