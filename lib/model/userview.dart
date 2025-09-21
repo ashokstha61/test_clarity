@@ -13,7 +13,6 @@ class UserViewModel {
   void fetchUserInfo() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      print("No user is signed in.");
       return;
     }
 

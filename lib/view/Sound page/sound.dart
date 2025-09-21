@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +30,7 @@ class _SoundPageState extends State<SoundPage> {
   bool _isLoading = false;
   String? _errorMessage;
   Timer? _freeTrialTimer;
-  bool isTrial = true;
+
 
 
   // bool _trialDialogShown = false;
@@ -155,7 +154,6 @@ class _SoundPageState extends State<SoundPage> {
                   );
                 },
               ),
-
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -250,10 +248,11 @@ class _SoundPageState extends State<SoundPage> {
     print(now.toString());
     print(trialEndDate.toString());
 
-    if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate!)) {
-      setState(() {
+    if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate)) {
+      // setState(() {
         isTrial = false;
-      });
+        print("Trail is over ");
+      // });
 
       if (!_trialDialogShown) {
         _trialDialogShown = true;

@@ -1,4 +1,3 @@
-import 'package:clarity/main.dart';
 import 'package:clarity/theme.dart';
 import 'package:clarity/view/login/auth.dart';
 import 'package:clarity/view/login/login_screen.dart';
