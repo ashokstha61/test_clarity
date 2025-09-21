@@ -195,7 +195,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         isSoundPlaying = true;
       });
     // Sync players: create missing players
-    await _audioManager.syncPlayers(_selectedSounds);
+    await _audioManager.onTapSound(_selectedSounds, normalizedSound, isTrial);
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);

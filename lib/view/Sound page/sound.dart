@@ -96,7 +96,7 @@ class _SoundPageState extends State<SoundPage> {
 
     if (sound.isSelected) {
       final selected = _sounds.where((s) => s.isSelected).toList();
-      _audioManager.ensurePlayers(selected);
+      _audioManager.onTapSound(selected, sound, isTrial );
       _audioManager.playSound(sound.title);
       _audioManager.playAll();
     } else {

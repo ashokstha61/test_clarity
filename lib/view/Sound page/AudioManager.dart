@@ -24,28 +24,81 @@ class AudioManager {
     _volumeMap[title] = volume;
   }
 
-  /// Create players only if they don't exist
   Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
-    final futures = sounds.map((sound) async {
+    // Remove players that are no longer in the sounds list
+    final existingKeys = _players.keys.toList();
+    for (final key in existingKeys) {
+      if (!sounds.any((s) => s.title == key)) {
+        try {
+          await _players[key]?.dispose();
+        } catch (_) {}
+        _players.remove(key);
+      }
+    }
+
+    // Create and prepare players for missing sounds
+    final futures = <Future>[];
+    for (final sound in sounds) {
       final key = sound.title;
       if (!_players.containsKey(key)) {
-        try {
-          final player = AudioPlayer();
-          _players[key] = player;
-          await player.setAudioSource(
-            AudioSource.uri(Uri.parse(sound.musicUrl)),
-          );
-          await player.setLoopMode(LoopMode.one);
-          await player.setVolume(1);
-        } catch (e) {
-          debugPrint("❌ Failed to initialize ${sound.title}: $e");
-        }
+        futures.add(() async {
+          try {
+            final player = AudioPlayer();
+            await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+            await player.setLoopMode(LoopMode.one);
+            await player.setVolume(1.0);
+            _players[key] = player;
+          } catch (e) {
+            debugPrint("❌ Failed to initialize ${sound.title}: $e");
+          }
+        }());
       }
-    });
+    }
 
     await Future.wait(futures);
-    // await adjustVolumes(sounds);
   }
+
+  Future<void> onTapSound(List<NewSoundModel> sounds, NewSoundModel sound, bool isTrial) async {
+    await ensurePlayers(sounds);
+
+    final key = sound.title;
+    final player = _players[key];
+    if (player == null) {
+      debugPrint("⚠️ Player not found for $key");
+      return;
+    }
+
+    if (isTrial) {
+      if (sound.isSelected) {
+        await player.stop();
+        sound.isSelected = false;
+      } else {
+        await player.seek(Duration.zero);
+        await player.play();
+        sound.isSelected = true;
+      }
+    } else {
+      if (sound.isSelected) {
+        await player.stop();
+        sound.isSelected = false;
+      } else {
+        for (final other in sounds) {
+          if (other.title != key && other.isSelected) {
+            final otherPlayer = _players[other.title];
+            if (otherPlayer != null) {
+              await otherPlayer.stop();
+            }
+            other.isSelected = false;
+          }
+        }
+
+        await player.seek(Duration.zero);
+        await player.play();
+        sound.isSelected = true;
+      }
+    }
+  }
+
 
   /// Sync players with current selection
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
