@@ -33,7 +33,6 @@ class _SoundPageState extends State<SoundPage> {
   Timer? _freeTrialTimer;
   bool isTrial = true;
 
-
   // bool _trialDialogShown = false;
 
   @override
@@ -140,22 +139,20 @@ class _SoundPageState extends State<SoundPage> {
               child: _sounds.isEmpty
                   ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-
-                itemCount: _sounds.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      SoundTile(
-                        sound: _sounds[index],
-                        onTap: () => _toggleSoundSelection(index),
-                        isTrail: isTrial,
-                      ),
-                      const Divider(height: 1),
-                    ],
-                  );
-                },
-              ),
-
+                      itemCount: _sounds.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            SoundTile(
+                              sound: _sounds[index],
+                              onTap: () => _toggleSoundSelection(index),
+                              isTrail: isTrial,
+                            ),
+                            const Divider(height: 1),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -202,7 +199,6 @@ class _SoundPageState extends State<SoundPage> {
     );
   }
 
-
   Future<void> loadUserInfo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -233,7 +229,7 @@ class _SoundPageState extends State<SoundPage> {
 
     // Check every minute
     _freeTrialTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if(isTrial){
+      if (isTrial) {
         _checkFreeTrialStatus(user);
       }
     });
@@ -262,7 +258,7 @@ class _SoundPageState extends State<SoundPage> {
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: const Text('Free Trial Ended'),
-            content: const Text( 'You have completed our 7-day free trail'),
+            content: const Text('You have completed our 7-day free trail'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -277,5 +273,3 @@ class _SoundPageState extends State<SoundPage> {
     }
   }
 }
-
-

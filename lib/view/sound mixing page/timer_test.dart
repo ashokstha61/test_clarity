@@ -1,4 +1,5 @@
 import 'package:clarity/theme.dart';
+import 'package:clarity/view/home/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +71,6 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     final remainingTime = globalTimer.remaining;
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +109,18 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               color: ThemeHelper.iconAndTextColorRemix(context),
             ),
             onPressed: () {
-              
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => const Homepage()),
+              //   (route) => false,
+              // );
+              if (globalTimer.isRunning) {
+                // Go back to homepage root (without rebuilding a new one)
+                Navigator.popUntil(context, (route) => route.isFirst);
+              } else {
+                // Just close the timer screen
+                Navigator.pop(context);
+              }
             },
           ),
         ],
