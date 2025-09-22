@@ -180,32 +180,28 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       return;
     }
 
-    // Ensure new sounds start with a reasonable volume (say 0.8)
     final normalizedSound = sound.copyWith(
       volume: sound.volume > 0 ? sound.volume : 0.8,
     );
 
-    setState(() {
-      _recommendedSounds.removeWhere((s) => s.title == normalizedSound.title);
-      _selectedSounds.add(normalizedSound);
-    });
-
-    if (_selectedSounds.isNotEmpty)
-      setState(() {
-        isSoundPlaying = true;
-      });
-    // Sync players: create missing players
+    // Call AudioManager first (it enforces single sound rule if !isTrial)
     await _audioManager.onTapSound(_selectedSounds, normalizedSound, isTrial);
-
-    // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
-    _audioManager.saveVolume(
-      normalizedSound.title,
-      normalizedSound.volume.toDouble(),
-    );
 
-    // Play the newly added sound
-    _audioManager.playSound(normalizedSound.title);
+    if (isTrial) {
+      _audioManager.playSound(normalizedSound.title);
+    }
+
+    // Update lists for UI
+    setState(() {
+      _selectedSounds = _buildUpdatedSounds()
+          .where((s) => s.isSelected)
+          .toList();
+      _recommendedSounds = _buildUpdatedSounds()
+          .where((s) => !s.isSelected)
+          .toList();
+      isSoundPlaying = _selectedSounds.isNotEmpty;
+    });
 
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
