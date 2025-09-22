@@ -90,16 +90,6 @@ class _MyAccountPageState extends State<MyAccountPage> {
               readOnly: true,
             ),
             SizedBox(height: 10.0),
-            // CustomSetting(
-            //   title: 'App Settings',
-            //   switchLabel: 'Dark Mode',
-            //   switchValue: _isDarkMode,
-            //   onChanged: (bool value) {
-            //     setState(() {
-            //       _isDarkMode = value; // Update the theme state
-            //     });
-            //   },
-            // ),
             Divider(),
             CustomSetting(
               title: 'App Settings',

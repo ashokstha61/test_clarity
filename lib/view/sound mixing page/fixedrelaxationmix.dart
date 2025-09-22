@@ -1,5 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:clarity/model/model.dart';
 import 'package:clarity/theme.dart';
+import 'package:clarity/view/Sound%20page/sound.dart';
 import 'package:clarity/view/favourite/favouratemanager.dart';
 
 import 'package:flutter/material.dart';
@@ -31,6 +34,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   // bool _isLoadingPlayback = false;
   final bool _isLoadingRecommendedSounds = false;
   bool showLoading = false;
+  ui.Image? thumbImg;
 
   List<NewSoundModel> _buildUpdatedSounds() {
     return widget.sounds
@@ -67,6 +71,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         .toList();
     // _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
+
+    CustomImageThumbShape.loadImage('assets/images/thumb.png').then((img) {
+      setState(() {
+        thumbImg = img;
+      });
+    });
   }
 
   Future<void> _saveMix() async {
@@ -180,8 +190,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds.add(normalizedSound);
     });
 
+    if (_selectedSounds.isNotEmpty)
+      setState(() {
+        isSoundPlaying = true;
+      });
     // Sync players: create missing players
-    await _audioManager.syncPlayers(_selectedSounds);
+    await _audioManager.onTapSound(_selectedSounds, normalizedSound, isTrial);
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
@@ -203,6 +217,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         _selectedSounds.removeWhere((s) => s.title == sound.title);
       });
 
+      if (_selectedSounds.isEmpty)
+        setState(() {
+          isSoundPlaying = false;
+        });
       _audioManager.pauseSound(sound.title);
       _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
       await _audioManager.syncPlayers(_selectedSounds);
@@ -301,7 +319,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                               itemCount: _recommendedSounds.length,
                               itemBuilder: (context, index) {
                                 final sound = _recommendedSounds[index];
-                                return _buildRecommendedSoundButton(sound);
+                                return _buildRecommendedSoundButton(sound, isTrial: isTrial);
                               },
                             ),
                     ),
@@ -358,7 +376,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildControlButton(
                     imagePath: "assets/images/timer_button.png",
@@ -388,7 +406,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         );
                       }
                     },
-                    leading: 35.w,
+                    leading: 32.w,
                   ),
                   _buildPlaybackControls(),
                   _buildControlButton(
@@ -396,7 +414,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     label: 'Save Mix',
 
                     onPressed: _saveMix,
-                    leading: 30.w,
+                    leading: 25.w,
                   ),
                 ],
               ),
@@ -461,62 +479,79 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     return ValueListenableBuilder<bool>(
       valueListenable: _audioManager.isPlayingNotifier,
       builder: (context, isPlaying, _) {
-        return IconButton(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          icon: Image.asset(
-            isPlaying ? "assets/images/pause.png" : "assets/images/play.png",
-            height: 25.sp,
-            width: 25.sp,
-          ),
-          onPressed: _selectedSounds.isEmpty
-              ? null
-              : () async {
-                  if (isPlaying) {
+        return Column(
+          children: [
+            SizedBox(height: 25.h,),
+            IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Image.asset(
+                isSoundPlaying ? "assets/images/pause.png" : "assets/images/play.png",
+                height: 25.sp,
+                width: 25.sp,
+              ),
+              onPressed: _selectedSounds.isEmpty
+                ? null
+                : () async {
+                  if (isSoundPlaying) {
                     await AudioManager().pauseAll();
                   } else {
                     await AudioManager().playAll();
                   }
                 },
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildRecommendedSoundButton(NewSoundModel sound) {
+  Widget _buildRecommendedSoundButton(NewSoundModel sound, {required bool isTrial}) {
+    bool locked = false;
+    print("isTrial: $isTrial");
+
+    if(!isTrial) {
+      locked = sound.isLocked;
+      print("locked: $locked");
+    }
+
+
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-            onTap: () => _addSoundToMix(sound),
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(18, 23, 42, 1),
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.teal[50]!),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildIconImage(sound.icon, 40),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      sound.title.replaceAll('_', ' '),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        overflow: TextOverflow.ellipsis,
+            onTap: locked ? null : () => _addSoundToMix(sound),
+            child: Opacity(
+              opacity: locked ? 0.4 : 1.0, // dim if locked
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(18, 23, 42, 1),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.teal[50]!),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildIconImage(sound.icon, 40),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        sound.title.replaceAll('_', ' '),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 1,
                       ),
-                      maxLines: 1,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -524,6 +559,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       ),
     );
   }
+
 
   Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
     return Container(
@@ -541,7 +577,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Center(child: _buildIconImage(sound.icon, 36)),
+                Center(child: _buildIconImage(sound.icon, 24)),
                 Positioned(
                   top: -8,
                   right: -8,
@@ -578,34 +614,31 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          thumbShape: const CustomImageThumbShape(
-                            imagePath: 'assets/images/thumb.png',
-                            thumbRadius: 18,
-                          ),
-                          overlayShape: const RoundSliderOverlayShape(
-                            overlayRadius: 0,
-                          ),
-                          trackHeight: 4,
-                          activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
-                          inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
-                        ),
-                        child: Slider(
-                          value: sound.volume.toDouble(),
-                          min: 0.0,
-                          max: 1.0,
-                          onChanged: (value) {
-                            // FIX: Use proper update method instead of direct modification
-                            _updateSoundVolume(index, value);
-                          },
-                        ),
+                SizedBox(
+                  width: double.infinity,
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      thumbShape: CustomImageThumbShape(
+                        thumbRadius: 18,
+                        thumbImage: thumbImg,
                       ),
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 0,
+                      ),
+                      trackHeight: 4,
+                      activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
+                      inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
                     ),
-                  ],
+                    child: Slider(
+                      value: sound.volume.toDouble(),
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: (value) {
+                        // FIX: Use proper update method instead of direct modification
+                        _updateSoundVolume(index, value);
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +30,7 @@ class _SoundPageState extends State<SoundPage> {
   bool _isLoading = false;
   String? _errorMessage;
   Timer? _freeTrialTimer;
-  bool isTrial = true;
+
 
   // bool _trialDialogShown = false;
 
@@ -96,7 +95,7 @@ class _SoundPageState extends State<SoundPage> {
 
     if (sound.isSelected) {
       final selected = _sounds.where((s) => s.isSelected).toList();
-      _audioManager.ensurePlayers(selected);
+      _audioManager.onTapSound(selected, sound, isTrial );
       _audioManager.playSound(sound.title);
       _audioManager.playAll();
     } else {
@@ -139,20 +138,21 @@ class _SoundPageState extends State<SoundPage> {
               child: _sounds.isEmpty
                   ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-                      itemCount: _sounds.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            SoundTile(
-                              sound: _sounds[index],
-                              onTap: () => _toggleSoundSelection(index),
-                              isTrail: isTrial,
-                            ),
-                            const Divider(height: 1),
-                          ],
-                        );
-                      },
-                    ),
+
+                itemCount: _sounds.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      SoundTile(
+                        sound: _sounds[index],
+                        onTap: () => _toggleSoundSelection(index),
+                        isTrail: isTrial,
+                      ),
+                      const Divider(height: 1),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -246,10 +246,11 @@ class _SoundPageState extends State<SoundPage> {
     print(now.toString());
     print(trialEndDate.toString());
 
-    if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate!)) {
-      setState(() {
+    if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate)) {
+      // setState(() {
         isTrial = false;
-      });
+        print("Trail is over ");
+      // });
 
       if (!_trialDialogShown) {
         _trialDialogShown = true;

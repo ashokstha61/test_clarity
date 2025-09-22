@@ -1,5 +1,4 @@
 import 'package:clarity/theme.dart';
-import 'package:clarity/view/home/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
