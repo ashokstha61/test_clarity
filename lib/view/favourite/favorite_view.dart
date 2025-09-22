@@ -1,4 +1,5 @@
 import 'package:clarity/view/favourite/favorite_tile.dart';
+import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteView extends StatelessWidget {
@@ -68,7 +69,10 @@ class FavoriteView extends StatelessWidget {
               height: 60,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)], // moonlightGradient
+                  colors: [
+                    Color(0xFF1E1E2C),
+                    Color(0xFF2E2E48),
+                  ], // moonlightGradient
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -89,7 +93,9 @@ class FavoriteView extends StatelessWidget {
                   IconButton(
                     onPressed: onTogglePlayback,
                     icon: Image.asset(
-                      isPlaying ? "assets/images/pause_icon.png" : "assets/images/play_icon.png",
+                      isPlaying
+                          ? "assets/images/pause_icon.png"
+                          : "assets/images/play_icon.png",
                       width: 28,
                       height: 28,
                     ),

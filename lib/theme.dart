@@ -114,9 +114,16 @@ class ThemeHelper {
         ? const Color.fromARGB(255, 32, 32, 45)
         : Colors.white;
   }
+
   static Color iconColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white
         : const Color.fromARGB(255, 57, 70, 96);
+  }
+
+  static Color textFieldFillColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.black
+        : Colors.white;
   }
 }

@@ -26,7 +26,7 @@ class CustomLoginButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
-          side: BorderSide(color: Colors.white),
+          side: BorderSide(color: Colors.grey),
         ),
       ),
       child: Row(

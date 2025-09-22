@@ -80,11 +80,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Future<void> _saveMix() async {
+    // 1. Validate selected sounds
     if (_selectedSounds.isEmpty) {
       _showErrorSnackBar('Please select at least one sound to save.');
       return;
     }
 
+    // 2. Ask for mix name
     String? mixName = await showDialog<String>(
       context: context,
       builder: (context) {
@@ -98,6 +100,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   fontSize: 20,
                   color: ThemeHelper.textColor(context),
                   fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
@@ -121,7 +124,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 borderSide: const BorderSide(color: Colors.grey),
               ),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: ThemeHelper.textFieldFillColor(context),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 10,
@@ -133,43 +136,59 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.sp,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, controller.text),
-              child: const Text('Save'),
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.sp,
+                ),
+              ),
             ),
           ],
         );
       },
     );
 
-    if (mixName == null || mixName.trim().isEmpty) {
-      _showErrorSnackBar('Please enter a valid name.');
+    if (mixName == null || mixName.isEmpty) {
       return;
     }
 
-    // Create a "mix" object using NewSoundModel
+    // 3. Collect selected sound filepaths
+    final filepaths = _selectedSounds.map((s) => s.filepath).toList();
+
+    // 4. Create a new mix model
     final mix = NewSoundModel(
-      title: mixName.trim(),
-      icon: 'mix_icon.png',
-      isSelected: true,
+      title: mixName,
+      icon: 'default_icon',
+      filepath: "mix_$mixName",
+      musicUrl: "",
+      isSelected: false,
       isFav: true,
+      isNew: true,
       isLocked: false,
-      isNew: false,
-      filepath: '', // optional placeholder
-      musicUrl: '',
-      volume: 1.0, // default volume
+      volume: 1.0,
+      mixFilePaths: filepaths, // 👈 your saved sounds
     );
 
-    // Save to favorites page or local storage
+    // 5. Save using your FavoritesManager
     FavoriteManager.instance.addFavorite(mix);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Mix "$mixName" saved successfully!'),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -267,6 +286,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leadingWidth: 60,
         leading: IconButton(
@@ -319,7 +339,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                               itemCount: _recommendedSounds.length,
                               itemBuilder: (context, index) {
                                 final sound = _recommendedSounds[index];
-                                return _buildRecommendedSoundButton(sound, isTrial: isTrial);
+                                return _buildRecommendedSoundButton(
+                                  sound,
+                                  isTrial: isTrial,
+                                );
                               },
                             ),
                     ),
@@ -481,24 +504,26 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       builder: (context, isPlaying, _) {
         return Column(
           children: [
-            SizedBox(height: 25.h,),
+            SizedBox(height: 25.h),
             IconButton(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               icon: Image.asset(
-                isSoundPlaying ? "assets/images/pause.png" : "assets/images/play.png",
+                isSoundPlaying
+                    ? "assets/images/pause.png"
+                    : "assets/images/play.png",
                 height: 25.sp,
                 width: 25.sp,
               ),
               onPressed: _selectedSounds.isEmpty
-                ? null
-                : () async {
-                  if (isSoundPlaying) {
-                    await AudioManager().pauseAll();
-                  } else {
-                    await AudioManager().playAll();
-                  }
-                },
+                  ? null
+                  : () async {
+                      if (isSoundPlaying) {
+                        await AudioManager().pauseAll();
+                      } else {
+                        await AudioManager().playAll();
+                      }
+                    },
             ),
           ],
         );
@@ -506,15 +531,17 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     );
   }
 
-  Widget _buildRecommendedSoundButton(NewSoundModel sound, {required bool isTrial}) {
+  Widget _buildRecommendedSoundButton(
+    NewSoundModel sound, {
+    required bool isTrial,
+  }) {
     bool locked = false;
     print("isTrial: $isTrial");
 
-    if(!isTrial) {
+    if (!isTrial) {
       locked = sound.isLocked;
       print("locked: $locked");
     }
-
 
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
@@ -559,7 +586,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       ),
     );
   }
-
 
   Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
     return Container(
@@ -608,24 +634,28 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  sound.title.replaceAll('_', ' '),
-                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.sp),
+                  child: Text(
+                    sound.title.replaceAll('_', ' '),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 5.h),
                 SizedBox(
                   width: double.infinity,
                   child: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: CustomImageThumbShape(
-                        thumbRadius: 18,
+                        thumbRadius: 18.h,
                         thumbImage: thumbImg,
                       ),
                       overlayShape: const RoundSliderOverlayShape(
                         overlayRadius: 0,
                       ),
-                      trackHeight: 4,
+                      trackHeight: 10.h,
                       activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
                       inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
                     ),

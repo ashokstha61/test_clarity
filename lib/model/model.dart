@@ -7,7 +7,8 @@ class NewSoundModel {
   bool isSelected;
   final String musicUrl;
   final String title;
-   num volume;
+  num volume;
+  List<String> mixFilePaths;
 
   NewSoundModel({
     required this.filepath,
@@ -19,6 +20,7 @@ class NewSoundModel {
     required this.musicUrl,
     required this.title,
     required this.volume,
+    required this.mixFilePaths,
   });
 
   factory NewSoundModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class NewSoundModel {
       musicUrl: json['musicURL'] as String,
       title: json['title'] as String,
       volume: json['volume'] as num,
+      mixFilePaths: List<String>.from(json['mixFilePaths'] ?? []),
     );
   }
 
@@ -45,6 +48,7 @@ class NewSoundModel {
     String? musicUrl,
     String? title,
     num? volume,
+    List<String>? mixFilePaths,
   }) => NewSoundModel(
     filepath: filepath ?? this.filepath,
     icon: icon ?? this.icon,
@@ -55,5 +59,19 @@ class NewSoundModel {
     musicUrl: musicUrl ?? this.musicUrl,
     title: title ?? this.title,
     volume: volume ?? this.volume,
+    mixFilePaths: mixFilePaths ?? this.mixFilePaths,
   );
+
+  Map<String, dynamic> toJson() => {
+    'filepath': filepath,
+    'icon': icon,
+    'isFav': isFav,
+    'isLocked': isLocked,
+    'isNew': isNew,
+    'isSelected': isSelected,
+    'musicURL': musicUrl,
+    'title': title,
+    'volume': volume,
+    'mixFilePaths': mixFilePaths, // ✅ serialize
+  };
 }
