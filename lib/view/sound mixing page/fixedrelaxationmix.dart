@@ -160,6 +160,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         );
       },
     );
+    if (!mounted) return;
 
     if (mixName == null || mixName.isEmpty) {
       return;
