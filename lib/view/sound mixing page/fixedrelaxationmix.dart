@@ -69,7 +69,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           ),
         )
         .toList();
-    // _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
 
     CustomImageThumbShape.loadImage('assets/images/thumb.png').then((img) {
@@ -195,7 +195,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         isSoundPlaying = true;
       });
     // Sync players: create missing players
-    await _audioManager.onTapSound(_selectedSounds, normalizedSound, isTrial);
+    await _audioManager.syncPlayers(_selectedSounds);
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);

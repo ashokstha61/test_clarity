@@ -26,34 +26,20 @@ class AudioManager {
 
   Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
     // Remove players that are no longer in the sounds list
-    final existingKeys = _players.keys.toList();
-    for (final key in existingKeys) {
-      if (!sounds.any((s) => s.title == key)) {
-        try {
-          await _players[key]?.dispose();
-        } catch (_) {}
-        _players.remove(key);
-      }
-    }
-
-    // Create and prepare players for missing sounds
-    final futures = <Future>[];
-    for (final sound in sounds) {
+    final futures = sounds.map((sound) async {
       final key = sound.title;
       if (!_players.containsKey(key)) {
-        futures.add(() async {
-          try {
-            final player = AudioPlayer();
-            await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
-            await player.setLoopMode(LoopMode.one);
-            await player.setVolume(1.0);
-            _players[key] = player;
-          } catch (e) {
-            debugPrint("❌ Failed to initialize ${sound.title}: $e");
-          }
-        }());
+        try {
+          final player = AudioPlayer();
+          _players[key] = player;
+          await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+          await player.setLoopMode(LoopMode.one);
+          await player.setVolume(1);
+        } catch (e) {
+          debugPrint("❌ Failed to initialize ${sound.title}: $e");
+        }
       }
-    }
+    });
 
     await Future.wait(futures);
   }
@@ -75,6 +61,7 @@ class AudioManager {
       } else {
         await player.seek(Duration.zero);
         await player.play();
+        await player.setVolume(1.0);
         sound.isSelected = true;
       }
     } else {
@@ -92,8 +79,9 @@ class AudioManager {
           }
         }
 
-        await player.seek(Duration.zero);
+        // await player.seek(Duration.zero);
         await player.play();
+        await player.setVolume(1.0);
         sound.isSelected = true;
       }
     }
