@@ -4,6 +4,7 @@ import 'package:clarity/view/favourite/empty_file.dart';
 import 'package:clarity/view/favourite/favorite_tile.dart';
 import 'package:clarity/view/favourite/favouratemanager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
@@ -32,8 +33,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     _loadFavorites();
   }
 
-  void _loadFavorites() {
-    favoriteSounds = FavoriteManager.instance.getFavorites();
+  void _loadFavorites() async {
+    await FavoriteManager.instance.loadFavorites();
+    setState(() {
+      favoriteSounds = FavoriteManager.instance.favoriteSounds;
+    });
   }
 
   @override
@@ -60,6 +64,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     },
                   ),
           ),
+
+          Divider(color: Colors.grey.shade700, height: 1.h),
 
           // Bottom Player Bar
           if (widget.currentTitle != null)
@@ -89,8 +95,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     onPressed: widget.onTogglePlayback,
                     icon: Image.asset(
                       widget.isPlaying
-                          ? "assets/images/pause_icon.png"
-                          : "assets/images/play_icon.png",
+                          ? "assets/images/pause.png"
+                          : "assets/images/play.png",
                       width: 28,
                       height: 28,
                     ),
@@ -103,5 +109,3 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 }
-
-

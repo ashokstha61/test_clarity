@@ -106,7 +106,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[700],
+                  color: ThemeHelper.textColor(context),
                   fontFamily: 'Montserrat',
                 ),
               ),
@@ -183,10 +183,42 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     // 5. Save using your FavoritesManager
     FavoriteManager.instance.addFavorite(mix);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Mix "$mixName" saved successfully!'),
-        backgroundColor: Colors.green,
+    await showDialog(
+      context: context,
+      barrierDismissible: false, // must tap OK
+      builder: (context) => AlertDialog(
+        title: Text(
+          "Sound saved",
+          textAlign: TextAlign.center, // ✅ center align
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Montserrat',
+            color: ThemeHelper.textColor(context),
+          ),
+        ),
+        content: Text(
+          "Your customized mix has been saved to your favorites.",
+          textAlign: TextAlign.center, // ✅ center align
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontSize: 14,
+            color: ThemeHelper.textColor(context),
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center, // ✅ center button
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // close only on OK
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: Colors.blue,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

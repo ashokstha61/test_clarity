@@ -106,7 +106,5 @@ class FavoriteManager {
     return favoriteSounds.any((s) => s.title == sound.title);
   }
 
-  List<NewSoundModel> getFavorites() {
-    return favoriteSounds;
-  }
+  
 }

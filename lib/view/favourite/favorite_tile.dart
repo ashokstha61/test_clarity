@@ -33,6 +33,7 @@ class FavoriteTile extends StatelessWidget {
         ),
         onTap: onTap,
       ),
+      
     );
   }
 }
