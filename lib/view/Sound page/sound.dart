@@ -31,9 +31,6 @@ class _SoundPageState extends State<SoundPage> {
   String? _errorMessage;
   Timer? _freeTrialTimer;
 
-
-  // bool _trialDialogShown = false;
-
   @override
   void initState() {
     super.initState();
@@ -42,21 +39,26 @@ class _SoundPageState extends State<SoundPage> {
     } else {
       _loadSounds();
     }
-    _audioManager.selectedTitlesNotifier.addListener(() {
-      final selectedTitles = _audioManager.selectedSoundTitles;
+
+    // Listen to audio manager selection changes
+    _audioManager.selectedTitlesNotifier.addListener(_onSelectionChanged);
+    loadUserInfo();
+  }
+
+  void _onSelectionChanged() {
+    final selectedTitles = _audioManager.selectedSoundTitles;
+    if (mounted) {
       setState(() {
         for (var sound in _sounds) {
           sound.isSelected = selectedTitles.contains(sound.title);
         }
       });
-    });
-
-    loadUserInfo();
+    }
   }
 
   @override
   void dispose() {
-    _audioManager.dispose(); // 👈 clean up players
+    _audioManager.selectedTitlesNotifier.removeListener(_onSelectionChanged);
     super.dispose();
   }
 
@@ -89,18 +91,18 @@ class _SoundPageState extends State<SoundPage> {
 
   void _toggleSoundSelection(int index) async {
     final sound = _sounds[index];
-    setState(() {
-      sound.isSelected = !sound.isSelected;
-    });
 
-    if (sound.isSelected) {
-      final selected = _sounds.where((s) => s.isSelected).toList();
-      _audioManager.onTapSound(selected, sound, isTrial );
-      _audioManager.playSound(sound.title);
-      _audioManager.playAll();
-    } else {
-      _audioManager.pauseSound(sound.title);
-    }
+    // Use the updated method that handles trial/non-trial logic
+    await _audioManager.toggleSoundSelection(_sounds, sound, isTrial);
+
+    // The state will be updated automatically via the listener
+    // setState(() {
+    //  if(sound.isSelected) {
+    //    sound.isSelected = false;
+    //  } else {
+    //    sound.isSelected = true;
+    //  }
+    // }); // Trigger rebuild to reflect changes
   }
 
   @override
@@ -138,7 +140,6 @@ class _SoundPageState extends State<SoundPage> {
               child: _sounds.isEmpty
                   ? const Center(child: Text('No sounds available'))
                   : ListView.builder(
-
                 itemCount: _sounds.length,
                 itemBuilder: (context, index) {
                   return Column(
@@ -161,7 +162,7 @@ class _SoundPageState extends State<SoundPage> {
               builder: (context, isPlaying, _) {
                 return RelaxationMixBar(
                   onArrowTap: () async {
-                    await showModalBottomSheet(
+                    final result = await showModalBottomSheet<List<NewSoundModel>>(
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
@@ -175,12 +176,26 @@ class _SoundPageState extends State<SoundPage> {
                             ),
                           ),
                           child: RelaxationMixPage(
-                            sounds: _sounds,
-                            onSoundsChanged: (newSounds) {},
+                            sounds: List.from(_sounds), // Pass a copy of current sounds
+                            onSoundsChanged: (newSounds) {
+                              // This callback will be called when sounds change in mix page
+                              if (mounted) {
+                                setState(() {
+                                  _sounds = newSounds;
+                                });
+                              }
+                            },
                           ),
                         );
                       },
                     );
+
+                    // If result is returned, update the sounds
+                    if (result != null && mounted) {
+                      setState(() {
+                        _sounds = result;
+                      });
+                    }
                   },
                   onPlay: () async {
                     await _audioManager.playAll();
@@ -247,10 +262,10 @@ class _SoundPageState extends State<SoundPage> {
     print(trialEndDate.toString());
 
     if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate)) {
-      // setState(() {
+      setState(() {
         isTrial = false;
         print("Trail is over ");
-      // });
+      });
 
       if (!_trialDialogShown) {
         _trialDialogShown = true;

@@ -137,6 +137,50 @@ class AudioManager {
     await adjustVolumes(selectedSounds);
   }
 
+  Future<void> toggleSoundSelection(List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial) async {
+    await ensurePlayers(allSounds);
+
+    final key = targetSound.title;
+    final player = _players[key];
+    if (player == null) {
+      debugPrint("⚠️ Player not found for $key");
+      return;
+    }
+
+    if (targetSound.isSelected) {
+      // Deselect the sound
+      await player.stop();
+      targetSound.isSelected = false;
+    } else {
+      // Select the sound
+      if (!isTrial) {
+        // Non-trial mode: only one sound can play at a time
+        for (final other in allSounds) {
+          if (other.title != key && other.isSelected) {
+            final otherPlayer = _players[other.title];
+            if (otherPlayer != null) {
+              await otherPlayer.stop();
+            }
+            other.isSelected = false;
+          }
+        }
+      }
+
+      await player.seek(Duration.zero);
+      await player.play();
+      targetSound.isSelected = true;
+    }
+
+    // Update the selected titles notifier
+    final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+    selectedTitlesNotifier.value = selectedTitles;
+
+    // Update playing state
+    final anyPlaying = selectedTitles.isNotEmpty;
+    isPlayingNotifier.value = anyPlaying;
+    isSoundPlaying = anyPlaying;
+  }
+
   double getSavedVolume(String title, {double defaultValue = 1.0}) {
     return _volumeMap[title] ?? defaultValue;
   }
@@ -161,9 +205,15 @@ class AudioManager {
   Future<void> playAll() async {
     isPlayingNotifier.value = true;
     isSoundPlaying = true;
+
+    // Only play the selected sounds
+    final selectedTitles = selectedTitlesNotifier.value;
     await Future.wait(
-      _players.values.map((p) async {
-        if (!p.playing) await p.play();
+      selectedTitles.map((title) async {
+        final player = _players[title];
+        if (player != null && !player.playing) {
+          await player.play();
+        }
       }),
     );
   }
