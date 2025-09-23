@@ -38,18 +38,18 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     return widget.sounds
         .map(
           (s) => s.copyWith(
-        isSelected: _selectedSounds.any(
+            isSelected: _selectedSounds.any(
               (selected) => selected.title == s.title,
-        ),
-        // Preserve volume changes made in mix page
-        volume: _selectedSounds
-            .firstWhere(
-              (selected) => selected.title == s.title,
-          orElse: () => s,
+            ),
+            // Preserve volume changes made in mix page
+            volume: _selectedSounds
+                .firstWhere(
+                  (selected) => selected.title == s.title,
+                  orElse: () => s,
+                )
+                .volume,
+          ),
         )
-            .volume,
-      ),
-    )
         .toList();
   }
 
@@ -60,12 +60,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         .where((s) => s.isSelected)
         .map(
           (s) => s.copyWith(
-        volume: _audioManager.getSavedVolume(
-          s.title,
-          defaultValue: s.volume.toDouble(),
-        ),
-      ),
-    )
+            volume: _audioManager.getSavedVolume(
+              s.title,
+              defaultValue: s.volume.toDouble(),
+            ),
+          ),
+        )
         .toList();
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
 
@@ -129,7 +129,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             ),
           ),
           actionsAlignment:
-          MainAxisAlignment.spaceEvenly, // evenly spaced buttons
+              MainAxisAlignment.spaceEvenly, // evenly spaced buttons
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -227,7 +227,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     final allSounds = _buildUpdatedSounds();
 
     // Use AudioManager to handle the selection properly
-    await _audioManager.toggleSoundSelection(allSounds, normalizedSound, isTrial);
+    await _audioManager.toggleSoundSelection(
+      allSounds,
+      normalizedSound,
+      isTrial,
+    );
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
@@ -247,7 +251,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  Future<void> _removeSoundFromMixInternal(NewSoundModel sound, bool updateCallback) async {
+  Future<void> _removeSoundFromMixInternal(
+    NewSoundModel sound,
+    bool updateCallback,
+  ) async {
     try {
       setState(() {
         _recommendedSounds.add(sound.copyWith(isSelected: false));
@@ -331,10 +338,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 'Your Relaxation Mix',
                 style: TextStyle(color: Colors.white, fontSize: 25),
               ),
-              Text(
-                isTrial ? 'Trial Mode: Multiple sounds allowed' : 'Premium Mode: One sound at a time',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-              ),
             ],
           ),
         ),
@@ -360,21 +363,21 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       height: 120,
                       child: _isLoadingRecommendedSounds
                           ? const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                        ),
-                      )
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
                           : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _recommendedSounds.length,
-                        itemBuilder: (context, index) {
-                          final sound = _recommendedSounds[index];
-                          return _buildRecommendedSoundButton(
-                            sound,
-                            isTrial: isTrial,
-                          );
-                        },
-                      ),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _recommendedSounds.length,
+                              itemBuilder: (context, index) {
+                                final sound = _recommendedSounds[index];
+                                return _buildRecommendedSoundButton(
+                                  sound,
+                                  isTrial: isTrial,
+                                );
+                              },
+                            ),
                     ),
                     const SizedBox(height: 5),
                     const Text(
@@ -385,19 +388,19 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     Expanded(
                       child: _selectedSounds.isEmpty
                           ? const Center(
-                        child: Text(
-                          'No sounds selected\nTap on recommended sounds to add them',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white54),
-                        ),
-                      )
+                              child: Text(
+                                'No sounds selected\nTap on recommended sounds to add them',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white54),
+                              ),
+                            )
                           : ListView.builder(
-                        itemCount: _selectedSounds.length,
-                        itemBuilder: (context, index) {
-                          final sound = _selectedSounds[index];
-                          return _buildSelectedSoundItem(sound, index);
-                        },
-                      ),
+                              itemCount: _selectedSounds.length,
+                              itemBuilder: (context, index) {
+                                final sound = _selectedSounds[index];
+                                return _buildSelectedSoundItem(sound, index);
+                              },
+                            ),
                     ),
                   ],
                 ),
@@ -547,12 +550,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               onPressed: _selectedSounds.isEmpty
                   ? null
                   : () async {
-                if (isSoundPlaying) {
-                  await AudioManager().pauseAll();
-                } else {
-                  await AudioManager().playAll();
-                }
-              },
+                      if (isSoundPlaying) {
+                        await AudioManager().pauseAll();
+                      } else {
+                        await AudioManager().playAll();
+                      }
+                    },
             ),
           ],
         );
@@ -561,9 +564,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Widget _buildRecommendedSoundButton(
-      NewSoundModel sound, {
-        required bool isTrial,
-      }) {
+    NewSoundModel sound, {
+    required bool isTrial,
+  }) {
     bool locked = false;
     print("isTrial: $isTrial");
 
@@ -726,7 +729,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   String? _getMatchingAssetPath(String iconName) {
     // final cleanName = iconName.replaceAll(RegExp(r'\.png), '');
     return 'assets/images/$iconName.png';
-    }
+  }
 
   Widget _buildFallbackIcon(double size) =>
       Icon(Icons.audiotrack, size: size * 0.7, color: Colors.white70);
