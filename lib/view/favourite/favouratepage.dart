@@ -44,67 +44,69 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: const Color(0xFF12162A),
-      body: Column(
-        children: [
-          // Title
-          const SizedBox(height: 20),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Title
+            const SizedBox(height: 20),
 
-          // Show EmptyFile if no favorites, else show FavoriteView
-          Expanded(
-            child: favoriteSounds.isEmpty
-                ? const EmptyFile()
-                : ListView.builder(
-                    itemCount: favoriteSounds.length,
-                    itemBuilder: (context, index) {
-                      final sound = favoriteSounds[index];
-                      return FavoriteTile(
-                        title: sound.title,
-                        onTap: () => widget.onItemTap(sound.title),
-                      );
-                    },
+            // Show EmptyFile if no favorites, else show FavoriteView
+            Expanded(
+              child: favoriteSounds.isEmpty
+                  ? const EmptyFile()
+                  : ListView.builder(
+                      itemCount: favoriteSounds.length,
+                      itemBuilder: (context, index) {
+                        final sound = favoriteSounds[index];
+                        return FavoriteTile(
+                          title: sound.title,
+                          onTap: () => widget.onItemTap(sound.title),
+                        );
+                      },
+                    ),
+            ),
+
+            Divider(color: Colors.grey.shade700, height: 1.h),
+
+            // Bottom Player Bar
+            if (widget.currentTitle != null)
+              Container(
+                height: 60,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-          ),
-
-          Divider(color: Colors.grey.shade700, height: 1.h),
-
-          // Bottom Player Bar
-          if (widget.currentTitle != null)
-            Container(
-              height: 60,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.currentTitle!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: "Montserrat",
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: widget.onTogglePlayback,
+                      icon: Image.asset(
+                        widget.isPlaying
+                            ? "assets/images/pause.png"
+                            : "assets/images/play.png",
+                        width: 28,
+                        height: 28,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.currentTitle!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: widget.onTogglePlayback,
-                    icon: Image.asset(
-                      widget.isPlaying
-                          ? "assets/images/pause.png"
-                          : "assets/images/play.png",
-                      width: 28,
-                      height: 28,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

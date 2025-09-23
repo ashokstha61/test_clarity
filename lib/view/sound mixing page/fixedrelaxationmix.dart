@@ -283,14 +283,62 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
+  // Future<void> _removeSoundFromMixInternal(
+  //   NewSoundModel sound,
+  //   bool updateCallback,
+  // ) async {
+  //   try {
+  //     setState(() {
+  //       _recommendedSounds.add(sound.copyWith(isSelected: false));
+  //       _selectedSounds.removeWhere((s) => s.title == sound.title);
+  //     });
+
+  //     if (_selectedSounds.isEmpty) {
+  //       setState(() {
+  //         isSoundPlaying = false;
+  //       });
+  //     }
+
+  //     _audioManager.pauseSound(sound.title);
+  //     _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
+  //     await _audioManager.syncPlayers(_selectedSounds);
+
+  //     if (updateCallback) {
+  //       widget.onSoundsChanged(_buildUpdatedSounds());
+  //     }
+  //   } catch (e) {
+  //     _showErrorSnackBar('Failed to remove sound: $e');
+  //   }
+  // }
+
   Future<void> _removeSoundFromMixInternal(
     NewSoundModel sound,
     bool updateCallback,
   ) async {
     try {
       setState(() {
-        _recommendedSounds.add(sound.copyWith(isSelected: false));
         _selectedSounds.removeWhere((s) => s.title == sound.title);
+
+        // find original index in the full sounds list
+        final originalIndex = widget.sounds.indexWhere(
+          (s) => s.title == sound.title,
+        );
+
+        if (originalIndex != -1) {
+          // insert back into recommendedSounds at the right position
+          final insertIndex = _recommendedSounds.indexWhere(
+            (s) => widget.sounds.indexOf(s) > originalIndex,
+          );
+
+          if (insertIndex == -1) {
+            _recommendedSounds.add(sound.copyWith(isSelected: false));
+          } else {
+            _recommendedSounds.insert(
+              insertIndex,
+              sound.copyWith(isSelected: false),
+            );
+          }
+        }
       });
 
       if (_selectedSounds.isEmpty) {
