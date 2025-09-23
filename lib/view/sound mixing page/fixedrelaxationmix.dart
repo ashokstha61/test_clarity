@@ -210,10 +210,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds.add(normalizedSound);
     });
 
-    if (_selectedSounds.isNotEmpty)
+    if (_selectedSounds.isNotEmpty) {
       setState(() {
         isSoundPlaying = true;
       });
+    }
+
     // Sync players: create missing players
     await _audioManager.onTapSound(_selectedSounds, normalizedSound, isTrial);
 
