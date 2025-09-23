@@ -66,7 +66,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     ),
             ),
 
-            Divider(color: Colors.grey.shade700, height: 1.h),
+            // Divider(color: Colors.grey.shade700, height: 1.h),
 
             // Bottom Player Bar
             if (widget.currentTitle != null)

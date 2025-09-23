@@ -312,52 +312,48 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   // }
 
   Future<void> _removeSoundFromMixInternal(
-    NewSoundModel sound,
-    bool updateCallback,
-  ) async {
-    try {
-      setState(() {
-        _selectedSounds.removeWhere((s) => s.title == sound.title);
+  NewSoundModel sound,
+  bool updateCallback,
+) async {
+  try {
+    setState(() {
+      _selectedSounds.removeWhere((s) => s.title == sound.title);
 
-        // find original index in the full sounds list
-        final originalIndex = widget.sounds.indexWhere(
-          (s) => s.title == sound.title,
+      // find original index in the full sounds list
+      final originalIndex = widget.sounds.indexWhere((s) => s.title == sound.title);
+
+      if (originalIndex != -1) {
+        // insert back into recommendedSounds at the right position
+        final insertIndex = _recommendedSounds.indexWhere(
+          (s) => widget.sounds.indexOf(s) > originalIndex,
         );
 
-        if (originalIndex != -1) {
-          // insert back into recommendedSounds at the right position
-          final insertIndex = _recommendedSounds.indexWhere(
-            (s) => widget.sounds.indexOf(s) > originalIndex,
-          );
-
-          if (insertIndex == -1) {
-            _recommendedSounds.add(sound.copyWith(isSelected: false));
-          } else {
-            _recommendedSounds.insert(
-              insertIndex,
-              sound.copyWith(isSelected: false),
-            );
-          }
+        if (insertIndex == -1) {
+          _recommendedSounds.add(sound.copyWith(isSelected: false));
+        } else {
+          _recommendedSounds.insert(insertIndex, sound.copyWith(isSelected: false));
         }
+      }
+    });
+
+    if (_selectedSounds.isEmpty) {
+      setState(() {
+        isSoundPlaying = false;
       });
-
-      if (_selectedSounds.isEmpty) {
-        setState(() {
-          isSoundPlaying = false;
-        });
-      }
-
-      _audioManager.pauseSound(sound.title);
-      _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
-      await _audioManager.syncPlayers(_selectedSounds);
-
-      if (updateCallback) {
-        widget.onSoundsChanged(_buildUpdatedSounds());
-      }
-    } catch (e) {
-      _showErrorSnackBar('Failed to remove sound: $e');
     }
+
+    _audioManager.pauseSound(sound.title);
+    _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
+    await _audioManager.syncPlayers(_selectedSounds);
+
+    if (updateCallback) {
+      widget.onSoundsChanged(_buildUpdatedSounds());
+    }
+  } catch (e) {
+    _showErrorSnackBar('Failed to remove sound: $e');
   }
+}
+
 
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
