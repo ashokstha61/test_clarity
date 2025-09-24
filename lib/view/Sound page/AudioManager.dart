@@ -44,7 +44,9 @@ class AudioManager {
         futures.add(() async {
           try {
             final player = AudioPlayer();
-            await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+            await player.setAudioSource(
+              AudioSource.uri(Uri.parse(sound.musicUrl)),
+            );
             await player.setLoopMode(LoopMode.one);
             await player.setVolume(1.0);
             _players[key] = player;
@@ -58,7 +60,11 @@ class AudioManager {
     await Future.wait(futures);
   }
 
-  Future<void> onTapSound(List<NewSoundModel> sounds, NewSoundModel sound, bool isTrial) async {
+  Future<void> onTapSound(
+    List<NewSoundModel> sounds,
+    NewSoundModel sound,
+    bool isTrial,
+  ) async {
     await ensurePlayers(sounds);
 
     final key = sound.title;
@@ -99,7 +105,6 @@ class AudioManager {
     }
   }
 
-
   /// Sync players with current selection
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
     // Dispose removed players
@@ -137,7 +142,11 @@ class AudioManager {
     await adjustVolumes(selectedSounds);
   }
 
-  Future<void> toggleSoundSelection(List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial) async {
+  Future<void> toggleSoundSelection(
+    List<NewSoundModel> allSounds,
+    NewSoundModel targetSound,
+    bool isTrial,
+  ) async {
     await ensurePlayers(allSounds);
 
     final key = targetSound.title;
@@ -172,7 +181,10 @@ class AudioManager {
     }
 
     // Update the selected titles notifier
-    final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+    final selectedTitles = allSounds
+        .where((s) => s.isSelected)
+        .map((s) => s.title)
+        .toList();
     selectedTitlesNotifier.value = selectedTitles;
 
     // Update playing state
@@ -255,4 +267,6 @@ class AudioManager {
     // selectedTitlesNotifier.dispose();
     // isPlayingNotifier.dispose();
   }
+
+  
 }

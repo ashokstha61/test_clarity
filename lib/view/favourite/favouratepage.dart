@@ -28,8 +28,8 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   List<NewSoundModel> favoriteSounds = [];
-
-  NewSoundModel? _currentSound;
+  NewSoundModel? currentMix;
+  bool isPlaying = false;
 
   @override
   void initState() {
@@ -44,25 +44,47 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
-  void _onTap(NewSoundModel sound) async {
-    setState(() {
-      _currentSound = sound;
-    });
+  void _onFavoriteTap(NewSoundModel sound) async {
+    if (currentMix == sound && isPlaying) {
+      // pause if same sound is already playing
+      await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
+      isPlaying = false;
+    } else {
+      if (currentMix != null && currentMix != sound) {
+        // pause previous sound
+        await AudioManager().toggleSoundSelection(
+          favoriteSounds,
+          currentMix!,
+          false,
+        );
+      }
+      await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
+      currentMix = sound;
+      isPlaying = true;
+    }
+    setState(() {});
+  }
 
-    await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
+  void _togglePlayback() async {
+    if (currentMix != null) {
+      await AudioManager().toggleSoundSelection(
+        favoriteSounds,
+        currentMix!,
+        false,
+      );
+      setState(() {
+        isPlaying = !isPlaying;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: const Color(0xFF12162A),
       body: SafeArea(
         child: Column(
           children: [
-            // Title
             SizedBox(height: 5.h),
-
-            // Show EmptyFile if no favorites, else show FavoriteView
             Expanded(
               child: favoriteSounds.isEmpty
                   ? EmptyFile()
@@ -72,21 +94,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         final sound = favoriteSounds[index];
                         return FavoriteTile(
                           title: sound.title,
-                          onTap: () => _onTap(sound),
+                          onTap: () => _onFavoriteTap(sound),
                         );
                       },
                     ),
             ),
-
-            // Divider(color: Colors.grey.shade700, height: 1.h),
-
-            // Bottom Player Bar
-            if (widget.currentTitle != null)
+            if (currentMix != null)
               Container(
                 height: 60.h,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
+                    colors: [
+                      Color.fromARGB(255, 61, 61, 147),
+                      Color.fromARGB(255, 64, 64, 144),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -96,18 +117,18 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.currentTitle!,
+                      currentMix!.title,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontFamily: "Montserrat",
                         fontWeight: FontWeight.w600,
-                        color: ThemeHelper.textColor(context),
+                        color: ThemeHelper.iconAndTextColorRemix(context),
                       ),
                     ),
                     IconButton(
-                      onPressed: widget.onTogglePlayback,
+                      onPressed: _togglePlayback,
                       icon: Image.asset(
-                        widget.isPlaying
+                        isPlaying
                             ? "assets/images/pause.png"
                             : "assets/images/play.png",
                         width: 28.w,
