@@ -1,4 +1,5 @@
 import 'package:clarity/theme.dart';
+import 'package:clarity/view/home/homepage.dart';
 import 'package:clarity/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,10 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     imagePath: 'assets/images/google.png',
                     onPressed: () async {
                       User? user = await _authService.signInWithGoogle();
+                      print(user);
                       if (user != null) {
-                        // Navigate to home or show success
-                      } else {
-                        // Show error message
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Homepage()
+                          )
+                        );
                       }
                     },
                   ),

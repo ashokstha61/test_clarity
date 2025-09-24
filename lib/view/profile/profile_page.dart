@@ -2,6 +2,7 @@ import 'package:clarity/theme.dart';
 import 'package:clarity/view/login/auth.dart';
 import 'package:clarity/view/login/login_screen.dart';
 import 'package:clarity/view/profile/legal_documents_page.dart';
+import 'package:clarity/view/subscription/SubscriptionManagementView.dart';
 import 'package:flutter/material.dart';
 import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
@@ -102,7 +103,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-            CustomListTile(title: 'Subscription Management', onTap: () {}),
+            CustomListTile(title: 'Subscription Management', onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SubscriptionManagementView()),
+              );
+            }),
             Divider(),
             Text(
               'Support',
