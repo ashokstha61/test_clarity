@@ -1,5 +1,4 @@
 import 'package:clarity/view/favourite/favorite_tile.dart';
-import 'package:clarity/view/favourite/favouratepage.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteView extends StatelessWidget {
