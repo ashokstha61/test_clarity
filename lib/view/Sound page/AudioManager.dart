@@ -58,46 +58,46 @@ class AudioManager {
     await Future.wait(futures);
   }
 
-  Future<void> onTapSound(List<NewSoundModel> sounds, NewSoundModel sound, bool isTrial) async {
-    await ensurePlayers(sounds);
-
-    final key = sound.title;
-    final player = _players[key];
-    if (player == null) {
-      debugPrint("⚠️ Player not found for $key");
-      return;
-    }
-
-    if (isTrial) {
-      if (sound.isSelected) {
-        await player.stop();
-        sound.isSelected = false;
-      } else {
-        await player.seek(Duration.zero);
-        await player.play();
-        sound.isSelected = true;
-      }
-    } else {
-      if (sound.isSelected) {
-        await player.stop();
-        sound.isSelected = false;
-      } else {
-        for (final other in sounds) {
-          if (other.title != key && other.isSelected) {
-            final otherPlayer = _players[other.title];
-            if (otherPlayer != null) {
-              await otherPlayer.stop();
-            }
-            other.isSelected = false;
-          }
-        }
-
-        await player.seek(Duration.zero);
-        await player.play();
-        sound.isSelected = true;
-      }
-    }
-  }
+  // Future<void> onTapSound(List<NewSoundModel> sounds, NewSoundModel sound, bool isTrial) async {
+  //   await ensurePlayers(sounds);
+  //
+  //   final key = sound.title;
+  //   final player = _players[key];
+  //   if (player == null) {
+  //     debugPrint("⚠️ Player not found for $key");
+  //     return;
+  //   }
+  //
+  //   if (isTrial) {
+  //     if (sound.isSelected) {
+  //       await player.stop();
+  //       sound.isSelected = false;
+  //     } else {
+  //       await player.seek(Duration.zero);
+  //       await player.play();
+  //       sound.isSelected = true;
+  //     }
+  //   } else {
+  //     if (sound.isSelected) {
+  //       await player.stop();
+  //       sound.isSelected = false;
+  //     } else {
+  //       for (final other in sounds) {
+  //         if (other.title != key && other.isSelected) {
+  //           final otherPlayer = _players[other.title];
+  //           if (otherPlayer != null) {
+  //             await otherPlayer.stop();
+  //           }
+  //           other.isSelected = false;
+  //         }
+  //       }
+  //
+  //       await player.seek(Duration.zero);
+  //       await player.play();
+  //       sound.isSelected = true;
+  //     }
+  //   }
+  // }
 
 
   /// Sync players with current selection
@@ -137,49 +137,74 @@ class AudioManager {
     await adjustVolumes(selectedSounds);
   }
 
-  Future<void> toggleSoundSelection(List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial) async {
-    await ensurePlayers(allSounds);
+  Future<void> toggleSoundSelection(
+      List<NewSoundModel> allSounds,
+      NewSoundModel targetSound,
+      bool isTrial,
+      ) async {
+    try {
+      await ensurePlayers(allSounds);
+    } catch (e, st) {
+      print("❌ ensurePlayers failed: $e\n$st");
+      return;
+    }
 
     final key = targetSound.title;
     final player = _players[key];
     if (player == null) {
-      debugPrint("⚠️ Player not found for $key");
+      print("⚠️ Player not found for $key");
       return;
     }
 
-    if (targetSound.isSelected) {
-      // Deselect the sound
-      await player.stop();
-      targetSound.isSelected = false;
-    } else {
-      // Select the sound
-      if (!isTrial) {
-        // Non-trial mode: only one sound can play at a time
-        for (final other in allSounds) {
-          if (other.title != key && other.isSelected) {
-            final otherPlayer = _players[other.title];
-            if (otherPlayer != null) {
-              await otherPlayer.stop();
+    try {
+      if (targetSound.isSelected) {
+
+        targetSound.isSelected = false;
+
+        final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+        selectedTitlesNotifier.value = selectedTitles;
+
+        final anyPlaying = selectedTitles.isNotEmpty;
+        isPlayingNotifier.value = anyPlaying;
+        isSoundPlaying = anyPlaying;
+        await player.stop();
+      } else {
+        if (!isTrial) {
+          for (final other in allSounds) {
+            if (other.title != key && other.isSelected) {
+              final otherPlayer = _players[other.title];
+              if (otherPlayer != null) {
+                try {
+                  await otherPlayer.stop();
+                } catch (e, st) {
+                  print("❌ Error stopping ${other.title}: $e\n$st");
+                }
+              }
+              other.isSelected = false;
             }
-            other.isSelected = false;
           }
         }
+
+        targetSound.isSelected = true;
+
+        final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+        selectedTitlesNotifier.value = selectedTitles;
+
+        // Update playing state
+        final anyPlaying = selectedTitles.isNotEmpty;
+        isPlayingNotifier.value = anyPlaying;
+        isSoundPlaying = anyPlaying;
+
+        await player.seek(Duration.zero);
+        await player.play();
       }
-
-      await player.seek(Duration.zero);
-      await player.play();
-      targetSound.isSelected = true;
+    } catch (e, st) {
+      print("❌ Error in main toggle logic for ${targetSound.title}: $e\n$st");
+      targetSound.isSelected = false;
+      return;
     }
-
-    // Update the selected titles notifier
-    final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
-    selectedTitlesNotifier.value = selectedTitles;
-
-    // Update playing state
-    final anyPlaying = selectedTitles.isNotEmpty;
-    isPlayingNotifier.value = anyPlaying;
-    isSoundPlaying = anyPlaying;
   }
+
 
   double getSavedVolume(String title, {double defaultValue = 1.0}) {
     return _volumeMap[title] ?? defaultValue;
@@ -216,6 +241,7 @@ class AudioManager {
         }
       }),
     );
+
   }
 
   Future<void> pauseAll() async {
