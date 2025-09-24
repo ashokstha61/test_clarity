@@ -39,12 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       User? user = await _authService.signInWithGoogle();
                       print(user);
+
+                      if (!mounted) return;
                       if (user != null) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const Homepage()
-                          )
+                          MaterialPageRoute(builder: (context) => Homepage()),
                         );
                       }
                     },
@@ -59,9 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignInScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => SignInScreen()),
                         // remove all previous
                       );
                     },
