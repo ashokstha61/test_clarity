@@ -6,6 +6,7 @@ import 'package:clarity/view/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../Sound page/AudioManager.dart';
 import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _HomepageState extends State<Homepage> {
       if (mounted) {
         setState(() {
           soundData = sounds;
-          _screens[0] = SoundPage(); // Replace with actual SoundPage
+          _screens[0] = const SoundPage();
           _screens[1] = FavoritesPage(
             currentTitle: _currentPlayingTitle,
             isPlaying: _isPlaying,
@@ -85,12 +86,18 @@ class _HomepageState extends State<Homepage> {
     // TODO: Add actual audio play/pause logic
   }
 
-  void _onFavoriteItemTap(String title) {
+  void _onFavoriteItemTap(NewSoundModel sound) async {
     setState(() {
-      _currentPlayingTitle = title;
+      _currentPlayingTitle = sound.title;
       _isPlaying = true;
+      _screens[1] = FavoritesPage(
+        currentTitle: _currentPlayingTitle,
+        isPlaying: _isPlaying,
+        onTogglePlayback: _togglePlayback,
+        onItemTap: _onFavoriteItemTap,
+      );
     });
-    // TODO: Play selected favorite sound
+    await AudioManager().toggleSoundSelection(soundData, sound, false);
   }
 
   @override

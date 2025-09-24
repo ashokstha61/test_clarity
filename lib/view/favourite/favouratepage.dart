@@ -6,11 +6,13 @@ import 'package:clarity/view/favourite/favouratemanager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../Sound page/AudioManager.dart';
+
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
   final bool isPlaying;
   final VoidCallback onTogglePlayback;
-  final Function(String) onItemTap;
+  final Function(NewSoundModel) onItemTap;
 
   const FavoritesPage({
     super.key,
@@ -27,6 +29,8 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   List<NewSoundModel> favoriteSounds = [];
 
+  NewSoundModel? _currentSound;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +44,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
+  void _onTap(NewSoundModel sound) async {
+    setState(() {
+      _currentSound = sound;
+    });
+
+    await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,19 +60,19 @@ class _FavoritesPageState extends State<FavoritesPage> {
         child: Column(
           children: [
             // Title
-            const SizedBox(height: 20),
+            SizedBox(height: 5.h),
 
             // Show EmptyFile if no favorites, else show FavoriteView
             Expanded(
               child: favoriteSounds.isEmpty
-                  ? const EmptyFile()
+                  ? EmptyFile()
                   : ListView.builder(
                       itemCount: favoriteSounds.length,
                       itemBuilder: (context, index) {
                         final sound = favoriteSounds[index];
                         return FavoriteTile(
                           title: sound.title,
-                          onTap: () => widget.onItemTap(sound.title),
+                          onTap: () => _onTap(sound),
                         );
                       },
                     ),
@@ -71,7 +83,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             // Bottom Player Bar
             if (widget.currentTitle != null)
               Container(
-                height: 60,
+                height: 60.h,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
@@ -79,17 +91,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 25),
+                padding: EdgeInsets.symmetric(horizontal: 25.sp),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       widget.currentTitle!,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: 14.sp,
                         fontFamily: "Montserrat",
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: ThemeHelper.textColor(context),
                       ),
                     ),
                     IconButton(
@@ -98,8 +110,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         widget.isPlaying
                             ? "assets/images/pause.png"
                             : "assets/images/play.png",
-                        width: 28,
-                        height: 28,
+                        width: 28.w,
+                        height: 28.h,
                       ),
                     ),
                   ],

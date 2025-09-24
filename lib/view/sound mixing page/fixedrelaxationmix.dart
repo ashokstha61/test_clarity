@@ -283,33 +283,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  // Future<void> _removeSoundFromMixInternal(
-  //   NewSoundModel sound,
-  //   bool updateCallback,
-  // ) async {
-  //   try {
-  //     setState(() {
-  //       _recommendedSounds.add(sound.copyWith(isSelected: false));
-  //       _selectedSounds.removeWhere((s) => s.title == sound.title);
-  //     });
 
-  //     if (_selectedSounds.isEmpty) {
-  //       setState(() {
-  //         isSoundPlaying = false;
-  //       });
-  //     }
-
-  //     _audioManager.pauseSound(sound.title);
-  //     _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
-  //     await _audioManager.syncPlayers(_selectedSounds);
-
-  //     if (updateCallback) {
-  //       widget.onSoundsChanged(_buildUpdatedSounds());
-  //     }
-  //   } catch (e) {
-  //     _showErrorSnackBar('Failed to remove sound: $e');
-  //   }
-  // }
 
   Future<void> _removeSoundFromMixInternal(
   NewSoundModel sound,

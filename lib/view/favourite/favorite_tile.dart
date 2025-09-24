@@ -14,10 +14,10 @@ class FavoriteTile extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 5.h),
       child: ListTile(
         leading: Container(
-          width: 40,
-          height: 40,
+          width: 40.w,
+          height: 40.h,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.blue.shade200, width: 1),
+            border: Border.all(color: Colors.blue.shade200, width: 1.w),
             borderRadius: BorderRadius.circular(3),
           ),
           child: Icon(Icons.music_note, color: ThemeHelper.iconColor(context)),
@@ -33,7 +33,6 @@ class FavoriteTile extends StatelessWidget {
         ),
         onTap: onTap,
       ),
-      
     );
   }
 }
