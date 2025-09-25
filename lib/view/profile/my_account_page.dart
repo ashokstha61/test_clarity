@@ -7,6 +7,8 @@ import 'package:clarity/custom/custom_setting.dart';
 import 'package:clarity/custom/custom_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../subscription/SubscriptionManagement.dart';
+
 class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
 
@@ -15,6 +17,7 @@ class MyAccountPage extends StatefulWidget {
 }
 
 class _MyAccountPageState extends State<MyAccountPage> {
+  final SubscriptionManagement subscription = SubscriptionManagement();
   bool _isDarkMode = false;
   String fullName = '';
   String email = '';
@@ -26,6 +29,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
     _loadUserInfoFromFirestore(); // Then check Firestore
     final appState = MyApp.of(context);
     if (appState != null) _isDarkMode = appState.isDarkMode;
+    subscription.fetchPackages();
   }
 
   /// Load cached values (instant display)

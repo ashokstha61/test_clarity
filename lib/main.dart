@@ -2,15 +2,15 @@ import 'package:clarity/view/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-// import 'view/sound mixing page/remix test.dart';
-// import 'package:just_audio/just_audio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Purchases.configure(
+    PurchasesConfiguration("goog_pXDFgIWJTwgEzOwiNtVpCffRXne"), // 👈 Use Android key here
+  );
   runApp(const MyApp());
 }
 

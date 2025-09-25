@@ -8,6 +8,8 @@ import 'package:clarity/custom/custom_logout_button.dart';
 import 'package:clarity/custom/customtilelist.dart';
 import 'package:clarity/view/profile/my_account_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:purchases_ui_flutter/paywall_result.dart';
+import '../subscription/SubscriptionManagement.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final SubscriptionManagement subscription = SubscriptionManagement();
 
   // bool _isDarkMode = false;
 
@@ -25,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     // final appState = MyApp.of(context);
     // if (appState != null) _isDarkMode = appState.isDarkMode;
+    // subscription.fetchPackages();
   }
 
   void _logout(BuildContext context) {
@@ -75,7 +79,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final subscriptionManager = SubscriptionManagement();
+
+                      // Present the paywall
+                      final result = await subscriptionManager.presentPaywall();
+
+                      if (result == PaywallResult.purchased) {
+                        // User completed purchase
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Purchase successful!')),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
                       backgroundColor: Color.fromARGB(255, 157, 157, 190),
