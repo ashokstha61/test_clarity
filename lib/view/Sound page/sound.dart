@@ -121,7 +121,7 @@ class _SoundPageState extends State<SoundPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadSounds,
-                child: const Text('Retry'),
+                child:  Text('Retry'),
               ),
             ],
           ),
@@ -138,7 +138,7 @@ class _SoundPageState extends State<SoundPage> {
             child: RefreshIndicator(
               onRefresh: _loadSounds,
               child: _sounds.isEmpty
-                  ? const Center(child: Text('No sounds available'))
+                  ?  Center(child: Text('No sounds available'))
                   : ListView.builder(
                 itemCount: _sounds.length,
                 itemBuilder: (context, index) {

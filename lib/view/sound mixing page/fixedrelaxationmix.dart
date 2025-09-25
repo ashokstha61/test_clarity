@@ -283,51 +283,53 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-
-
   Future<void> _removeSoundFromMixInternal(
-  NewSoundModel sound,
-  bool updateCallback,
-) async {
-  try {
-    setState(() {
-      _selectedSounds.removeWhere((s) => s.title == sound.title);
+    NewSoundModel sound,
+    bool updateCallback,
+  ) async {
+    try {
+      setState(() {
+        _selectedSounds.removeWhere((s) => s.title == sound.title);
 
-      // find original index in the full sounds list
-      final originalIndex = widget.sounds.indexWhere((s) => s.title == sound.title);
-
-      if (originalIndex != -1) {
-        // insert back into recommendedSounds at the right position
-        final insertIndex = _recommendedSounds.indexWhere(
-          (s) => widget.sounds.indexOf(s) > originalIndex,
+        // find original index in the full sounds list
+        final originalIndex = widget.sounds.indexWhere(
+          (s) => s.title == sound.title,
         );
 
-        if (insertIndex == -1) {
-          _recommendedSounds.add(sound.copyWith(isSelected: false));
-        } else {
-          _recommendedSounds.insert(insertIndex, sound.copyWith(isSelected: false));
+        if (originalIndex != -1) {
+          // insert back into recommendedSounds at the right position
+          final insertIndex = _recommendedSounds.indexWhere(
+            (s) => widget.sounds.indexOf(s) > originalIndex,
+          );
+
+          if (insertIndex == -1) {
+            _recommendedSounds.add(sound.copyWith(isSelected: false));
+          } else {
+            _recommendedSounds.insert(
+              insertIndex,
+              sound.copyWith(isSelected: false),
+            );
+          }
         }
-      }
-    });
-
-    if (_selectedSounds.isEmpty) {
-      setState(() {
-        isSoundPlaying = false;
       });
-    }
 
-    _audioManager.pauseSound(sound.title);
-    _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
-    await _audioManager.syncPlayers(_selectedSounds);
+      if (_selectedSounds.isEmpty) {
+        setState(() {
+          isSoundPlaying = false;
+        });
+      }
 
-    if (updateCallback) {
-      widget.onSoundsChanged(_buildUpdatedSounds());
+      _audioManager.pauseSound(sound.title);
+      _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
+      await _audioManager.syncPlayers(_selectedSounds);
+
+      if (updateCallback) {
+        widget.onSoundsChanged(_buildUpdatedSounds());
+      }
+    } catch (e) {
+      _showErrorSnackBar('Failed to remove sound: $e');
     }
-  } catch (e) {
-    _showErrorSnackBar('Failed to remove sound: $e');
   }
-}
-
 
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
@@ -369,9 +371,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       appBar: AppBar(
         leadingWidth: 60,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.keyboard_arrow_down,
-            color: Colors.white,
+            color: ThemeHelper.textTitle(context),
             size: 35,
           ),
           onPressed: () {
@@ -384,18 +386,22 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           padding: const EdgeInsets.only(top: 8.0),
           child: Column(
             children: [
-              const Text(
+              Text(
                 'Your Relaxation Mix',
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                style: TextStyle(
+                  color: ThemeHelper.textTitle(context),
+                  fontSize: 25,
+                  fontFamily: 'Montserrat',
+                ),
               ),
             ],
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(18, 23, 42, 1),
+        // backgroundColor:  Color.fromRGBO(18, 23, 42, 1),
       ),
       body: Container(
-        color: const Color.fromRGBO(18, 23, 42, 1),
+        // color: const Color.fromRGBO(18, 23, 42, 1),
         child: Column(
           children: [
             Expanded(
@@ -404,9 +410,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Recommended Sounds',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: ThemeHelper.textTitle(context),
+                        fontFamily: 'Montserrat',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -430,9 +440,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
+                    Text(
                       'Selected Sounds',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: ThemeHelper.textTitle(context),
+                        fontFamily: 'Montserrat',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Expanded(
@@ -638,9 +652,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(18, 23, 42, 1),
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.teal[50]!),
+                  border: Border.all(
+                    color: ui.Color.fromARGB(255, 62, 86, 145)!,
+                    width: 2.w,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -651,10 +668,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Text(
                         sound.title.replaceAll('_', ' '),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white,
+                          color: ThemeHelper.textTitle(context),
                           overflow: TextOverflow.ellipsis,
+                          fontFamily: 'Montserrat',
                         ),
                         maxLines: 1,
                       ),
@@ -675,12 +693,15 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 50.w,
+            height: 50.h,
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(18, 23, 42, 1),
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: Colors.teal[50]!),
+              border: Border.all(
+                color: const ui.Color.fromARGB(255, 51, 61, 108)!,
+                width: 2.w,
+              ),
             ),
             child: Stack(
               clipBehavior: Clip.none,
@@ -722,7 +743,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   padding: EdgeInsets.only(left: 16.sp),
                   child: Text(
                     sound.title.replaceAll('_', ' '),
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: ThemeHelper.textTitle(context),
+                      fontFamily: 'Montserrat',
+                    ),
                   ),
                 ),
                 SizedBox(height: 5.h),
