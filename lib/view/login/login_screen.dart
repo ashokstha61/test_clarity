@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       if (!mounted) return;
                       if (user != null) {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => Homepage()),
                         );
