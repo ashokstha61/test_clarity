@@ -45,33 +45,46 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _onFavoriteTap(NewSoundModel sound) async {
-    if (currentMix == sound && isPlaying) {
-      // pause if same sound is already playing
-      await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
-      isPlaying = false;
-    } else {
-      if (currentMix != null && currentMix != sound) {
-        // pause previous sound
-        await AudioManager().toggleSoundSelection(
-          favoriteSounds,
-          currentMix!,
-          false,
+    final filepaths = sound.mixFilePaths ?? [];
+
+    if (filepaths.isEmpty) return; // prevent crash if no files
+
+    if (currentMix == null || sound.filepath != currentMix!.filepath) {
+      // If new mix → stop old one and play this
+      if (currentMix?.mixFilePaths != null) {
+        await AudioManager().pauseSounds(
+          currentMix!.mixFilePaths,
+          context: "mix_",
         );
       }
-      await AudioManager().toggleSoundSelection(favoriteSounds, sound, false);
       currentMix = sound;
-      isPlaying = true;
+      await AudioManager().playMix(filepaths, context: "mix_");
+      isPlaying = true; // ✅ mark as playing
+    } else {
+      // If same mix tapped → toggle play/pause
+      final playingNow = AudioManager().isAnyPlayingInContext(
+        filepaths,
+        context: "mix_",
+      );
+      if (playingNow) {
+        await AudioManager().pauseSounds(filepaths, context: "mix_");
+        isPlaying = false; // ✅ mark as paused
+      } else {
+        await AudioManager().playMix(filepaths, context: "mix_");
+        isPlaying = true; // ✅ mark as playing
+      }
     }
-    setState(() {});
+
+    setState(() {}); // refresh UI
   }
 
   void _togglePlayback() async {
     if (currentMix != null) {
-      await AudioManager().toggleSoundSelection(
-        favoriteSounds,
-        currentMix!,
-        false,
-      );
+      if (isPlaying) {
+        await AudioManager().pauseSound(currentMix!.filepath);
+      } else {
+        await AudioManager().playSound(currentMix!.filepath);
+      }
       setState(() {
         isPlaying = !isPlaying;
       });

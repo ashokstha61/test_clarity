@@ -172,7 +172,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       icon: 'default_icon',
       filepath: "mix_$mixName",
       musicUrl: "",
-      isSelected: true,
+      isSelected: false,
       isFav: true,
       isNew: true,
       isLocked: false,
@@ -655,7 +655,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: ui.Color.fromARGB(255, 62, 86, 145)!,
+                    color: Color.fromARGB(255, 62, 86, 145),
                     width: 2.w,
                   ),
                 ),
@@ -699,7 +699,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(5),
               border: Border.all(
-                color: const ui.Color.fromARGB(255, 51, 61, 108)!,
+                color: Color.fromARGB(255, 51, 61, 108),
                 width: 2.w,
               ),
             ),

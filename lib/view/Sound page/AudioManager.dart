@@ -60,8 +60,6 @@ class AudioManager {
     await Future.wait(futures);
   }
 
-  
-
   /// Sync players with current selection
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
     // Dispose removed players
@@ -100,10 +98,10 @@ class AudioManager {
   }
 
   Future<void> toggleSoundSelection(
-      List<NewSoundModel> allSounds,
-      NewSoundModel targetSound,
-      bool isTrial,
-      ) async {
+    List<NewSoundModel> allSounds,
+    NewSoundModel targetSound,
+    bool isTrial,
+  ) async {
     try {
       await ensurePlayers(allSounds);
     } catch (e, st) {
@@ -120,10 +118,12 @@ class AudioManager {
 
     try {
       if (targetSound.isSelected) {
-
         targetSound.isSelected = false;
 
-        final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+        final selectedTitles = allSounds
+            .where((s) => s.isSelected)
+            .map((s) => s.title)
+            .toList();
         selectedTitlesNotifier.value = selectedTitles;
 
         final anyPlaying = selectedTitles.isNotEmpty;
@@ -149,7 +149,10 @@ class AudioManager {
 
         targetSound.isSelected = true;
 
-        final selectedTitles = allSounds.where((s) => s.isSelected).map((s) => s.title).toList();
+        final selectedTitles = allSounds
+            .where((s) => s.isSelected)
+            .map((s) => s.title)
+            .toList();
         selectedTitlesNotifier.value = selectedTitles;
 
         // Update playing state
@@ -166,7 +169,6 @@ class AudioManager {
       return;
     }
   }
-
 
   double getSavedVolume(String title, {double defaultValue = 1.0}) {
     return _volumeMap[title] ?? defaultValue;
@@ -203,7 +205,6 @@ class AudioManager {
         }
       }),
     );
-
   }
 
   Future<void> pauseAll() async {
@@ -244,5 +245,58 @@ class AudioManager {
     // isPlayingNotifier.dispose();
   }
 
-  
+  bool isAnyPlayingInContext(List<String> filepath, {String? context}) {
+    for (var fp in filepath) {
+      final key = context != null ? '$context$fp' : fp;
+      if (_players[key]?.playing == true) return true;
+    }
+    return false;
+  }
+
+    /// Play all sounds in a mix
+  Future<void> playMix(List<String> filepaths, {String? context}) async {
+    for (var fp in filepaths) {
+      final key = context != null ? '$context$fp' : fp;
+      var player = _players[key];
+
+      if (player == null) {
+        // If player doesn't exist, initialize
+        player = AudioPlayer();
+        try {
+          await player.setAudioSource(AudioSource.uri(Uri.parse(fp)));
+          await player.setLoopMode(LoopMode.one);
+          await player.setVolume(1.0);
+          _players[key] = player;
+        } catch (e) {
+          debugPrint("❌ Failed to load $fp: $e");
+          continue;
+        }
+      }
+
+      if (!player.playing) {
+        await player.seek(Duration.zero);
+        await player.play();
+      }
+    }
+
+    isPlayingNotifier.value = true;
+    isSoundPlaying = true;
+  }
+
+  /// Pause all sounds in a given list
+  Future<void> pauseSounds(List<String> filepaths, {String? context}) async {
+    for (var fp in filepaths) {
+      final key = context != null ? '$context$fp' : fp;
+      final player = _players[key];
+      if (player != null && player.playing) {
+        await player.pause();
+      }
+    }
+
+    // If nothing else is playing → update notifiers
+    final anyPlaying = _players.values.any((p) => p.playing);
+    isPlayingNotifier.value = anyPlaying;
+    isSoundPlaying = anyPlaying;
+  }
+
 }
