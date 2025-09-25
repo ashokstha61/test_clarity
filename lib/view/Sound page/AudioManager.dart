@@ -60,47 +60,7 @@ class AudioManager {
     await Future.wait(futures);
   }
 
-  // Future<void> onTapSound(List<NewSoundModel> sounds, NewSoundModel sound, bool isTrial) async {
-  //   await ensurePlayers(sounds);
-  //
-  //   final key = sound.title;
-  //   final player = _players[key];
-  //   if (player == null) {
-  //     debugPrint("⚠️ Player not found for $key");
-  //     return;
-  //   }
-  //
-  //   if (isTrial) {
-  //     if (sound.isSelected) {
-  //       await player.stop();
-  //       sound.isSelected = false;
-  //     } else {
-  //       await player.seek(Duration.zero);
-  //       await player.play();
-  //       sound.isSelected = true;
-  //     }
-  //   } else {
-  //     if (sound.isSelected) {
-  //       await player.stop();
-  //       sound.isSelected = false;
-  //     } else {
-  //       for (final other in sounds) {
-  //         if (other.title != key && other.isSelected) {
-  //           final otherPlayer = _players[other.title];
-  //           if (otherPlayer != null) {
-  //             await otherPlayer.stop();
-  //           }
-  //           other.isSelected = false;
-  //         }
-  //       }
-  //
-  //       await player.seek(Duration.zero);
-  //       await player.play();
-  //       sound.isSelected = true;
-  //     }
-  //   }
-  // }
-
+  
 
   /// Sync players with current selection
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
