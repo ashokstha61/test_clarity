@@ -172,7 +172,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       icon: 'default_icon',
       filepath: "mix_$mixName",
       musicUrl: "",
-      isSelected: false,
+      isSelected: true,
       isFav: true,
       isNew: true,
       isLocked: false,
