@@ -4,6 +4,7 @@ import 'package:clarity/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../model/usermodel.dart';
 import '../sound mixing page/fixedrelaxationmix.dart';
 import 'AudioManager.dart';
@@ -119,10 +120,7 @@ class _SoundPageState extends State<SoundPage> {
             children: [
               Text(_errorMessage!, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loadSounds,
-                child:  Text('Retry'),
-              ),
+              ElevatedButton(onPressed: _loadSounds, child: Text('Retry')),
             ],
           ),
         ),
@@ -138,22 +136,22 @@ class _SoundPageState extends State<SoundPage> {
             child: RefreshIndicator(
               onRefresh: _loadSounds,
               child: _sounds.isEmpty
-                  ?  Center(child: Text('No sounds available'))
+                  ? Center(child: Text('No sounds available'))
                   : ListView.builder(
-                itemCount: _sounds.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      SoundTile(
-                        sound: _sounds[index],
-                        onTap: () => _toggleSoundSelection(index),
-                        isTrail: isTrial,
-                      ),
-                      const Divider(height: 1),
-                    ],
-                  );
-                },
-              ),
+                      itemCount: _sounds.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            SoundTile(
+                              sound: _sounds[index],
+                              onTap: () => _toggleSoundSelection(index),
+                              isTrail: isTrial,
+                            ),
+                            Divider(height: 1, indent: 15.w, endIndent: 15.w),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ),
           if (selectedSounds.isNotEmpty)
@@ -176,7 +174,9 @@ class _SoundPageState extends State<SoundPage> {
                             ),
                           ),
                           child: RelaxationMixPage(
-                            sounds: List.from(_sounds), // Pass a copy of current sounds
+                            sounds: List.from(
+                              _sounds,
+                            ), // Pass a copy of current sounds
                             onSoundsChanged: (newSounds) {
                               // This callback will be called when sounds change in mix page
                               if (mounted) {

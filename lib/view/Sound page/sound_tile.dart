@@ -32,7 +32,7 @@ class SoundTile extends StatelessWidget {
             splashFactory: NoSplash.splashFactory,
           ),
           child: ListTile(
-            contentPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.symmetric(horizontal: 8.w),
             onTap: locked ? null : onTap, // disable tap if locked
             leading: SizedBox(
               width: 53.w,

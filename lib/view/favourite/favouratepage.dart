@@ -45,7 +45,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _onFavoriteTap(NewSoundModel sound) async {
-    final filepaths = sound.mixFilePaths ?? [];
+    final filepaths = sound.mixFilePaths;
 
     if (filepaths.isEmpty) return; // prevent crash if no files
 
@@ -112,6 +112,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       },
                     ),
             ),
+            
             if (currentMix != null)
               Container(
                 height: 60.h,
