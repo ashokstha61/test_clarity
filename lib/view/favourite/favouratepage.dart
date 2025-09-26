@@ -74,7 +74,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         isPlaying = true; // ✅ mark as playing
       }
     }
-
+    if (!mounted) return;
     setState(() {}); // refresh UI
   }
 
@@ -112,7 +112,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       },
                     ),
             ),
-            
+
             if (currentMix != null)
               Container(
                 height: 60.h,
