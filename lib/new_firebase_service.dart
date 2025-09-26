@@ -1,10 +1,14 @@
 import 'package:clarity/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'model/favSoundModel.dart';
 
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _collectionName = 'SoundData';
+  final String _favSoundCollection= 'FavoriteSoundData';
 
   Future<List<NewSoundModel>> fetchSoundData() async {
     try {
@@ -72,6 +76,53 @@ class DatabaseService {
       await _firestore.collection(_collectionName).doc(id).delete();
     } catch (e) {
       print('Error deleting sound data: $e');
+    }
+  }
+
+  Future<void> addOrUpdateMix(FavSoundModel mix) async {
+    try {
+      final docRef = _firestore
+          .collection(_favSoundCollection)
+          .doc("${mix.userId}_${mix.favSoundTitle}");
+
+      await docRef.set({
+        'userId': mix.userId,
+        'favSoundTitle': mix.favSoundTitle,
+        'soundTitles': mix.soundTitles,
+      });
+    } catch (e) {
+      print("Failed to add/update mix: $e");
+    }
+  }
+
+  Future<List<FavSoundModel>> loadMixes(String userId) async {
+    try {
+      // Verify user is authenticated
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not authenticated');
+        return [];
+      }
+
+      // Ensure user can only access their own data
+      if (userId != user.uid) {
+        throw Exception('Unauthorized access');
+        return [];
+      }
+
+      final snapshot = await _firestore
+          .collection(_favSoundCollection)
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      final mixes = snapshot.docs
+          .map((doc) => FavSoundModel.fromJson(doc.data()))
+          .toList();
+
+      return mixes;
+    } catch (e) {
+      print("❌ Failed to load mixes: $e");
+      return [];
     }
   }
 }

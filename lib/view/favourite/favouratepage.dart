@@ -1,8 +1,10 @@
+import 'package:clarity/model/favSoundModel.dart';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/theme.dart';
 import 'package:clarity/view/favourite/empty_file.dart';
 import 'package:clarity/view/favourite/favorite_tile.dart';
 import 'package:clarity/view/favourite/favouratemanager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,7 +36,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  List<NewSoundModel> favoriteSounds = [];
+  List<FavSoundModel> favoriteSounds = [];
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager();
@@ -49,9 +51,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _loadFavorites() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     final fav = await FavoriteManager.instance.loadFavorites();
+    final favData = await _firebaseService.loadMixes(userId.toString());
     setState(() {
-      favoriteSounds = FavoriteManager.instance.favoriteSounds;
+      favoriteSounds = favData;
+      for(final favs in favData)
+        {
+          print('$favs.favorateSoundTitle');
+        }
       soundMixes = fav;
     });
   }
@@ -84,28 +92,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _onFavoriteTap(String mixName, List<String> soundTitles) async {
-  setState(() {
-  currentMix = mixName; // mark current
-  isPlaying = true;
-  });
+    setState(() {
+    currentMix = mixName; // mark current
+    isPlaying = true;
+    });
 
-  final selectedSounds = Sounds
-      .where((s) => soundTitles.contains(s.title))
-      .toList();
+    final selectedSounds = Sounds
+        .where((s) => soundTitles.contains(s.title))
+        .toList();
 
-  if (selectedSounds.isEmpty) {
-  debugPrint("⚠️ No matching sounds found for $mixName");
-  return;
-  }
+    if (selectedSounds.isEmpty) {
+    debugPrint("⚠️ No matching sounds found for $mixName");
+    return;
+    }
 
-  // Ensure AudioPlayers exist
-  await AudioManager().ensurePlayers(selectedSounds);
+    // Ensure AudioPlayers exist
+    await AudioManager().ensurePlayers(selectedSounds);
 
-  // Sync players (volumes, etc.)
-  await AudioManager().syncPlayers(selectedSounds);
+    // Sync players (volumes, etc.)
+    await AudioManager().syncPlayers(selectedSounds);
 
-  // Play all sounds in this mix
-  await AudioManager().playAll();
+    // Play all sounds in this mix
+    await AudioManager().playAll();
   }
 
   void _togglePlayback() async {
@@ -134,20 +142,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
           children: [
             SizedBox(height: 5.h),
             Expanded(
-              child: soundMixes.isEmpty
+              child: favoriteSounds.isEmpty
                   ? EmptyFile()
                   : ListView.builder(
-                      itemCount: soundMixes.length,
+                      itemCount: favoriteSounds.length,
                       itemBuilder: (context, index) {
-                        final mixName = soundMixes.keys.elementAt(index);
-                        final soundTitles = soundMixes[mixName]!;
+                        final favSound = favoriteSounds[index];
+                        final mixName = favSound.favSoundTitle;
+                        final soundTitles = favSound.soundTitles;
                         return FavoriteTile(
                           title: mixName,
                           onTap: ()=>_onFavoriteTap(mixName,soundTitles),
-
-
-
-
                         );
                       },
                     ),

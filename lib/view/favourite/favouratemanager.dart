@@ -1,31 +1,16 @@
-// import 'package:clarity/model/model.dart';
-
-// class FavoriteManager {
-//   FavoriteManager._privateConstructor();
-//   static final FavoriteManager instance = FavoriteManager._privateConstructor();
-
-//   List<NewSoundModel> favoriteSounds = [];
-
-//   void addFavorite(NewSoundModel sound) {
-//      if (!favoriteSounds.any((s) => s.title == sound.title)) {
-//       favoriteSounds.add(sound);
-//     }
-//   }
-
-//   List<NewSoundModel> getFavorites() {
-//     return favoriteSounds;
-//   }
-// }
 import 'dart:convert';
+import 'package:clarity/model/favSoundModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clarity/model/model.dart';
 
+import '../../new_firebase_service.dart';
 import 'favouratepage.dart'; // <- Your NewSoundModel
 
 class FavoriteManager {
   FavoriteManager._privateConstructor();
   static final FavoriteManager instance = FavoriteManager._privateConstructor();
+  final service = DatabaseService();
 
   List<NewSoundModel> favoriteSounds = [];
 
@@ -106,6 +91,7 @@ class FavoriteManager {
 
   /// Add a sound to favorites
   Future<void> addFavorite(String mixName, List<String> soundTitles) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     soundMixes.addAll({
       mixName: soundTitles,
     });
@@ -120,8 +106,14 @@ class FavoriteManager {
     //   favoriteSounds.add(sound.copyWith(isFav: true));
     //   await saveFavorites();
     // }
+    final mix = FavSoundModel(
+      soundTitles: soundTitles,
+      favSoundTitle: mixName,
+      userId: userId.toString(),
+    );
 
     await saveSoundMixes(soundMixes);
+    await service.addOrUpdateMix(mix);
   }
 
   /// Remove a sound from favorites
