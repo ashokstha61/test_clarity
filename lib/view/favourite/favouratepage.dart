@@ -6,7 +6,14 @@ import 'package:clarity/view/favourite/favouratemanager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
+
+final Map<String, List<String>> soundMixes = {
+  "Morning Mix": ["Birds", "Piano", "Rain"],
+  "Focus Mix": ["White Noise", "Typing", "Soft Wind"],
+  "Sleep Mix": ["Ocean", "Rain", "Thunder"],
+};
 
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
@@ -28,6 +35,9 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   List<NewSoundModel> favoriteSounds = [];
+  List<NewSoundModel> Sounds = [];
+  final DatabaseService _firebaseService = DatabaseService();
+  final AudioManager _audioManager = AudioManager();
   NewSoundModel? currentMix;
   bool isPlaying = false;
 
@@ -35,6 +45,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void initState() {
     super.initState();
     _loadFavorites();
+    _loadSounds();
   }
 
   void _loadFavorites() async {
@@ -42,6 +53,33 @@ class _FavoritesPageState extends State<FavoritesPage> {
     setState(() {
       favoriteSounds = FavoriteManager.instance.favoriteSounds;
     });
+  }
+
+  Future<void> _loadSounds() async {
+    setState(() {
+      // _isLoading = true;
+      // _errorMessage = null;
+    });
+
+    try {
+      final sounds = await _firebaseService.fetchSoundData();
+      for (var sound in sounds) {
+        sound.isSelected = _audioManager.selectedSoundTitles.contains(
+          sound.title,
+        );
+      }
+      // _cachedSounds = sounds;
+
+      setState(() {
+        Sounds = sounds;
+        // _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        // _errorMessage = 'Failed to load sounds: $e';
+        // _isLoading = false;
+      });
+    }
   }
 
   void _onFavoriteTap(NewSoundModel sound) async {
@@ -99,15 +137,40 @@ class _FavoritesPageState extends State<FavoritesPage> {
           children: [
             SizedBox(height: 5.h),
             Expanded(
-              child: favoriteSounds.isEmpty
+              child: soundMixes.isEmpty
                   ? EmptyFile()
                   : ListView.builder(
-                      itemCount: favoriteSounds.length,
+                      itemCount: soundMixes.length,
                       itemBuilder: (context, index) {
-                        final sound = favoriteSounds[index];
+                        final mixName = soundMixes.keys.elementAt(index);
+                        final soundTitles = soundMixes[mixName]!;
                         return FavoriteTile(
-                          title: sound.title,
-                          onTap: () => _onFavoriteTap(sound),
+                          title: mixName,
+                          onTap: () async {
+
+                            final selectedSounds = Sounds
+                                .where((s) => soundTitles.contains(s.title))
+                                .toList();
+
+                            if (selectedSounds.isEmpty) {
+                              debugPrint("⚠️ No matching sounds found for $mixName");
+                              return;
+                            }
+
+                            // Ensure AudioPlayers exist
+                            await AudioManager().ensurePlayers(selectedSounds);
+
+                            // Sync players (volumes, etc.)
+                            await AudioManager().syncPlayers(selectedSounds);
+
+                            // Play all sounds in this mix
+                            await AudioManager().playAll();
+
+                            setState(() {
+                              currentMix = selectedSounds.first; // mark current
+                              isPlaying = true;
+                            });
+                          },
                         );
                       },
                     ),
