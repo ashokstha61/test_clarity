@@ -9,10 +9,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
-final Map<String, List<String>> soundMixes = {
-  "Morning Mix": ["Birds", "Piano", "Rain"],
-  "Focus Mix": ["White Noise", "Typing", "Soft Wind"],
-  "Sleep Mix": ["Ocean", "Rain", "Thunder"],
+Map<String, List<String>> soundMixes = {
+  // "Morning Mix": ["Birds", "Piano", "Rain"],
+  // "Focus Mix": ["White Noise", "Typing", "Soft Wind"],
+  // "Sleep Mix": ["Ocean", "Rain", "Thunder"],
 };
 
 class FavoritesPage extends StatefulWidget {
@@ -38,7 +38,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager();
-  NewSoundModel? currentMix;
+  String? currentMix;
   bool isPlaying = false;
 
   @override
@@ -49,9 +49,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _loadFavorites() async {
-    await FavoriteManager.instance.loadFavorites();
+    final fav = await FavoriteManager.instance.loadFavorites();
     setState(() {
       favoriteSounds = FavoriteManager.instance.favoriteSounds;
+      soundMixes = fav;
     });
   }
 
@@ -82,50 +83,46 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  void _onFavoriteTap(NewSoundModel sound) async {
-    final filepaths = sound.mixFilePaths;
+  void _onFavoriteTap(String mixName, List<String> soundTitles) async {
+  setState(() {
+  currentMix = mixName; // mark current
+  isPlaying = true;
+  });
 
-    if (filepaths.isEmpty) return; // prevent crash if no files
+  final selectedSounds = Sounds
+      .where((s) => soundTitles.contains(s.title))
+      .toList();
 
-    if (currentMix == null || sound.filepath != currentMix!.filepath) {
-      // If new mix → stop old one and play this
-      if (currentMix?.mixFilePaths != null) {
-        await AudioManager().pauseSounds(
-          currentMix!.mixFilePaths,
-          context: "mix_",
-        );
-      }
-      currentMix = sound;
-      await AudioManager().playMix(filepaths, context: "mix_");
-      isPlaying = true; // ✅ mark as playing
-    } else {
-      // If same mix tapped → toggle play/pause
-      final playingNow = AudioManager().isAnyPlayingInContext(
-        filepaths,
-        context: "mix_",
-      );
-      if (playingNow) {
-        await AudioManager().pauseSounds(filepaths, context: "mix_");
-        isPlaying = false; // ✅ mark as paused
-      } else {
-        await AudioManager().playMix(filepaths, context: "mix_");
-        isPlaying = true; // ✅ mark as playing
-      }
-    }
-    if (!mounted) return;
-    setState(() {}); // refresh UI
+  if (selectedSounds.isEmpty) {
+  debugPrint("⚠️ No matching sounds found for $mixName");
+  return;
+  }
+
+  // Ensure AudioPlayers exist
+  await AudioManager().ensurePlayers(selectedSounds);
+
+  // Sync players (volumes, etc.)
+  await AudioManager().syncPlayers(selectedSounds);
+
+  // Play all sounds in this mix
+  await AudioManager().playAll();
   }
 
   void _togglePlayback() async {
     if (currentMix != null) {
+
       if (isPlaying) {
-        await AudioManager().pauseSound(currentMix!.filepath);
+        setState(() {
+          isPlaying = false;
+        });
+        await AudioManager().pauseAll();
       } else {
-        await AudioManager().playSound(currentMix!.filepath);
+        setState(() {
+          isPlaying = true;
+        });
+        await AudioManager().playAll();
       }
-      setState(() {
-        isPlaying = !isPlaying;
-      });
+
     }
   }
 
@@ -146,31 +143,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         final soundTitles = soundMixes[mixName]!;
                         return FavoriteTile(
                           title: mixName,
-                          onTap: () async {
+                          onTap: ()=>_onFavoriteTap(mixName,soundTitles),
 
-                            final selectedSounds = Sounds
-                                .where((s) => soundTitles.contains(s.title))
-                                .toList();
 
-                            if (selectedSounds.isEmpty) {
-                              debugPrint("⚠️ No matching sounds found for $mixName");
-                              return;
-                            }
 
-                            // Ensure AudioPlayers exist
-                            await AudioManager().ensurePlayers(selectedSounds);
 
-                            // Sync players (volumes, etc.)
-                            await AudioManager().syncPlayers(selectedSounds);
-
-                            // Play all sounds in this mix
-                            await AudioManager().playAll();
-
-                            setState(() {
-                              currentMix = selectedSounds.first; // mark current
-                              isPlaying = true;
-                            });
-                          },
                         );
                       },
                     ),
@@ -194,7 +171,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      currentMix!.title,
+                      currentMix!,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontFamily: "Montserrat",

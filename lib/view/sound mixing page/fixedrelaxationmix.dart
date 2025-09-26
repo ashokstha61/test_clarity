@@ -164,24 +164,24 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     // 3. Collect selected sound filepaths
-    final filepaths = _selectedSounds.map((s) => s.filepath).toList();
+    final selectedSoundskoTitle = _selectedSounds.map((s) => s.title).toList();
 
-    // 4. Create a new mix model
-    final mix = NewSoundModel(
-      title: mixName,
-      icon: 'default_icon',
-      filepath: "mix_$mixName",
-      musicUrl: "",
-      isSelected: false,
-      isFav: true,
-      isNew: true,
-      isLocked: false,
-      volume: 1.0,
-      mixFilePaths: filepaths, // 👈 your saved sounds
-    );
+    // // 4. Create a new mix model
+    // final mix = NewSoundModel(
+    //   title: mixName,
+    //   icon: 'default_icon',
+    //   filepath: "mix_$mixName",
+    //   musicUrl: "",
+    //   isSelected: false,
+    //   isFav: true,
+    //   isNew: true,
+    //   isLocked: false,
+    //   volume: 1.0,
+    //   mixFilePaths: filepaths, // 👈 your saved sounds
+    // );
 
     // 5. Save using your FavoritesManager
-    FavoriteManager.instance.addFavorite(mix);
+    FavoriteManager.instance.addFavorite(mixName, selectedSoundskoTitle);
 
     await showDialog(
       context: context,
