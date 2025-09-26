@@ -11,12 +11,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
-Map<String, List<String>> soundMixes = {
-  // "Morning Mix": ["Birds", "Piano", "Rain"],
-  // "Focus Mix": ["White Noise", "Typing", "Soft Wind"],
-  // "Sleep Mix": ["Ocean", "Rain", "Thunder"],
-};
-
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
   final bool isPlaying;
@@ -52,15 +46,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void _loadFavorites() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    final fav = await FavoriteManager.instance.loadFavorites();
     final favData = await _firebaseService.loadMixes(userId.toString());
     setState(() {
       favoriteSounds = favData;
-      for(final favs in favData)
-        {
-          print('$favs.favorateSoundTitle');
-        }
-      soundMixes = fav;
     });
   }
 
@@ -93,7 +81,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void _onFavoriteTap(String mixName, List<String> soundTitles) async {
     setState(() {
-    currentMix = mixName; // mark current
+    currentMix = mixName;
     isPlaying = true;
     });
 
@@ -106,13 +94,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return;
     }
 
-    // Ensure AudioPlayers exist
     await AudioManager().ensurePlayers(selectedSounds);
-
-    // Sync players (volumes, etc.)
     await AudioManager().syncPlayers(selectedSounds);
-
-    // Play all sounds in this mix
     await AudioManager().playAll();
   }
 
@@ -130,7 +113,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         });
         await AudioManager().playAll();
       }
-
     }
   }
 

@@ -16,20 +16,6 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  /// Save favorites for the current user
-  Future<void> saveFavorites() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final data = jsonEncode(favoriteSounds.map((e) => e.toJson()).toList());
-      await prefs.setString(_mixesKey(user.uid), data);
-    } catch (e) {
-      print("❌ Failed to save favorites: $e");
-    }
-  }
-
   Future<void> saveSoundMixes(Map<String, List<String>> soundMixes) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -92,40 +78,23 @@ class FavoriteManager {
   /// Add a sound to favorites
   Future<void> addFavorite(String mixName, List<String> soundTitles) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    soundMixes.addAll({
-      mixName: soundTitles,
-    });
 
-    soundMixes.forEach((mix, titles) {
-      print("🎶 $mix:");
-      for (final title in titles) {
-        print("   • $title");
-      }
-    });
-    // if (!favoriteSounds.any((s) => s.title == sound.title)) {
-    //   favoriteSounds.add(sound.copyWith(isFav: true));
-    //   await saveFavorites();
-    // }
     final mix = FavSoundModel(
       soundTitles: soundTitles,
       favSoundTitle: mixName,
       userId: userId.toString(),
     );
 
-    await saveSoundMixes(soundMixes);
     await service.addOrUpdateMix(mix);
   }
 
   /// Remove a sound from favorites
   Future<void> removeFavorite(NewSoundModel sound) async {
     favoriteSounds.removeWhere((s) => s.title == sound.title);
-    await saveFavorites();
   }
 
   /// Check if a sound is favorite
   bool isFavorite(NewSoundModel sound) {
     return favoriteSounds.any((s) => s.title == sound.title);
   }
-
-
 }
